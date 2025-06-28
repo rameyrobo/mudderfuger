@@ -34,8 +34,10 @@ export default function HomePage() {
 
         if (visibleRatio <= 0) {
           if (!userToggled) {
-            videoRef.current.muted = true;
-            setIsMuted(true);
+            if (videoRef.current) {
+              videoRef.current.muted = true;
+                setIsMuted(true);
+              }
           } else {
             // Reset user toggle if hero is no longer visible
             setUserToggled(false);
