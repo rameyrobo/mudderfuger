@@ -65,7 +65,9 @@ export default function VideoGrid({
             onMouseLeave={() => handleMouseLeave(video.id)}
           >
             <video
-              ref={el => (hoverRefs.current[video.id] = el)}
+              ref={el => {
+                hoverRefs.current[video.id] = el;
+              }}
               src={video.url}
               muted={localIsMuted}
               preload="auto"
