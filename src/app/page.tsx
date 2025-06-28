@@ -92,7 +92,7 @@ export default function HomePage() {
       id="story-section">
         <ScrollingBanner />
         <h2 className="text-7xl font-bold mb-16 uppercase tracking-wide justify-self-center">
-          MF's Story
+          MF&rsquo;s Story
         </h2>
         <VideoGrid />
       </section>

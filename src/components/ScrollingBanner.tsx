@@ -13,7 +13,7 @@ export default function ScrollingBanner() {
       >
         <span 
         className="text-5xl"
-        > •&nbsp;Yo I'm mudderfuger--I'm 19. I've been skating since June 16, 2025. I've got no sponsers yet and I hate mudda fuckin' cops&nbsp;•&nbsp;<a href="#product-1" className="hover:underline">Sponsor Me</a>&nbsp;•&nbsp;<a href="#product-2" className="hover:underline">Be a MF</a>&nbsp;•&nbsp;<a href="#product-3" className="hover:underline">Get heard</a>&nbsp;•&nbsp;<a href="/about" className="hover:underline">About</a>&nbsp;
+        > •&nbsp;Yo I&rsquo;m mudderfuger--I&rsquo;m 19. I&rsquo;ve been skating since June 16, 2025. I&rsquo;ve got no sponsers yet and I hate mudda fuckin&rsquo; cops&nbsp;•&nbsp;<a href="#product-1" className="hover:underline">Sponsor Me</a>&nbsp;•&nbsp;<a href="#product-2" className="hover:underline">Be a MF</a>&nbsp;•&nbsp;<a href="#product-3" className="hover:underline">Get heard</a>&nbsp;•&nbsp;<a href="/about" className="hover:underline">About</a>&nbsp;
         </span>
       </Marquee>
     </div>
