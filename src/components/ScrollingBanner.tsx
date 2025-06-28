@@ -9,11 +9,15 @@ export default function ScrollingBanner() {
         gradient={false}
         speed={400}
         pauseOnHover={true}
-        className="text-white text-2xl uppercase tracking-wider font-anton"
+        className="text-white text-2xl uppercase tracking-wider font-anton overflow-y-hidden"
       >
         <span 
         className="text-5xl"
-        > •&nbsp;Yo I&rsquo;m mudderfuger--I&rsquo;m 19. I&rsquo;ve been skating since June 16, 2025. I&rsquo;ve got no sponsers yet and I hate mudda fuckin&rsquo; cops&nbsp;•&nbsp;<a href="#product-1" className="hover:underline">Sponsor Me</a>&nbsp;•&nbsp;<a href="#product-2" className="hover:underline">Be a MF</a>&nbsp;•&nbsp;<a href="#product-3" className="hover:underline">Get heard</a>&nbsp;•&nbsp;<a href="/about" className="hover:underline">About</a>&nbsp;
+        >
+        &nbsp;•&nbsp;The world’s first AI skateboarder
+        •&nbsp;I hate cops, I drink beer, I party, I skate
+        •&nbsp;AI dropout with a busted tooth & a warrant
+        •&nbsp;Name’s Mudderfuger&nbsp;🛹🍻
         </span>
       </Marquee>
     </div>
