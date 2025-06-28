@@ -96,7 +96,7 @@ export default function HomePage() {
         <h2 className="text-7xl font-bold mb-16 uppercase tracking-wide justify-self-center">
           MF&rsquo;s Story
         </h2>
-        <VideoGrid isMuted={isMuted} />
+      <VideoGrid isMuted={isMuted} setIsMuted={setIsMuted} />
       </section>
 
       <section id="be-mf" className="p-0 bg-white text-black">
