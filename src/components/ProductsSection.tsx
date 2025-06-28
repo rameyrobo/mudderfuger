@@ -7,28 +7,28 @@ export default function ProductsSection() {
       title: "Brand/Product Placement",
       price: 300,
       description: "Your brand or @name on a shirt, sign, wall, or background prop. Optional name drop or dialogue shoutout. Tag in caption + option for a collab post (if requested). Includes 1–3 high-res cinematic stills from the scene.",
-      videoSrc: "https://mudderfuger.b-cdn.net/2_walking%20to%20the%20park4x5_.mp4",
+      videoSrc: "https://mudderfuger.b-cdn.net/2_walking_to_the_park.mp4",
     },
     {
       id: "add-yourself",
       title: "Add Yourself Into an Episode",
       price: 100,
       description: "Submit a photo. We’ll build you into a Mudderfuger scene. Includes custom AI version of your face, your name or @handle in the skit, and an optional tag in caption.",
-      videoSrc: "https://mudderfuger.b-cdn.net/3_skatepark4x5_%20v3.mp4",
+      videoSrc: "https://mudderfuger.b-cdn.net/3_skatepark.mp4",
     },
     {
       id: "submit-song",
       title: "Submit a Song",
       price: 150,
       description: "At least 8–10 seconds of your music in a real skit. Includes tag in caption + option for a collab post.",
-      videoSrc: "https://mudderfuger.b-cdn.net/9_out%20of%20jail%20selfi_4x5.mp4",
+      videoSrc: "https://mudderfuger.b-cdn.net/9_out_of_jail_selfi-hevc.mp4",
     },
     {
       id: "collab-post",
       title: "📩 Collab Post Listing",
       price: 50,
       description: "Be added as a collaborator on Instagram. Only available with a Brand, Character, or Song package.",
-      videoSrc: "https://mudderfuger.b-cdn.net/4_photogrpher_walking_to_work_4x5_2.mp4",
+      videoSrc: "https://mudderfuger.b-cdn.net/4_photogrpher_walking_to_work.mp4",
     },
   ];
 
