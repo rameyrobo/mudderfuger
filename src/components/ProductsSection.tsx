@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+
 
 export default function ProductsSection() {
   const products = [
@@ -41,11 +41,11 @@ export default function ProductsSection() {
           className="group relative flex items-center justify-center h-[50vh] bg-black text-white overflow-hidden"
           onMouseEnter={(e) => {
             const video = e.currentTarget.querySelector("video");
-            video && video.play();
+            if (video) video.play();
           }}
           onMouseLeave={(e) => {
             const video = e.currentTarget.querySelector("video");
-            video && video.pause();
+            if (video) video.pause();
           }}
         >
           <video
