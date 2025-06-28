@@ -36,10 +36,9 @@ export default function HomePage() {
           if (!userToggled) {
             if (videoRef.current) {
               videoRef.current.muted = true;
-                setIsMuted(true);
-              }
+              setIsMuted(true);
+            }
           } else {
-            // Reset user toggle if hero is no longer visible
             setUserToggled(false);
           }
         }
