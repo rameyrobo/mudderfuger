@@ -17,7 +17,13 @@ const videos = [
   { id: 13, title: 'ep13: wake up', url: 'https://mudderfuger.b-cdn.net/12_wake_up_mudderfuger_v1_1.mp4' },
 ];
 
-export default function VideoGrid({ isMuted }: { isMuted: boolean }) {
+export default function VideoGrid({
+    isMuted,
+    setIsMuted,
+  }:{
+    isMuted: boolean;
+    setIsMuted: React.Dispatch<React.SetStateAction<boolean>>;
+  }) {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [hoverTimeMap, setHoverTimeMap] = useState<{ [key: number]: number }>({});
   const hoverRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
@@ -84,9 +90,14 @@ export default function VideoGrid({ isMuted }: { isMuted: boolean }) {
       {selectedVideo && (
         <div
           className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center"
-          onClick={() => setSelectedVideo(null)}
+          onClick={() => {
+            const modalVideo = document.querySelector('#modalVideo') as HTMLVideoElement;
+            modalVideo?.pause();
+            setSelectedVideo(null);
+          }}
         >
           <video
+            id="modalVideo"
             src={selectedVideo}
             controls
             autoPlay
