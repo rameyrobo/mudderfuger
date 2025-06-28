@@ -19,10 +19,8 @@ const videos = [
 
 export default function VideoGrid({
     isMuted,
-    setIsMuted,
-  }:{
+  }: {
     isMuted: boolean;
-    setIsMuted: React.Dispatch<React.SetStateAction<boolean>>;
   }) {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [hoverTimeMap, setHoverTimeMap] = useState<{ [key: number]: number }>({});
