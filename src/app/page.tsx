@@ -93,16 +93,17 @@ export default function HomePage() {
       </section>
 
       <section 
-      className="pt-0 pb-10"
+      className="pt-16 pb-0"
       id="story-section">
-        <ScrollingBanner />
-        <h2 className="text-6xl font-bold mb-16 uppercase tracking-wide justify-self-center">
+        <h2 className="text-6xl font-bold uppercase tracking-wide justify-self-center mb-6">
           MuddaFugger&rsquo;s Story
         </h2>
+      <ScrollingBanner />
       <VideoGrid isMuted={isMuted} />
       </section>
 
-      <section id="be-mf" className="p-0 bg-white text-black">
+      <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full">
+        <h2 className="text-[10rem] absolute bg-black color-white font-bold uppercase tracking-wide justify-self-center px-8 py-4 absolute bg-black opacity-85 z-50 pointer-events-none">Be a MF</h2>
         <ProductsSection />
       </section>
     </main>
