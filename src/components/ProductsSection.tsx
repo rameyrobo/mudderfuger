@@ -14,7 +14,7 @@ const imgs = [
 { id: 10, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-5.jpg' },
 { id: 11, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-6.jpg' },
 { id: 12, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-7.jpg' },
-{ id: 13, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-8.jpg' },
+{ id: 13, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-8.jpg' }
 ,
 ];
 const products = [

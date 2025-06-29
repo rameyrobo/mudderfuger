@@ -14,7 +14,7 @@ const videos = [
   { id: 10, title: 'ep10: out of jail pt2', url: 'https://mudderfuger.b-cdn.net/_vids/9_out_of_jail_selfi-hevc.mp4' },
   { id: 11, title: 'ep11: police station', url: 'https://mudderfuger.b-cdn.net/_vids/10_police_station_skate.mp4' },
   { id: 12, title: 'ep12: skatepark pt2', url: 'https://mudderfuger.b-cdn.net/_vids/11_mudderfuger_skate_part.mp4' },
-  { id: 13, title: 'ep13: wake up', url: 'https://mudderfuger.b-cdn.net/_vids/12_wake_up_mudderfuger.mp4' },
+  { id: 13, title: 'ep13: wake up', url: 'https://mudderfuger.b-cdn.net/_vids/12_wake_up_mudderfuger.mp4' }
 ];
 
 export default function VideoGrid({
