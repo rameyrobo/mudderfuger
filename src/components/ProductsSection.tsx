@@ -97,12 +97,13 @@ export default function ProductsSection() {
   };
 
   return (
-    <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-0">
+    <div className="w-full grid grid-cols-2 gap-0">
       {products.map((product, idx) => (
         <div
           key={product.id}
           id={product.id}
-          className="group relative flex items-center justify-center h-[50vh] bg-black text-white overflow-hidden"
+          tabIndex={0}
+          className="group relative flex items-center justify-center h-[47vh] bg-black text-white overflow-hidden outline-none"
           onMouseLeave={() => handleMouseLeave(idx)}
         >
           {/* Decorative BG Image */}
@@ -114,23 +115,41 @@ export default function ProductsSection() {
               className="absolute inset-0 w-full h-full object-cover transition-all duration-500 z-0"
             />
           )}
-          {/* Solid color overlay, transitions on hover */}
-          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-90 transition-opacity z-10" />
-            <div className="text-center px-4 relative z-20 max-w-[90%] group-hover:z-60">
+          {/* Solid color overlay */}
+          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-90 group-focus-within:opacity-90 transition-opacity z-10" />
+            <div className="text-center px-4 relative z-20 max-w-[90%] group-hover:z-60 group-focus-within:z-60">
               <h3 className="
-                text-2xl
-                group-hover:text-4xl
-                text-center 
-                color-white 
-                font-bold 
-                uppercase 
-                tracking-wide 
-                transition-all
-                bg-black
-                group-hover:bg-transparent 
-                justify-self-center 
-                px-8 
-                py-4 
+                text-l
+                text-center  
+                text-black  
+                bg-white
+                font-bold  
+                uppercase
+                tracking-wide  
+                transition-all bg-black 
+                justify-self-center
+                px-0.5  
+                py-4   
+                leading-6 
+                text-xl
+                lg:text-2xl
+                lg:px-8
+                group-hover:bg-transparent
+                group-focus:bg-transparent
+                group-focus-within:bg-transparent  
+                group-hover:text-white
+                group-focus:text-white
+                group-focus-within:text-white  
+                sm:group-hover:text-3xl
+                sm:group-focus:text-3xl 
+                sm:group-focus-within:text-3xl   
+                sm:leading-8
+                md:px-4
+                md:leading-9
+                md:group-hover:text-4xl
+                md:group-focus:text-4xl
+                md:group-focus-within:text-4xl 
+                group-hover:bg-transparent  
                 ">
                   {product.title}
               </h3>
@@ -141,6 +160,8 @@ export default function ProductsSection() {
                   opacity-0 
                   group-hover:max-h-96 
                   group-hover:opacity-100 
+                  group-focus-within:max-h-96 
+                  group-focus-within:opacity-100 
                   transition-all 
                   duration-500 
                   ease-in-out
@@ -150,13 +171,26 @@ export default function ProductsSection() {
                 "
               >
                 {product.description && (
-                  <p className="text-base text-left bg-black/100 mb-2 max-w-sm">{product.description}</p>
+                  <p className="
+                  text-sm 
+                  lg:text-base 
+                  text-left 
+                  bg-black/100 
+                  mb-2 
+                  max-w-sm
+                  ">
+                  {product.description}
+                  </p>
                 )}
                 {product.includes && product.includes.length > 0 && (
                   <ul className="list-disc list-inside text-sm mb-4 text-left mx-auto max-w-[90%]">
                     {product.includes.map((item, i) => (
                       <li 
-                        className="text-base mb-1 max-w-max"
+                        className="
+                        text-xs
+                        lg:text-base 
+                        mb-1 
+                        max-w-max"
                         key={i}
                       >
                         {item}
@@ -170,7 +204,9 @@ export default function ProductsSection() {
                   snipcart-add-item
                   opacity-0 
                   group-hover:max-h-96 
-                  group-hover:opacity-95          s 
+                  group-hover:opacity-95 
+                  group-focus-within:max-h-96 
+                  group-focus-within:opacity-95
                   bg-white 
                   text-black 
                   px-4 
@@ -183,6 +219,7 @@ export default function ProductsSection() {
                 data-item-price={product.price.toFixed(2)}
                 data-item-url="/"
                 data-item-description={product.description || ""}
+                tabIndex={-1}
               >
                 Buy Now
               </button>

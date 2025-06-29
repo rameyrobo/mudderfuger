@@ -93,7 +93,7 @@ export default function HomePage() {
       </section>
 
       <section 
-      className="pt-16 pb-0"
+      className="pt-20 pb-0"
       id="story-section">
         <h2 className="text-6xl font-bold uppercase tracking-wide justify-self-center mb-6">
           MuddaFugger&rsquo;s Story
@@ -102,8 +102,30 @@ export default function HomePage() {
       <VideoGrid isMuted={isMuted} />
       </section>
 
-      <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full">
-        <h2 className="text-[10rem] absolute bg-black color-white font-bold uppercase tracking-wide justify-self-center px-8 py-4 absolute bg-black opacity-85 z-50 pointer-events-none">Be a MF</h2>
+      <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full overflow-x-hidden relative">
+        <ScrollingBanner />
+        <h2 className="
+        text-7xl
+        color-white
+        font-bold 
+        uppercase
+        tracking-wide
+        justify-self-center
+        ml-6
+        px-8 
+        py-4
+        absolute
+        bg-black
+        opacity-85
+        translate-y-9
+        z-50
+        pointer-events-none
+        lg:translate-y-8
+        lg:text-[10rem]
+        lg:ml-11
+        xl: translate-y-5
+        ">
+          Be a MF</h2>
         <ProductsSection />
       </section>
     </main>
