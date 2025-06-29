@@ -1,7 +1,22 @@
+import { useState } from 'react';
 
-
-export default function ProductsSection() {
-  const products = [
+const imgs = [
+{ id: 1, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-1.jpg' },
+{ id: 2, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-10.jpg' },
+{ id: 3, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-11.jpg' },
+{ id: 4, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-12.jpg' },
+{ id: 5, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-14.jpg' },
+{ id: 6, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-15.jpg' },
+{ id: 7, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-16.jpg' },
+{ id: 8, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-2.jpg' },
+{ id: 9, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-3.jpg' },
+{ id: 10, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-5.jpg' },
+{ id: 11, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-6.jpg' },
+{ id: 12, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-7.jpg' },
+{ id: 13, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-8.jpg' },
+{ id: 14, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-9.jpg' },
+];
+const products = [
     {
       id: "brand-placement",
       title: "Brand/Product Placement",
@@ -32,38 +47,55 @@ export default function ProductsSection() {
     },
   ];
 
+// Helper to get N unique random images from the pool
+function getNUniqueRandomImages(imgArray, n) {
+  const arr = [...imgArray];
+  const chosen = [];
+  while (chosen.length < n && arr.length) {
+    const idx = Math.floor(Math.random() * arr.length);
+    chosen.push(arr.splice(idx, 1)[0].url);
+  }
+  return chosen;
+}
+
+export default function ProductsSection() {
+  // Initial assignment of images (unique for each product)
+  const [imageAssignments, setImageAssignments] = useState(() =>
+    getNUniqueRandomImages(imgs, products.length)
+  );
+
+  const handleMouseLeave = (idx) => {
+    // Images currently in use (except for this one)
+    const used = imageAssignments.filter((_, i) => i !== idx);
+    // Available images
+    const available = imgs.map(i => i.url).filter(url => !used.includes(url));
+    // Random new image
+    if (available.length) {
+      const newImg = available[Math.floor(Math.random() * available.length)];
+      setImageAssignments(assignments =>
+        assignments.map((img, i) => i === idx ? newImg : img)
+      );
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-      {products.map((product) => (
+      {products.map((product, idx) => (
         <div
           key={product.id}
           id={product.id}
           className="group relative flex items-center justify-center h-[50vh] bg-black text-white overflow-hidden"
-          onMouseEnter={(e) => {
-            const video = e.currentTarget.querySelector("video");
-            if (video) video.play();
-          }}
-          onMouseLeave={(e) => {
-            const video = e.currentTarget.querySelector("video");
-            if (video) video.pause();
-          }}
+          onMouseLeave={() => handleMouseLeave(idx)}
         >
-          <video
-            className="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-500 z-0"
-            muted
-            loop
-            playsInline
-          >
-            <source
-              src={product.videoSrc.replace(/\.mp4$/, ".webm")}
-              type="video/webm"
-            />
-            <source
-              src={product.videoSrc}
-              type="video/mp4"
-            />
-          </video>
-          <div className="text-center px-4 relative z-10 max-w-[90%]">
+          {/* Decorative BG Image */}
+          <img
+            src={imageAssignments[idx]}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 z-0"
+          />
+          {/* Solid color overlay, transitions on hover */}
+          <div className="absolute inset-0 bg-black opacity-80 group-hover:opacity-0 transition-opacity z-10" />
+          <div className="text-center px-4 relative z-20 max-w-[90%]">
             <h3 className="text-2xl font-bold mb-2">{product.title}</h3>
             <p className="text-sm mb-4">{product.description}</p>
             <button
