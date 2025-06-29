@@ -66,6 +66,10 @@ export default function HomePage() {
           className="absolute w-full h-full object-cover"
         >
           <source
+            src="https://mudderfuger.b-cdn.net/1_mudderfuger_intro.webm"
+            type="video/webm"
+          />
+          <source
             src="https://mudderfuger.b-cdn.net/1_mudderfuger_intro.mp4"
             type="video/mp4"
           />
@@ -92,8 +96,8 @@ export default function HomePage() {
       className="pt-0 pb-10"
       id="story-section">
         <ScrollingBanner />
-        <h2 className="text-7xl font-bold mb-16 uppercase tracking-wide justify-self-center">
-          MF&rsquo;s Story
+        <h2 className="text-6xl font-bold mb-16 uppercase tracking-wide justify-self-center">
+          MuddaFugger&rsquo;s Story
         </h2>
       <VideoGrid isMuted={isMuted} />
       </section>
