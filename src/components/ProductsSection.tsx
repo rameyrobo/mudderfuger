@@ -70,7 +70,7 @@ export default function ProductsSection() {
     setImageAssignments(getNUniqueRandomImages(imgs, products.length));
   }, []);
 
-  const handleMouseLeave = (idx) => {
+  const handleMouseLeave = (idx: number) => {
     // Images currently in use (except for this one)
     const used = imageAssignments.filter((_, i) => i !== idx);
     // Available images
