@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 const imgs = [
 { id: 1, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-1.jpg' },
@@ -59,10 +60,12 @@ function getNUniqueRandomImages(imgArray, n) {
 }
 
 export default function ProductsSection() {
-  // Initial assignment of images (unique for each product)
-  const [imageAssignments, setImageAssignments] = useState(() =>
-    getNUniqueRandomImages(imgs, products.length)
-  );
+  // Initial assignment of images as empty, then assign unique images on mount
+  const [imageAssignments, setImageAssignments] = useState<string[]>(() => Array(products.length).fill(""));
+
+  useEffect(() => {
+    setImageAssignments(getNUniqueRandomImages(imgs, products.length));
+  }, []);
 
   const handleMouseLeave = (idx) => {
     // Images currently in use (except for this one)
@@ -88,11 +91,14 @@ export default function ProductsSection() {
           onMouseLeave={() => handleMouseLeave(idx)}
         >
           {/* Decorative BG Image */}
-          <img
-            src={imageAssignments[idx]}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 z-0"
-          />
+          {imageAssignments[idx] && (
+            <Image
+              src={imageAssignments[idx]}
+              alt=""
+              fill
+              className="absolute inset-0 w-full h-full object-cover transition-all duration-500 z-0"
+            />
+          )}
           {/* Solid color overlay, transitions on hover */}
           <div className="absolute inset-0 bg-black opacity-80 group-hover:opacity-0 transition-opacity z-10" />
           <div className="text-center px-4 relative z-20 max-w-[90%]">
