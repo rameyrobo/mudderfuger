@@ -66,11 +66,11 @@ export default function HomePage() {
           className="absolute w-full h-full object-cover"
         >
           <source
-            src="https://mudderfuger.b-cdn.net/1_mudderfuger_intro.webm"
+            src="https://mudderfuger.b-cdn.net/_vids/1_mudderfuger_intro.webm"
             type="video/webm"
           />
           <source
-            src="https://mudderfuger.b-cdn.net/1_mudderfuger_intro.mp4"
+            src="https://mudderfuger.b-cdn.net/_vids/1_mudderfuger_intro.mp4"
             type="video/mp4"
           />
         </video>
