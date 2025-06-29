@@ -4,7 +4,7 @@ import Marquee from 'react-fast-marquee';
 
 export default function ScrollingBanner() {
   return (
-    <div className="bg-black py-2 mb-32 border-t border-b border-white">
+    <div className="bg-black py-2 mb-0 border-t border-b border-white">
       <Marquee
         gradient={false}
         speed={400}
@@ -12,7 +12,7 @@ export default function ScrollingBanner() {
         className="text-white text-2xl uppercase tracking-wider font-anton overflow-y-hidden"
       >
         <span 
-        className="text-5xl"
+        className="text-4xl"
         >
         &nbsp;•&nbsp;The world’s first AI skateboarder
         •&nbsp;I hate cops, I drink beer, I party, I skate
