@@ -49,9 +49,12 @@ const products = [
   ];
 
 // Helper to get N unique random images from the pool
-function getNUniqueRandomImages(imgArray, n) {
+function getNUniqueRandomImages(
+  imgArray: { id: number; url: string }[],
+  n: number
+): string[] {
   const arr = [...imgArray];
-  const chosen = [];
+  const chosen: string[] = [];
   while (chosen.length < n && arr.length) {
     const idx = Math.floor(Math.random() * arr.length);
     chosen.push(arr.splice(idx, 1)[0].url);
