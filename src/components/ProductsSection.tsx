@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 const imgs = [
-{ id: 1, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-1.jpg' },
+{ id: 1, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-9.jpg' },
 { id: 2, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-10.jpg' },
 { id: 3, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-11.jpg' },
 { id: 4, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-12.jpg' },
@@ -15,36 +15,48 @@ const imgs = [
 { id: 11, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-6.jpg' },
 { id: 12, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-7.jpg' },
 { id: 13, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-8.jpg' },
-{ id: 14, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-9.jpg' },
+,
 ];
 const products = [
     {
       id: "brand-placement",
       title: "Brand/Product Placement",
       price: 300,
-      description: "Your brand or @name on a shirt, sign, wall, or background prop. Optional name drop or dialogue shoutout. Tag in caption + option for a collab post (if requested). Includes 1–3 high-res cinematic stills from the scene.",
-      videoSrc: "https://mudderfuger.b-cdn.net/2_walking_to_the_park.mp4",
+      description: null,
+      includes: [
+        "Your brand or @name on a shirt, sign, wall, or background prop",
+        "Optional name drop or dialogue shoutout",
+        "Tag in caption + option for a collab post (if requested) - add on",
+        "1–3 high-res cinematic stills from the scene"
+      ]
     },
     {
       id: "add-yourself",
       title: "Add Yourself Into an Episode",
       price: 100,
-      description: "Submit a photo. We’ll build you into a Mudderfuger scene. Includes custom AI version of your face, your name or @handle in the skit, and an optional tag in caption.",
-      videoSrc: "https://mudderfuger.b-cdn.net/3_skatepark.mp4",
+      description: "Submit a photo. We’ll build you (or a friend) into a real Mudderfuger scene as a skater, partygoer, cop, or background freak.",
+      includes: [
+        "Custom AI version of your face",
+        "Name or @handle used in the skit",
+        "Tag in caption + option for a collab post - add on"
+      ]
     },
     {
       id: "submit-song",
       title: "Submit a Song",
       price: 150,
-      description: "At least 8–10 seconds of your music in a real skit. Includes tag in caption + option for a collab post.",
-      videoSrc: "https://mudderfuger.b-cdn.net/9_out_of_jail_selfi-hevc.mp4",
+      description: null,
+      includes: [
+        "At least 8–10 seconds of your music in a real skit",
+        "Tag in caption + option for a collab post - add on"
+      ]
     },
     {
       id: "collab-post",
       title: "📩 Collab Post Listing",
       price: 50,
-      description: "Be added as a collaborator on Instagram. Only available with a Brand, Character, or Song package.",
-      videoSrc: "https://mudderfuger.b-cdn.net/4_photogrpher_walking_to_work.mp4",
+      description: "Be added as a collaborator on the Instagram  (shows up on your page too). Only available with a Brand, Character, or Song package.",
+      includes: null
     },
   ];
 
@@ -85,7 +97,7 @@ export default function ProductsSection() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+    <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-0">
       {products.map((product, idx) => (
         <div
           key={product.id}
@@ -103,22 +115,79 @@ export default function ProductsSection() {
             />
           )}
           {/* Solid color overlay, transitions on hover */}
-          <div className="absolute inset-0 bg-black opacity-80 group-hover:opacity-0 transition-opacity z-10" />
-          <div className="text-center px-4 relative z-20 max-w-[90%]">
-            <h3 className="text-2xl font-bold mb-2">{product.title}</h3>
-            <p className="text-sm mb-4">{product.description}</p>
-            <button
-              className="snipcart-add-item bg-white text-black px-4 py-2 rounded"
-              data-item-id={product.id}
-              data-item-name={product.title}
-              data-item-price={product.price.toFixed(2)}
-              data-item-url="/"
-              data-item-description={product.description}
-            >
-              Buy Now
-            </button>
+          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-90 transition-opacity z-10" />
+            <div className="text-center px-4 relative z-20 max-w-[90%] group-hover:z-60">
+              <h3 className="
+                text-2xl
+                group-hover:text-4xl
+                text-center 
+                color-white 
+                font-bold 
+                uppercase 
+                tracking-wide 
+                transition-all
+                bg-black
+                group-hover:bg-transparent 
+                justify-self-center 
+                px-8 
+                py-4 
+                ">
+                  {product.title}
+              </h3>
+              <div
+                className="
+                  max-h-0 
+                  overflow-hidden 
+                  opacity-0 
+                  group-hover:max-h-96 
+                  group-hover:opacity-100 
+                  transition-all 
+                  duration-500 
+                  ease-in-out
+                  flex 
+                  flex-col 
+                  items-center
+                "
+              >
+                {product.description && (
+                  <p className="text-base text-left bg-black/100 mb-2 max-w-sm">{product.description}</p>
+                )}
+                {product.includes && product.includes.length > 0 && (
+                  <ul className="list-disc list-inside text-sm mb-4 text-left mx-auto max-w-[90%]">
+                    {product.includes.map((item, i) => (
+                      <li 
+                        className="text-base mb-1 max-w-max"
+                        key={i}
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <button
+                className="
+                  snipcart-add-item
+                  opacity-0 
+                  group-hover:max-h-96 
+                  group-hover:opacity-95          s 
+                  bg-white 
+                  text-black 
+                  px-4 
+                  py-2 
+                  rounded 
+                  mt-2
+                  cursor-pointer"
+                data-item-id={product.id}
+                data-item-name={product.title}
+                data-item-price={product.price.toFixed(2)}
+                data-item-url="/"
+                data-item-description={product.description || ""}
+              >
+                Buy Now
+              </button>
+            </div>
           </div>
-        </div>
       ))}
     </div>
   );
