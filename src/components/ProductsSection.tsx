@@ -78,9 +78,20 @@ export default function ProductsSection() {
   // Initial assignment of images as empty, then assign unique images on mount
   const [imageAssignments, setImageAssignments] = useState<string[]>(() => Array(products.length).fill(""));
 
+  const [modalIdx, setModalIdx] = useState<number | null>(null);
+
   useEffect(() => {
     setImageAssignments(getNUniqueRandomImages(imgs, products.length));
   }, []);
+
+  useEffect(() => {
+    if (modalIdx === null) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setModalIdx(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [modalIdx]);
 
   const handleMouseLeave = (idx: number) => {
     // Images currently in use (except for this one)
@@ -105,6 +116,8 @@ export default function ProductsSection() {
           tabIndex={0}
           className="group relative flex items-center justify-center h-[47vh] bg-black text-white overflow-hidden outline-none"
           onMouseLeave={() => handleMouseLeave(idx)}
+          onClick={() => setModalIdx(idx)}
+          onFocus={() => setModalIdx(idx)}
         >
           {/* Decorative BG Image */}
           {imageAssignments[idx] && (
@@ -119,7 +132,6 @@ export default function ProductsSection() {
           <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-90 group-focus-within:opacity-90 transition-opacity z-10" />
             <div className="text-center px-4 relative z-20 max-w-[90%] group-hover:z-60 group-focus-within:z-60">
               <h3 className="
-                text-l
                 text-center  
                 text-black  
                 bg-white
@@ -128,9 +140,10 @@ export default function ProductsSection() {
                 tracking-wide  
                 transition-all bg-black 
                 justify-self-center
-                px-0.5  
+                px-1
                 py-4   
-                leading-6 
+                leading-6
+                rounded-sm 
                 text-xl
                 lg:text-2xl
                 lg:px-8
@@ -229,6 +242,59 @@ export default function ProductsSection() {
             </div>
           </div>
       ))}
+      {modalIdx !== null && (
+      <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/90 transition-all">
+        <div className="absolute inset-0" onClick={() => setModalIdx(null)}></div>
+        <div className="relative max-w-lg w-full mx-4 bg-black text-white rounded-lg shadow-2xl p-6 z-10 flex flex-col items-center">
+          <button
+            onClick={() => setModalIdx(null)}
+            className="absolute -top-2.5 right-2 text-4xl font-light z-20 cursor-pointer text-white"
+            aria-label="Close"
+          >
+            ×
+          </button>
+          {imageAssignments[modalIdx] && (
+            <Image
+              src={imageAssignments[modalIdx]}
+              alt=""
+              width={600}
+              height={800}
+              className="w-full max-h-96 object-cover rounded mb-4"
+            />
+          )}
+          <h2 className="text-2xl font-bold mb-2">{products[modalIdx].title}</h2>
+          {products[modalIdx].description && (
+            <p className="mb-2 text-base">{products[modalIdx].description}</p>
+          )}
+          {products[modalIdx].includes && products[modalIdx].includes.length > 0 && (
+            <ul className="list-disc list-inside text-sm mb-4 text-left mx-auto max-w-[90%]">
+              {products[modalIdx].includes.map((item, i) => (
+                <li key={i} className="mb-2 pl-[19.8px] indent-[-21.1px]">{item}</li>
+              ))}
+            </ul>
+          )}
+          <button
+            className="
+              snipcart-add-item
+              bg-white 
+              text-black 
+              px-4 
+              py-2 
+              rounded 
+              mt-2
+              cursor-pointer
+            "
+            data-item-id={products[modalIdx].id}
+            data-item-name={products[modalIdx].title}
+            data-item-price={products[modalIdx].price.toFixed(2)}
+            data-item-url="/"
+            data-item-description={products[modalIdx].description || ""}
+          >
+            Buy Now
+          </button>
+        </div>
+      </div>
+    )}
     </div>
   );
 }
