@@ -106,13 +106,11 @@ export default function HomePage() {
       <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full overflow-x-hidden relative">
         <ScrollingBannerProds />
         <h2 className="
-        text-2xl
         color-white
         font-bold 
         uppercase
         tracking-wide
         justify-self-center
-        ml-6
         px-8 
         py-4
         absolute
@@ -121,14 +119,20 @@ export default function HomePage() {
         translate-y-9
         z-50
         pointer-events-none
-        md:text-3xl
-        lg:text-4xl
-        lg:translate-y-8
-        lg:text-[10rem]
-        lg:ml-11
+        text-6xl 
+        sm:text-7xl 
+        md:text-8xl 
+        lg:text-9xl 
+        xl:text-10rem
         xl: translate-y-5
+
+        translate-x-2
+        translate-y-9 
+        xl:translate-y-4  
+        
         ">
-          Be a MF</h2>
+          Be<span className="space1">&nbsp;</span>a<span className="space2">&nbsp;</span>MF</h2>
+          
         <ProductsSection />
       </section>
     </main>
