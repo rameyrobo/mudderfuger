@@ -257,7 +257,9 @@ export default function ProductsSection() {
                   py-2 
                   rounded 
                   mt-2
-                  cursor-pointer"
+                  cursor-pointer
+                  hidden
+                  lg:inline-block"
                 data-item-id={product.id}
                 data-item-name={product.title}
                 data-item-price={product.price.toFixed(2)}
@@ -265,7 +267,32 @@ export default function ProductsSection() {
                 data-item-description={product.description || ""}
                 tabIndex={-1}
               >
-                Buy Now
+                Add to Cart
+              </button>
+              <button
+                className="
+                  font-arial-bold
+                  snipcart-add-item
+                  opacity-0 
+                  group-hover:max-h-96
+                  group-hover:opacity-95
+                  bg-white 
+                  text-black 
+                  px-4 
+                  py-2 
+                  rounded 
+                  mt-2
+                  cursor-pointer
+                  inline-block
+                  lg:hidden"
+                data-item-id={product.id}
+                data-item-name={product.title}
+                data-item-price={product.price.toFixed(2)}
+                data-item-url="/"
+                data-item-description={product.description || ""}
+                tabIndex={-1}
+              >
+                See Details
               </button>
             </div>
           </div>
