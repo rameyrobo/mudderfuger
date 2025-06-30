@@ -165,6 +165,7 @@ export default function ProductsSection() {
           <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-80 transition-opacity z-10" />
             <div className="text-center px-4 relative z-20 max-w-[90%] group-hover:z-60">
               <h3 className="
+                font-arial-bold
                 text-center  
                 text-black  
                 bg-white
@@ -173,29 +174,21 @@ export default function ProductsSection() {
                 tracking-wide  
                 transition-all bg-black 
                 justify-self-center
-                px-1
+                px-3.5
                 py-4   
                 leading-6
                 rounded-sm 
-                text-xl
-                lg:text-2xl
-                lg:px-8
+                text-base
                 group-hover:bg-transparent
-                group-focus:bg-transparent
-                group-focus-within:bg-transparent  
                 group-hover:text-white
-                group-focus:text-white
-                group-focus-within:text-white  
-                sm:group-hover:text-3xl
-                sm:group-focus:text-3xl 
-                sm:group-focus-within:text-3xl   
+                group-hover:bg-transparent  
                 sm:leading-8
+                md:text-xl
                 md:px-4
                 md:leading-9
                 md:group-hover:text-4xl
-                md:group-focus:text-4xl
-                md:group-focus-within:text-4xl 
-                group-hover:bg-transparent  
+                lg:text-2xl
+                lg:px-8
                 ">
                   {product.title}
               </h3>
@@ -216,6 +209,7 @@ export default function ProductsSection() {
               >
                 {product.description && (
                   <p className="
+                  font-arial
                   text-sm 
                   lg:text-base 
                   text-left 
@@ -231,6 +225,7 @@ export default function ProductsSection() {
                     {product.includes.map((item, i) => (
                       <li 
                         className="
+                        font-arial
                         text-xs
                         lg:text-base 
                         mb-1 
@@ -248,12 +243,11 @@ export default function ProductsSection() {
               </div>
               <button
                 className="
+                  font-arial-bold
                   snipcart-add-item
                   opacity-0 
-                  group-hover:max-h-96 
-                  group-hover:opacity-95 
-                  group-focus-within:max-h-96 
-                  group-focus-within:opacity-95
+                  group-hover:max-h-96
+                  group-hover:opacity-95
                   bg-white 
                   text-black 
                   px-4 
@@ -280,6 +274,7 @@ export default function ProductsSection() {
           <button
             onClick={() => handleModalClose()}
             className="
+            font-arial-bold
             absolute 
             -top-2.5 
             right-2 
@@ -287,8 +282,7 @@ export default function ProductsSection() {
             font-light 
             z-20 
             cursor-pointer 
-            text-white
-            scale-125"
+            text-white"
             aria-label="Close"
           >
             ×
@@ -302,19 +296,20 @@ export default function ProductsSection() {
               className="w-full max-h-96 object-cover rounded mb-4"
             />
           )}
-          <h2 className="text-2xl font-bold mb-2">{products[modalIdx].title}</h2>
+          <h2 className="text-2xl sm:text-8xl md:text-9xl font-bold mb-2 font-arial-bold">{products[modalIdx].title}</h2>
           {products[modalIdx].description && (
-            <p className="mb-2 text-base">{products[modalIdx].description}</p>
+            <p className="mb-2 text-base font-arial">{products[modalIdx].description}</p>
           )}
           {products[modalIdx].includes && products[modalIdx].includes.length > 0 && (
             <ul className="list-disc list-inside text-sm mb-4 text-left mx-auto max-w-[90%]">
               {products[modalIdx].includes.map((item, i) => (
-                <li key={i} className="mb-2 pl-[19.8px] indent-[-21.1px]">{item}</li>
+                <li key={i} className="font-arial mb-2 pl-[19.8px] indent-[-21.1px]">{item}</li>
               ))}
             </ul>
           )}
           <button
             className="
+              font-arial-bold
               snipcart-add-item
               bg-white 
               text-black 

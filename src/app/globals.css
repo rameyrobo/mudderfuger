@@ -1,7 +1,17 @@
 @import "tailwindcss";
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css" layer(utilities);
+
 @import url("https://fonts.googleapis.com/css2?family=Anton&display=swap");
+
+.font-arial {
+  font-family: Arial, sans-serif;
+}
+
+.font-arial-bold {
+  font-family: Arial, sans-serif;
+  font-weight: 900;
+}
 
 :root {
   --background: #ffffff;
