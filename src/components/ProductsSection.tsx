@@ -259,6 +259,7 @@ export default function ProductsSection() {
                   mt-2
                   cursor-pointer
                   hidden
+                  uppercase
                   lg:inline-block"
                 data-item-id={product.id}
                 data-item-name={product.title}

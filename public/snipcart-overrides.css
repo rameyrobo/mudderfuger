@@ -16,6 +16,10 @@
   border-color: #ccc !important;
 }
 
+.snipcart-modal__container {
+  z-index: 1000 !important;
+}
+
 #snipcart h1,
 #snipcart h2,
 #snipcart h3,
@@ -37,6 +41,18 @@ span.snipcart__font--secondary.snipcart__font--regular,
   font-family: Arial, sans-serif !important;
 }
 
+#snipcart h1,
+#snipcart h2,
+#snipcart h3,
+#snipcart h4,
+#snipcart h5,
+#snipcart h6,
+.snipcart-item-quantity__label,
+.snipcart-base-button__label,
+.snipcart-cart__footer-buttons .snipcart-button-link, 
+.snipcart-cart__footer-buttons .snipcart-button-primary {
+    text-transform: uppercase !important;
+}
 /* Button overrides for clarity */
 .snipcart-button,
 .snipcart-button-primary,
@@ -47,9 +63,15 @@ span.snipcart__font--secondary.snipcart__font--regular,
   font-family: Arial, sans-serif !important;
 }
 
+.snipcart-button-primary, 
+.snipcart-base-button,
+.snipcart-base-button__label {
+    background: black !important;
+}
 .snipcart-base-button__label,
 .snipcart-base-button__icon {
   color: white !important;
+  font-family: Arial, sans-serif !important;
 }
 
 /* Remove unwanted shadows or styling artifacts */
@@ -107,4 +129,14 @@ span.snipcart__font--secondary.snipcart__font--regular,
 .snipcart-form__select {
   color: #000 !important;
   border-color: #333 !important;
+}
+@media (min-width: 1024px) {
+    .snipcart-cart__footer-col {
+    margin: auto;
+    }
+}
+@media (max-width: 1023px) {
+    .snipcart-cart__footer-col {;
+    margin: auto;
+    }
 }
