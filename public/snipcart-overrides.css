@@ -1,0 +1,106 @@
+/* public/snipcart-overrides.css */
+
+/* Basic reset to restore default Snipcart layout appearance */
+.snipcart {
+  font-family: Arial, sans-serif !important;
+  background-color: white !important;
+  color: black !important;
+  z-index: 1000 !important;
+}
+
+/* Ensure inputs and labels are legible on white background */
+.snipcart-input,
+.snipcart-form__select {
+  background-color: #fff !important;
+  color: #000 !important;
+  border-color: #ccc !important;
+}
+
+#snipcart h1,
+#snipcart h2,
+#snipcart h3,
+#snipcart h4,
+#snipcart h5,
+#snipcart h6,
+span.snipcart__font--secondary.snipcart__font--regular,
+.snipcart-item-quantity__quantity
+.snipcart-item-line__title,
+.snipcart__font--secondary,
+.snipcart__font--regular,
+.snipcart__font--bold,
+.snipcart__font--xlarge,
+.snipcart__font--large,
+.snipcart__font--std,
+.snipcart__font--tiny {
+  color: black !important;
+  font-family: Arial, sans-serif !important;
+}
+
+/* Button overrides for clarity */
+.snipcart-button,
+.snipcart-button-primary,
+.snipcart-button-icon,
+.snipcart-base-button {
+  background-color: black !important;
+  color: white !important;
+  font-family: Arial, sans-serif !important;
+}
+
+.snipcart-base-button__label,
+.snipcart-base-button__icon {
+  color: white !important;
+}
+
+/* Remove unwanted shadows or styling artifacts */
+.snipcart-item-list--no-shadow,
+.snipcart-cart-summary-fees--reverse {
+  box-shadow: none !important;
+}
+
+/* Restore padding/margins if needed */
+.snipcart-item-line__header,
+.snipcart-item-line__title {
+  margin-bottom: 0.5rem;
+}
+
+.snipcart-item-line__body {
+  padding-top: 0.5rem;
+}
+
+/* Improve appearance of total summary */
+.snipcart-summary-fees__title,
+.snipcart-summary-fees__amount {
+  color: black !important;
+}
+
+/* Override background of cart modal and content */
+.snipcart-layout__content,
+.snipcart-cart__content,
+.snipcart-cart__footer,
+.snipcart-item-line,
+.snipcart-item-line__container {
+  background-color: white !important;
+}
+.snipcart {
+  font-family: Arial, sans-serif !important;
+  z-index: 1000 !important;
+}
+
+.snipcart-modal,
+.snipcart-cart-header,
+.snipcart-item-line,
+.snipcart-form {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+.snipcart-button,
+.snipcart__font--secondary {
+  color: #fff !important;
+}
+
+.snipcart-input,
+.snipcart-form__select {
+  color: #000 !important;
+  border-color: #333 !important;
+}
