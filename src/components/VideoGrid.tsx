@@ -93,7 +93,7 @@ export default function VideoGrid({
       </div>
       {selectedVideo && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center"
+          className="fixed max-w-[100vw] inset-0 bg-black bg-opacity-70 z-60 flex items-center justify-center"
           onClick={() => {
             const modalVideo = document.querySelector('#modalVideo') as HTMLVideoElement;
             modalVideo?.pause();
@@ -105,7 +105,7 @@ export default function VideoGrid({
             controls
             autoPlay
             muted={localIsMuted}
-            className="max-w-6xl max-h-[80vh] border-4 border-white rounded"
+            className="max-h-[80vh] max-w-[90vw] border-4 border-white rounded"
             onLoadedMetadata={(e) => {
               const index = videos.findIndex(v => v.url === selectedVideo);
               const time = hoverTimeMap[videos[index]?.id] || 0;
