@@ -108,7 +108,7 @@ export default function ProductsSection() {
         );
       }
       setFading(f => f.map((fade, i) => i === idx ? false : fade));
-    }, 420);
+    }, 0);
   };
 
   const handleModalClose = () => {
