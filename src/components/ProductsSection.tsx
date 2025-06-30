@@ -190,7 +190,10 @@ export default function ProductsSection() {
                         text-xs
                         lg:text-base 
                         mb-1 
-                        max-w-max"
+                        max-w-max
+                        pl-[20px]
+                        indent-[-18px]
+                        lg:indent-[-24px]"
                         key={i}
                       >
                         {item}
