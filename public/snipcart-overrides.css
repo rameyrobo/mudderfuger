@@ -23,6 +23,7 @@
 #snipcart h5,
 #snipcart h6,
 span.snipcart__font--secondary.snipcart__font--regular,
+.snipcart__font--secondary
 .snipcart-item-quantity__quantity
 .snipcart-item-line__title,
 .snipcart__font--secondary,
@@ -41,8 +42,8 @@ span.snipcart__font--secondary.snipcart__font--regular,
 .snipcart-button-primary,
 .snipcart-button-icon,
 .snipcart-base-button {
-  background-color: black !important;
-  color: white !important;
+  background-color: white !important;
+  color: black !important;
   font-family: Arial, sans-serif !important;
 }
 
@@ -88,14 +89,17 @@ span.snipcart__font--secondary.snipcart__font--regular,
 
 .snipcart-modal,
 .snipcart-cart-header,
-.snipcart-item-line,
-.snipcart-form {
+.snipcart-item-line {
   background-color: #000 !important;
   color: #fff !important;
 }
-
-.snipcart-button,
-.snipcart__font--secondary {
+.snipcart-modal__close-icon path {
+    fill: white !important;
+}
+.snipcart__box--badge-highlight {
+    background-color: #C2FFEF;
+}
+.snipcart-button {
   color: #fff !important;
 }
 
