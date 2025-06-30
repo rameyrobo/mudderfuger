@@ -14,7 +14,7 @@ export default function ScrollingBanner() {
         <span 
         className="text-4xl font-arial-bold tracking-wider"
         >
-        &nbsp;•&nbsp;The world’s first AI skateboarder
+        &nbsp;•&nbsp;The world&lsquo;s first AI skateboarder
         •&nbsp;I hate cops, I drink beer, I party, I skate
         •&nbsp;AI dropout with a busted tooth & a warrant
         •&nbsp;Name’s Mudderfuger&nbsp;🛹🍻

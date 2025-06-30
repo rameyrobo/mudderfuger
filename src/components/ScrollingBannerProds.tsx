@@ -14,7 +14,7 @@ export default function ScrollingBanner() {
         <span 
         className="text-4xl font-arial-bold tracking-widest"
         >
-        Yo! You wanna get in on this? You can be like me and be ai too! That'd be sick. You don't even have to like think or anything...</span>
+        Yo! You wanna get in on this? You can be like me and be ai too! That&quote;d be sick. You don&quote;t even have to like think or anything...</span>
       </Marquee>
     </div>
   );
