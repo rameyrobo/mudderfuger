@@ -16,9 +16,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={anton.className}>
+      <head>
+        <link rel="preconnect" href="https://app.snipcart.com" />
+        <link rel="preconnect" href="https://cdn.snipcart.com" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.snipcart.com/themes/v3.6.1/default/snipcart.css"
+        />
+        <script
+          async
+          src="https://cdn.snipcart.com/themes/v3.6.1/default/snipcart.js"
+        ></script>
+      </head>
       <body>
         {children}
-         <SpeedInsights />
+        <SpeedInsights />
+        <div
+          hidden
+          id="snipcart"
+          data-api-key="N2IzNmViNGEtMjU2Mi00MzQ4LTk5OGEtMzE0YTk5YjFmOWE2NjM1ODczODE5MTMxNTk1Njky"
+          data-config-modal-style="side"
+        ></div>
       </body>
     </html>
   );
