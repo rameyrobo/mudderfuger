@@ -34,6 +34,10 @@ body {
   font-family: Anton, Helvetica, sans-serif;
 }
 
+.snipcart-modal__container {
+  z-index: 1000 !important;
+}
+
 @layer utilities {
   .animate-scroll {
     animation: scroll 10s linear infinite;
