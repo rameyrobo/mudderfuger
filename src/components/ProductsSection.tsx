@@ -77,8 +77,10 @@ function getNUniqueRandomImages(
 export default function ProductsSection() {
   // Initial assignment of images as empty, then assign unique images on mount
   const [imageAssignments, setImageAssignments] = useState<string[]>(() => Array(products.length).fill(""));
+  const [fading, setFading] = useState(() => Array(products.length).fill(false));
 
   const [modalIdx, setModalIdx] = useState<number | null>(null);
+  const [modalImage, setModalImage] = useState<string | null>(null);
 
   useEffect(() => {
     setImageAssignments(getNUniqueRandomImages(imgs, products.length));
@@ -87,24 +89,31 @@ export default function ProductsSection() {
   useEffect(() => {
     if (modalIdx === null) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setModalIdx(null);
+      if (e.key === "Escape") handleModalClose();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [modalIdx]);
 
   const handleMouseLeave = (idx: number) => {
-    // Images currently in use (except for this one)
-    const used = imageAssignments.filter((_, i) => i !== idx);
-    // Available images
-    const available = imgs.map(i => i.url).filter(url => !used.includes(url));
-    // Random new image
-    if (available.length) {
-      const newImg = available[Math.floor(Math.random() * available.length)];
-      setImageAssignments(assignments =>
-        assignments.map((img, i) => i === idx ? newImg : img)
-      );
-    }
+    setFading(f => f.map((fade, i) => i === idx ? true : fade));
+    setTimeout(() => {
+      // Images currently in use (except for this one)
+      const used = imageAssignments.filter((_, i) => i !== idx);
+      const available = imgs.map(i => i.url).filter(url => !used.includes(url));
+      if (available.length) {
+        const newImg = available[Math.floor(Math.random() * available.length)];
+        setImageAssignments(assignments =>
+          assignments.map((img, i) => i === idx ? newImg : img)
+        );
+      }
+      setFading(f => f.map((fade, i) => i === idx ? false : fade));
+    }, 320);
+  };
+
+  const handleModalClose = () => {
+    setModalIdx(null);
+    setModalImage(null);
   };
 
   return (
@@ -116,8 +125,32 @@ export default function ProductsSection() {
           tabIndex={0}
           className="group relative flex items-center justify-center h-[47vh] bg-black text-white overflow-hidden outline-none"
           onMouseLeave={() => handleMouseLeave(idx)}
-          onClick={() => setModalIdx(idx)}
-          onFocus={() => setModalIdx(idx)}
+          onClick={() => {
+            setModalImage(imageAssignments[idx]);
+            setModalIdx(idx);
+            // Change the image assignment right away
+            const used = imageAssignments.filter((_, i) => i !== idx);
+            const available = imgs.map(i => i.url).filter(url => !used.includes(url));
+            if (available.length) {
+              const newImg = available[Math.floor(Math.random() * available.length)];
+              setImageAssignments(assignments =>
+                assignments.map((img, i) => i === idx ? newImg : img)
+              );
+            }
+          }}
+          onFocus={() => {
+            setModalImage(imageAssignments[idx]);
+            setModalIdx(idx);
+            // Change the image assignment right away
+            const used = imageAssignments.filter((_, i) => i !== idx);
+            const available = imgs.map(i => i.url).filter(url => !used.includes(url));
+            if (available.length) {
+              const newImg = available[Math.floor(Math.random() * available.length)];
+              setImageAssignments(assignments =>
+                assignments.map((img, i) => i === idx ? newImg : img)
+              );
+            }
+          }}
         >
           {/* Decorative BG Image */}
           {imageAssignments[idx] && (
@@ -125,12 +158,12 @@ export default function ProductsSection() {
               src={imageAssignments[idx]}
               alt=""
               fill
-              className="absolute inset-0 w-full h-full object-cover transition-all duration-500 z-0"
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0 ${fading[idx] ? "opacity-0" : "opacity-100"}`}
             />
           )}
           {/* Solid color overlay */}
-          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-90 group-focus-within:opacity-90 transition-opacity z-10" />
-            <div className="text-center px-4 relative z-20 max-w-[90%] group-hover:z-60 group-focus-within:z-60">
+          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-80 transition-opacity z-10" />
+            <div className="text-center px-4 relative z-20 max-w-[90%] group-hover:z-60">
               <h3 className="
                 text-center  
                 text-black  
@@ -173,14 +206,12 @@ export default function ProductsSection() {
                   opacity-0 
                   group-hover:max-h-96 
                   group-hover:opacity-100 
-                  group-focus-within:max-h-96 
-                  group-focus-within:opacity-100 
                   transition-all 
                   duration-500 
                   ease-in-out
                   flex 
                   flex-col 
-                  items-center
+                  items-center 
                 "
               >
                 {product.description && (
@@ -243,19 +274,28 @@ export default function ProductsSection() {
           </div>
       ))}
       {modalIdx !== null && (
-      <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/90 transition-all">
-        <div className="absolute inset-0" onClick={() => setModalIdx(null)}></div>
+      <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/90 transition-all lg:hidden">
+        <div className="absolute inset-0" onClick={() => handleModalClose()}></div>
         <div className="relative max-w-lg w-full mx-4 bg-black text-white rounded-lg shadow-2xl p-6 z-10 flex flex-col items-center">
           <button
-            onClick={() => setModalIdx(null)}
-            className="absolute -top-2.5 right-2 text-4xl font-light z-20 cursor-pointer text-white"
+            onClick={() => handleModalClose()}
+            className="
+            absolute 
+            -top-2.5 
+            right-2 
+            text-4xl 
+            font-light 
+            z-20 
+            cursor-pointer 
+            text-white
+            scale-125"
             aria-label="Close"
           >
             ×
           </button>
-          {imageAssignments[modalIdx] && (
+          {modalImage && (
             <Image
-              src={imageAssignments[modalIdx]}
+              src={modalImage}
               alt=""
               width={600}
               height={800}
