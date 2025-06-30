@@ -8,7 +8,7 @@ export default function ScrollingBanner() {
       <Marquee
         gradient={false}
         speed={400}
-        pauseOnHover={true}
+        pauseOnHover={true}       
         className="text-white text-2xl uppercase tracking-wider font-anton overflow-y-hidden"
       >
         <span 
