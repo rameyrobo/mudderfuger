@@ -104,6 +104,9 @@ span.snipcart__font--secondary.snipcart__font--regular,
 .snipcart-item-line__container {
   background-color: white !important;
 }
+.snipcart-item-line__container {
+    margin-bottom: 0 !important
+}
 .snipcart {
   font-family: Arial, sans-serif !important;
   z-index: 1000 !important;
