@@ -95,7 +95,7 @@ export default function HomePage() {
       <section 
       className="pt-20 pb-0"
       id="story-section">
-        <h2 className="text-6xl font-bold uppercase tracking-wide justify-self-center mb-6">
+        <h2 className="text-2xl font-bold uppercase tracking-wide justify-self-center mb-px md:text-3xl lg:text-3xl xl:text-4xl">
           MuddaFugger&rsquo;s Story
         </h2>
       <ScrollingBanner />
@@ -105,7 +105,7 @@ export default function HomePage() {
       <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full overflow-x-hidden relative">
         <ScrollingBanner />
         <h2 className="
-        text-7xl
+        text-2xl
         color-white
         font-bold 
         uppercase
@@ -120,6 +120,8 @@ export default function HomePage() {
         translate-y-9
         z-50
         pointer-events-none
+        md:text-3xl
+        lg:text-4xl
         lg:translate-y-8
         lg:text-[10rem]
         lg:ml-11

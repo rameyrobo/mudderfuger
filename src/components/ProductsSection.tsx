@@ -179,14 +179,17 @@ export default function ProductsSection() {
                 leading-6
                 rounded-sm 
                 text-base
+                group-hover:text-lg
                 group-hover:bg-transparent
                 group-hover:text-white
-                group-hover:bg-transparent  
+                group-hover:bg-transparent
+                group-hover:leading-6
+                md:group-hover:leading-10
+                md:group-hover:text-4xl
                 sm:leading-8
                 md:text-xl
                 md:px-4
-                md:leading-9
-                md:group-hover:text-4xl
+                md:leading-7
                 lg:text-2xl
                 lg:px-8
                 ">
@@ -296,7 +299,7 @@ export default function ProductsSection() {
               className="w-full max-h-96 object-cover rounded mb-4"
             />
           )}
-          <h2 className="text-2xl sm:text-8xl md:text-9xl font-bold mb-2 font-arial-bold">{products[modalIdx].title}</h2>
+          <h3 className="text-2xl font-bold mb-2 font-arial-bold uppercase">{products[modalIdx].title}</h3>
           {products[modalIdx].description && (
             <p className="mb-2 text-base font-arial">{products[modalIdx].description}</p>
           )}

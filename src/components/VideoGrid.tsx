@@ -55,7 +55,7 @@ export default function VideoGrid({
 
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4 lg:px-32">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4 lg:px-20 sm:px-6 xl:px-52">
         {videos.map(video => (
           <div
             key={video.id}

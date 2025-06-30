@@ -12,7 +12,7 @@ export default function ScrollingBanner() {
         className="text-white text-2xl uppercase tracking-wider font-anton overflow-y-hidden"
       >
         <span 
-        className="text-4xl"
+        className="text-4xl font-arial-bold tracking-wider"
         >
         &nbsp;•&nbsp;The world’s first AI skateboarder
         •&nbsp;I hate cops, I drink beer, I party, I skate
