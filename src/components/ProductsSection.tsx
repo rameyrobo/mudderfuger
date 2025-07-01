@@ -260,7 +260,8 @@ export default function ProductsSection() {
                   cursor-pointer
                   hidden
                   uppercase
-                  lg:inline-block"
+                  lg:inline-block
+                  snipcart-checkout"
                 data-item-id={product.id}
                 data-item-name={product.title}
                 data-item-price={product.price.toFixed(2)}
@@ -285,7 +286,8 @@ export default function ProductsSection() {
                   mt-2
                   cursor-pointer
                   inline-block
-                  lg:hidden"
+                  lg:hidden
+                  snipcart-checkout"
                 data-item-id={product.id}
                 data-item-name={product.title}
                 data-item-price={product.price.toFixed(2)}
