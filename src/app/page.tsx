@@ -77,7 +77,7 @@ export default function HomePage() {
         </video>
 
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
-          <h1 className="text-6xl md:text-9xl font-extrabold uppercase tracking-wide text-white">
+          <h1 className="font-arial text-6xl md:text-9xl font-extrabold uppercase tracking-wide text-white">
             Mudderfuger
           </h1>
           <Navbar />
