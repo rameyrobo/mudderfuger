@@ -67,6 +67,26 @@ export default function RootLayout({
             `,
           }}
         ></script>
+        <noscript
+          dangerouslySetInnerHTML={{
+            __html: `<link rel="stylesheet" href="/snipcart-overrides.css" />`
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+        const preloadLink = document.createElement('link');
+        preloadLink.rel = 'preload';
+        preloadLink.as = 'style';
+        preloadLink.href = '/snipcart-overrides.css';
+        preloadLink.fetchPriority = 'low';
+        preloadLink.onload = function () {
+          this.rel = 'stylesheet';
+        };
+        document.head.appendChild(preloadLink);
+      `,
+          }}
+        />
 </head>
       <body>
         {children}
@@ -75,7 +95,7 @@ export default function RootLayout({
           hidden
           id="snipcart"
         ></div>
-        <link rel="stylesheet" href="/snipcart-overrides.css" media="all" />
+        
       </body>
     </html>
   );
