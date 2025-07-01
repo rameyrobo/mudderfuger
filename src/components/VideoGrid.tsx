@@ -98,8 +98,8 @@ export default function VideoGrid({
                 playsInline
                 className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
               >
-                <source src={video.url.replace('.mp4', '.webm')} type="video/webm" />
                 <source src={video.url} type="video/mp4" />
+                <source src={video.url.replace('.mp4', '.webm')} type="video/webm" />
               </video>
               <div className="absolute top-2 right-2 z-20 cursor-pointer" onClick={handleMuteToggle}>
                 {localIsMuted ? (
@@ -137,8 +137,9 @@ export default function VideoGrid({
               e.currentTarget.currentTime = time;
             }}
           >
-            <source src={selectedVideo?.replace('.mp4', '.webm')} type="video/webm" />
             <source src={selectedVideo} type="video/mp4" />
+            <source src={selectedVideo?.replace('.mp4', '.webm')} type="video/webm" />
+            
           </video>
         </div>
       )}
