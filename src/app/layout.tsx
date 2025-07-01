@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Anton } from 'next/font/google'
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import SnipcartStyleLoader from "../components/SnipcartStyleLoader";
 
 export const metadata: Metadata = {
   title: "Mudderfuger 🛹🍻",
@@ -17,16 +18,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={anton.className}>
       <head>
-  <link rel="icon" href="/icon.ico" />
-  <link rel="icon" href="/icon.ico" type="image/x-icon" sizes="32x32" />
-  
-  <link rel="preconnect" href="https://app.snipcart.com" />
-  <link rel="preconnect" href="https://cdn.snipcart.com" />
-  <link
-    rel="stylesheet"
-    href="https://cdn.snipcart.com/themes/v3.6.1/default/snipcart.css"
-  />
-  <link rel="stylesheet" href="/snipcart-overrides.css" />
+        <link rel="icon" href="/icon.ico" type="image/x-icon" sizes="32x32" />
+        <link rel="preconnect" href="https://mudderfuger.b-cdn.net" />
+        <link rel="preconnect" href="https://app.snipcart.com" />
+        <link rel="preconnect" href="https://cdn.snipcart.com" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.snipcart.com/themes/v3.6.1/default/snipcart.css"
+        />
+      <SnipcartStyleLoader />
   <script
     async
     src="https://cdn.snipcart.com/themes/v3.6.1/default/snipcart.js"
