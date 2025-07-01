@@ -6,6 +6,7 @@ import ScrollingBannerVids from "../components/ScrollingBannerVids"
 import ScrollingBannerProds from "../components/ScrollingBannerProds"
 import VideoGrid from "../components/VideoGrid";
 import ProductsSection from "../components/ProductsSection";
+import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 
 export default function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -100,9 +101,13 @@ export default function HomePage() {
           <Navbar />
           <button
             onClick={toggleMute}
-            className="font-arial absolute top-5 right-5 z-20 bg-black/60 text-white px-3 py-1 rounded hover:bg-black/80"
+            className="font-arial bg-transparent text-white px-3 py-1 rounded hover:bg-black/80 transition-colors duration-300 tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4 translate-1.5 md:translate-x-4"
           >
-            {isMuted ? "🔇 Enable Sound" : "🔊 Mute"}
+            {isMuted ? (
+                  <SpeakerXMarkIcon className="h-8 w-8 text-white" />
+                ) : (
+                  <SpeakerWaveIcon className="h-8 w-8 text-white" />
+                )}
           </button>
         </div>
 
