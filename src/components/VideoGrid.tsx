@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 
 const videos = [
@@ -26,6 +26,30 @@ export default function VideoGrid({
   const [hoverTimeMap, setHoverTimeMap] = useState<{ [key: number]: number }>({});
   const hoverRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
   const [localIsMuted, setLocalIsMuted] = useState<boolean>(isMuted);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target as HTMLVideoElement;
+          if (entry.isIntersecting) {
+            video.preload = 'auto';
+            observer.unobserve(video); // preload once
+          }
+        });
+      },
+      {
+        rootMargin: '200px',
+        threshold: 0.1,
+      }
+    );
+
+    Object.values(hoverRefs.current).forEach((video) => {
+      if (video) observer.observe(video);
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   const handleMuteToggle = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
