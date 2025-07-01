@@ -94,8 +94,8 @@ export default function HomePage() {
         </video>
 
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
-          <h1 className="font-arial text-6xl md:text-9xl font-extrabold uppercase tracking-tighter">
-            <span ref={animatedTextRef} className="text-red-500">Mudderfuger</span>
+          <h1 className="font-arial text-3xl md:text-7xl font-extrabold uppercase tracking-tighter xl:text-8xl">
+            <span ref={animatedTextRef} className="text-red-500 opacity-95">Mudderfuger</span>
           </h1>
           <Navbar />
           <button
