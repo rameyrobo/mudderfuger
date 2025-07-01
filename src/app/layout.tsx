@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Anton } from 'next/font/google'
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import SnipcartStyleLoader from "../components/SnipcartStyleLoader";
 
 export const metadata: Metadata = {
   title: "Mudderfuger 🛹🍻",
@@ -71,6 +70,7 @@ export default function RootLayout({
 </head>
       <body>
         {children}
+        <SpeedInsights />
         <div
           hidden
           id="snipcart"
