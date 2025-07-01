@@ -83,11 +83,11 @@ span.snipcart__font--secondary.snipcart__font--regular,
 /* Restore padding/margins if needed */
 .snipcart-item-line__header,
 .snipcart-item-line__title {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem !important;
 }
 
 .snipcart-item-line__body {
-  padding-top: 0.5rem;
+  padding-top: 0.5rem !important;
 }
 
 /* Improve appearance of total summary */
@@ -135,12 +135,12 @@ span.snipcart__font--secondary.snipcart__font--regular,
 }
 @media (min-width: 1024px) {
     .snipcart-cart__footer-col {
-    margin: auto;
+    margin: auto !important;
     }
 }
 @media (max-width: 1023px) {
     .snipcart-cart__footer-col {;
-    margin: auto;
+    margin: auto !important;
     }
 }
 
