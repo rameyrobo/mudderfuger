@@ -103,6 +103,7 @@ export default function VideoGrid({
           <video
             id="modalVideo"
             controls
+            controlsList="nodownload"
             autoPlay
             muted={localIsMuted}
             className="max-h-[80vh] max-w-[90vw] border-4 border-white rounded"
