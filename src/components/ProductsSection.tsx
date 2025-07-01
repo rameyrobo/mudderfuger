@@ -326,7 +326,7 @@ export default function ProductsSection() {
               alt=""
               width={600}
               height={800}
-              className="w-full max-h-96 object-cover rounded mb-4"
+              className="w-full max-h-70 object-contain rounded mb-4"
             />
           )}
           <h3 className="text-2xl font-bold mb-2 font-arial-bold uppercase">{products[modalIdx].title}</h3>
