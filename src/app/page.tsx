@@ -11,6 +11,7 @@ export default function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const animatedTextRef = useRef<HTMLSpanElement>(null);
 
   const [isMuted, setIsMuted] = useState(true);
   const [userToggled, setUserToggled] = useState(false);
@@ -55,6 +56,22 @@ export default function HomePage() {
     return () => observer.disconnect();
   }, [userToggled, isMuted]);
 
+  useEffect(() => {
+    let hue = 0;
+    let frameId: number;
+
+    const animateHue = () => {
+      if (animatedTextRef.current) {
+        animatedTextRef.current.style.color = `hsl(${hue}, 100%, 50%)`;
+      }
+      hue = (hue + .3) % 360;
+      frameId = requestAnimationFrame(animateHue);
+    };
+
+    frameId = requestAnimationFrame(animateHue);
+    return () => cancelAnimationFrame(frameId);
+  }, []);
+
   return (
     <main className="bg-black text-white min-h-screen">
       <section ref={heroRef} className="w-full h-screen relative overflow-hidden">
@@ -77,8 +94,8 @@ export default function HomePage() {
         </video>
 
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
-          <h1 className="font-arial text-6xl md:text-9xl font-extrabold uppercase tracking-wide text-white">
-            Mudderfuger
+          <h1 className="font-arial text-6xl md:text-9xl font-extrabold uppercase tracking-tighter">
+            <span ref={animatedTextRef} className="text-red-500">Mudderfuger</span>
           </h1>
           <Navbar />
           <button
