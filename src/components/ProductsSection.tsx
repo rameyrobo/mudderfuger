@@ -351,6 +351,7 @@ export default function ProductsSection() {
               rounded 
               mt-2
               cursor-pointer
+              snipcart-checkout
             "
             data-item-id={products[modalIdx].id}
             data-item-name={products[modalIdx].title}
