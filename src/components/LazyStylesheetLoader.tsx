@@ -10,9 +10,9 @@ export default function LazyStylesheetLoader() {
     link.href = '/snipcart-overrides.css';
     link.fetchPriority = 'low';
 
-    link.onload = function () {
-      this.onload = null;
-      this.rel = 'stylesheet';
+    link.onload = () => {
+      // Switch rel from preload to stylesheet once loaded
+      link.rel = 'stylesheet';
     };
 
     document.head.appendChild(link);
