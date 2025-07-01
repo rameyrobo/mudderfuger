@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Anton } from 'next/font/google'
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import LazyStylesheetLoader from '@/components/LazyStylesheetLoader';
+
 
 export const metadata: Metadata = {
   title: "Mudderfuger 🛹🍻",
@@ -27,7 +29,7 @@ export default function RootLayout({
               window.SnipcartSettings = {
                 publicApiKey: "REDACTED_SNIPCART_KEY",
                 loadStrategy: "on-user-interaction",
-                loadCSS: true,
+                loadCSS: false,
                 modalStyle: "side",
                 addProductBehavior: "none"
               };
@@ -89,6 +91,7 @@ export default function RootLayout({
         />
 </head>
       <body>
+        <LazyStylesheetLoader />
         {children}
         <SpeedInsights />
         <div
