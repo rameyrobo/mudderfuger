@@ -83,7 +83,7 @@ export default function HomePage() {
           <Navbar />
           <button
             onClick={toggleMute}
-            className="absolute top-5 right-5 z-20 bg-black/60 text-white px-3 py-1 rounded hover:bg-black/80"
+            className="font-arial absolute top-5 right-5 z-20 bg-black/60 text-white px-3 py-1 rounded hover:bg-black/80"
           >
             {isMuted ? "🔇 Enable Sound" : "🔊 Mute"}
           </button>
