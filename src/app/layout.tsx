@@ -22,17 +22,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://mudderfuger.b-cdn.net" />
         <link rel="preconnect" href="https://app.snipcart.com" />
         <link rel="preconnect" href="https://cdn.snipcart.com" />
-      <SnipcartStyleLoader />
-</head>
-      <body>
-        {children}
-        <SpeedInsights />
-        <div
-          hidden
-          id="snipcart"
-        ></div>
-      </body>
-      <script
+        <script defer
           dangerouslySetInnerHTML={{
             __html: `
               window.SnipcartSettings = {
@@ -78,6 +68,15 @@ export default function RootLayout({
             `,
           }}
         ></script>
+</head>
+      <body>
+        {children}
+        <div
+          hidden
+          id="snipcart"
+        ></div>
+        <link rel="stylesheet" href="/snipcart-overrides.css" media="all" />
+      </body>
     </html>
   );
 }
