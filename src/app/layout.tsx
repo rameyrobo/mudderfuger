@@ -17,6 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={anton.className}>
       <head>
+  <link rel="icon" href="/icon.ico" />
+  <link rel="icon" href="/icon.ico" type="image/x-icon" sizes="32x32" />
+  
   <link rel="preconnect" href="https://app.snipcart.com" />
   <link rel="preconnect" href="https://cdn.snipcart.com" />
   <link
