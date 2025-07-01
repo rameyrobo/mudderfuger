@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Anton } from 'next/font/google'
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import LazyStylesheetLoader from '@/components/LazyStylesheetLoader';
+import LazyStylesheetLoader from '../components/LazyStylesheetLoader';
 
 
 export const metadata: Metadata = {
