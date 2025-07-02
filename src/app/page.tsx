@@ -65,14 +65,7 @@ export default function HomePage() {
           playsInline
           className="absolute w-full h-full object-cover"
         >
-          <source
-            src="https://mudderfuger.b-cdn.net/_vids/1_mudderfuger_intro.mp4"
-            type="video/mp4"
-          />
-          <source
-            src="https://mudderfuger.b-cdn.net/_vids/1_mudderfuger_intro.webm"
-            type="video/webm"
-          />
+          
         </video>
 
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
