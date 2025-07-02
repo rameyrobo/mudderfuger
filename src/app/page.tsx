@@ -2,10 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar"
-import ScrollingBannerVids from "../components/ScrollingBannerVids"
-import ScrollingBannerProds from "../components/ScrollingBannerProds"
-import VideoGrid from "../components/VideoGrid";
-import ProductsSection from "../components/ProductsSection";
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 
 export default function HomePage() {
@@ -57,21 +53,6 @@ export default function HomePage() {
     return () => observer.disconnect();
   }, [userToggled, isMuted]);
 
-  useEffect(() => {
-    let hue = 0;
-    let frameId: number;
-
-    const animateHue = () => {
-      if (animatedTextRef.current) {
-        animatedTextRef.current.style.color = `hsl(${hue}, 100%, 50%)`;
-      }
-      hue = (hue + .3) % 360;
-      frameId = requestAnimationFrame(animateHue);
-    };
-
-    frameId = requestAnimationFrame(animateHue);
-    return () => cancelAnimationFrame(frameId);
-  }, []);
 
   return (
     <main className="bg-black text-white min-h-screen">
