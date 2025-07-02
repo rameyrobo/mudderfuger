@@ -98,10 +98,11 @@ export default function HomePage() {
           <h1 className="font-arial text-3xl md:text-7xl font-extrabold uppercase tracking-tighter xl:text-8xl">
             <span ref={animatedTextRef} className="text-red-500 opacity-95">Mudderfuger</span>
           </h1>
+          <div className="flex-menu  flex flex-col md:flex-row">
           <Navbar />
           <button
             onClick={toggleMute}
-            className="font-arial bg-transparent text-white px-3 py-1 rounded hover:bg-black/80 transition-colors duration-300 tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4 translate-1.5 md:translate-x-4"
+            className="w-fit font-arial bg-transparent text-white px-3 py-1 rounded hover:bg-black/80 transition-colors duration-300 tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4 absolute relative translate-x-[344%] translate-y-[-110%] md:translate-x-3.5 md:translate-y-2"
           >
             {isMuted ? (
                   <SpeakerXMarkIcon className="h-8 w-8 text-white" />
@@ -109,50 +110,12 @@ export default function HomePage() {
                   <SpeakerWaveIcon className="h-8 w-8 text-white" />
                 )}
           </button>
+          </div>
+                <a href="#" className="text-4xl font-arial-bold text-white mt-32 focus:bg-black/90 focus-within:bg-black/90 hover:bg-black/90 transition-all px-5 py-1.5 rounded-sm tracking-wide focus:underline focus-within:underline hover:underline leading-4">coming soon</a>
         </div>
 
         {/* Invisible sentinel div at the bottom of hero */}
         <div ref={sentinelRef} className="absolute bottom-0 h-[100px] w-full pointer-events-none" />
-      </section>
-
-      <section 
-      className="pt-20 pb-0"
-      id="story-section">
-        <h2 className="text-2xl font-bold uppercase tracking-wide justify-self-center mb-px md:text-3xl lg:text-3xl xl:text-4xl">
-          MuddaFuger&rsquo;s Story
-        </h2>
-      <ScrollingBannerVids />
-      <VideoGrid isMuted={isMuted} />
-      </section>
-
-      <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full overflow-x-hidden relative">
-        <ScrollingBannerProds />
-        <h2 className="
-        color-white
-        font-bold 
-        uppercase
-        tracking-wide
-        justify-self-center
-        px-8 
-        py-4
-        absolute
-        bg-black
-        opacity-85
-        translate-y-9
-        z-50
-        pointer-events-none
-        translate-x-2
-        translate-y-9
-        text-6xl
-        sm:text-7xl 
-        md:text-8xl 
-        lg:text-9xl 
-        xl:text-10rem
-        xl:translate-y-5 
-        xl:translate-y-4">
-          Be<span className="space1">&nbsp;</span>a<span className="space2">&nbsp;</span>MF</h2>
-          
-        <ProductsSection />
       </section>
     </main>
   );
