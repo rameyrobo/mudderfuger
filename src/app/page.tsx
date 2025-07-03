@@ -15,10 +15,8 @@ export default function HomePage() {
   const animatedTextRef = useRef<HTMLSpanElement>(null);
 
   const [isMuted, setIsMuted] = useState(true);
-  const [userToggled, setUserToggled] = useState(false);
 
   const toggleMute = () => {
-    setUserToggled(true);
     if (videoRef.current) {
       const newMuted = !videoRef.current.muted;
       videoRef.current.muted = newMuted;
@@ -35,7 +33,7 @@ export default function HomePage() {
         const totalPx = entry.boundingClientRect.height;
         const visibleRatio = visiblePx / totalPx;
 
-        if (visibleRatio <= 0) {
+        if (visibleRatio <= 0.10) {
           if (videoRef.current && !videoRef.current.paused) {
             videoRef.current.pause();
           }
