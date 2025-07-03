@@ -7,6 +7,7 @@ import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 export default function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const animatedTextRef = useRef<HTMLSpanElement>(null);
 
@@ -19,6 +20,13 @@ export default function HomePage() {
       const newMuted = !videoRef.current.muted;
       videoRef.current.muted = newMuted;
       setIsMuted(newMuted);
+      if (audioRef.current) {
+        if (newMuted) {
+          audioRef.current.pause();
+        } else {
+          audioRef.current.play().catch(() => {});
+        }
+      }
     }
   };
 
@@ -67,7 +75,7 @@ export default function HomePage() {
         >
           
         </video>
-
+        <audio ref={audioRef} src="/Fuck%20Tha%20Police.mp3" />
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
           <h1 className="font-arial text-3xl md:text-7xl font-extrabold uppercase tracking-tighter xl:text-8xl">
             <span ref={animatedTextRef} className="text-red-500 opacity-95">Mudderfuger</span>
