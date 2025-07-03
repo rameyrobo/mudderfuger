@@ -75,7 +75,7 @@ export default function HomePage() {
         >
           
         </video>
-        <audio ref={audioRef} src="/Fuck%20Tha%20Police.mp3" />
+        <audio ref={audioRef} src="https://mudderfuger.b-cdn.net/_sounds/Fuck%20Tha%20Police.mp3" />
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
           <h1 className="font-arial text-3xl md:text-7xl font-extrabold uppercase tracking-tighter xl:text-8xl">
             <span ref={animatedTextRef} className="text-red-500 opacity-95">Mudderfuger</span>
