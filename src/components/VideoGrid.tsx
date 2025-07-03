@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 
 const videos = [
@@ -27,14 +27,21 @@ export default function VideoGrid({
   const hoverRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
   const [localIsMuted, setLocalIsMuted] = useState<boolean>(isMuted);
 
+  useLayoutEffect(() => {
+    Object.values(hoverRefs.current).forEach(video => {
+      if (video) {
+        video.muted = true;
+      }
+    });
+  }, []);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target as HTMLVideoElement;
-          if (entry.isIntersecting) {
-            video.preload = 'auto';
-            observer.unobserve(video); // preload once
+          if (!entry.isIntersecting && !video.paused) {
+            video.pause();
           }
         });
       },
@@ -57,6 +64,12 @@ export default function VideoGrid({
   };
 
   const handleMouseEnter = (videoId: number) => {
+    Object.entries(hoverRefs.current).forEach(([id, el]) => {
+      if (el && parseInt(id) !== videoId) {
+        el.pause();
+      }
+    });
+
     const el = hoverRefs.current[videoId];
     if (el) {
       el.play().catch(() => {});
@@ -72,8 +85,11 @@ export default function VideoGrid({
   };
 
   const handleClick = (videoId: number, url: string) => {
-    const time = hoverRefs.current[videoId]?.currentTime || 0;
-    setHoverTimeMap(prev => ({ ...prev, [videoId]: time }));
+    const el = hoverRefs.current[videoId];
+    if (el) {
+      setHoverTimeMap(prev => ({ ...prev, [videoId]: el.currentTime }));
+      el.pause(); // pause thumbnail video before opening modal
+    }
     setSelectedVideo(url);
   };
 
@@ -96,7 +112,9 @@ export default function VideoGrid({
                 muted={localIsMuted}
                 preload="metadata"
                 playsInline
+                onContextMenu={(e) => e.preventDefault()}
                 className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+                onTouchStart={() => handleMouseEnter(video.id)}
               >
                 <source src={video.url} type="video/mp4" />
                 <source src={video.url.replace('.mp4', '.webm')} type="video/webm" />
@@ -130,6 +148,7 @@ export default function VideoGrid({
             controlsList="nodownload"
             autoPlay
             muted={localIsMuted}
+            onContextMenu={(e) => e.preventDefault()}
             className="max-h-[80vh] max-w-[90vw] border-4 border-white rounded"
             onLoadedMetadata={(e) => {
               const index = videos.findIndex(v => v.url === selectedVideo);
