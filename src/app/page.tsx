@@ -15,10 +15,8 @@ export default function HomePage() {
   const animatedTextRef = useRef<HTMLSpanElement>(null);
 
   const [isMuted, setIsMuted] = useState(true);
-  const [userToggled, setUserToggled] = useState(false);
 
   const toggleMute = () => {
-    setUserToggled(true);
     if (videoRef.current) {
       const newMuted = !videoRef.current.muted;
       videoRef.current.muted = newMuted;
@@ -35,14 +33,13 @@ export default function HomePage() {
         const totalPx = entry.boundingClientRect.height;
         const visibleRatio = visiblePx / totalPx;
 
-        if (visibleRatio <= 0) {
-          if (!userToggled) {
-            if (videoRef.current) {
-              videoRef.current.muted = true;
-              setIsMuted(true);
-            }
-          } else {
-            setUserToggled(false);
+        if (visibleRatio <= 0.10) {
+          if (videoRef.current && !videoRef.current.paused) {
+            videoRef.current.pause();
+          }
+        } else {
+          if (videoRef.current && videoRef.current.paused) {
+            videoRef.current.play().catch(() => {});
           }
         }
       },
@@ -55,7 +52,7 @@ export default function HomePage() {
     observer.observe(sentinelRef.current);
 
     return () => observer.disconnect();
-  }, [userToggled, isMuted]);
+  }, []);
 
   useEffect(() => {
     let hue = 0;
@@ -98,7 +95,11 @@ export default function HomePage() {
           <h1 className="font-arial text-3xl md:text-7xl font-extrabold uppercase tracking-tighter xl:text-8xl">
             <span ref={animatedTextRef} className="text-red-500 opacity-95">Mudderfuger</span>
           </h1>
-          <Navbar />
+          <Navbar onNavClick={() => {
+            if (videoRef.current && !videoRef.current.paused) {
+              videoRef.current.pause();
+            }
+          }} />
           <button
             onClick={toggleMute}
             className="font-arial bg-transparent text-white px-3 py-1 rounded hover:bg-black/80 transition-colors duration-300 tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4 translate-1.5 md:translate-x-4"
@@ -116,7 +117,7 @@ export default function HomePage() {
       </section>
 
       <section 
-      className="pt-20 pb-0"
+      className="pb-0 pt-9 md:pt-10 lg:pt-11 xl:pt-12"
       id="story-section">
         <h2 className="text-2xl font-bold uppercase tracking-wide justify-self-center mb-px md:text-3xl lg:text-3xl xl:text-4xl">
           MuddaFuger&rsquo;s Story
