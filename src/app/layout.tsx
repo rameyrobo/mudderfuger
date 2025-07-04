@@ -27,7 +27,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               window.SnipcartSettings = {
-                publicApiKey: "REDACTED_SNIPCART_KEY",
+                publicApiKey: "${process.env.NEXT_PUBLIC_SNIPCART_API_KEY}",
                 loadStrategy: "on-user-interaction",
                 loadCSS: false,
                 modalStyle: "side",
