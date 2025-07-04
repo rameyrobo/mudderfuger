@@ -84,7 +84,7 @@ export default function HomePage() {
           <Navbar />
           <button
             onClick={toggleMute}
-            className="w-fit font-arial bg-transparent text-white px-3 py-1 rounded hover:bg-black/80 transition-colors duration-300 tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4 absolute relative translate-x-[344%] translate-y-[-110%] md:translate-x-3.5 md:translate-y-2"
+            className="w-fit font-arial bg-transparent text-white px-3 py-1 rounded hover:bg-black/80 transition-colors duration-300 tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4 relative translate-x-[378%] translate-y-[-95%] lg:translate-x-3.5 lg:translate-y-2"
           >
             {isMuted ? (
                   <SpeakerXMarkIcon className="h-8 w-8 text-white" />
