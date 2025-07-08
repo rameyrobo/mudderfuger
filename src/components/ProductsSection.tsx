@@ -26,7 +26,7 @@ export default function ProductsSection() {
   const [modalImage, setModalImage] = useState<string | null>(null);
 
   // State to track custom field values for the modal product
-  const [customFieldValues, setCustomFieldValues] = useState<{ [key: number]: any }>({});
+  const [customFieldValues, setCustomFieldValues] = useState<{ [key: number]: string | boolean }>({});
 
   useEffect(() => {
     setImageAssignments(getNUniqueRandomImages(imgs, products.length));
@@ -59,7 +59,7 @@ export default function ProductsSection() {
     // Reset custom field values when modal changes
     if (modalIdx !== null) {
       const product = products[modalIdx];
-      const initialValues: { [key: number]: any } = {};
+      const initialValues: { [key: number]: string | boolean } = {};
       if (product.customFields) {
         product.customFields.forEach((field, index) => {
           if (field.type === 'checkbox') {
@@ -97,7 +97,7 @@ export default function ProductsSection() {
     setModalImage(null);
   };
 
-  const handleCustomFieldChange = (index: number, value: any) => {
+  const handleCustomFieldChange = (index: number, value: string | boolean) => {
     setCustomFieldValues(prev => ({
       ...prev,
       [index]: value,
