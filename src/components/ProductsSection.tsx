@@ -38,6 +38,20 @@ export default function ProductsSection() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [modalIdx]);
 
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    if (modalIdx !== null) {
+      document.body.classList.add('overflow-y-hidden');
+    } else {
+      document.body.classList.remove('overflow-y-hidden');
+    }
+
+    return () => {
+      document.body.classList.remove('overflow-y-hidden');
+    };
+  }, [modalIdx]);
+
   const handleMouseLeave = (idx: number) => {
     setFading(f => f.map((fade, i) => i === idx ? true : fade));
     setTimeout(() => {
