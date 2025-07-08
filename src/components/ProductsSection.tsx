@@ -1,64 +1,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-
-const imgs = [
-{ id: 1, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-9.jpg' },
-{ id: 2, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-10.jpg' },
-{ id: 3, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-11.jpg' },
-{ id: 4, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-12.jpg' },
-{ id: 5, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-14.jpg' },
-{ id: 6, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-15.jpg' },
-{ id: 7, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-16.jpg' },
-{ id: 8, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-2.jpg' },
-{ id: 9, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-3.jpg' },
-{ id: 10, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-5.jpg' },
-{ id: 11, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-6.jpg' },
-{ id: 12, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-7.jpg' },
-{ id: 13, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-8.jpg' }
-,
-];
-const products = [
-    {
-      id: "brand-placement",
-      title: "Brand/Product Placement",
-      price: 300,
-      description: null,
-      includes: [
-        "Your brand or @name on a shirt, sign, wall, or background prop",
-        "Optional name drop or dialogue shoutout",
-        "Tag in caption + option for a collab post (if requested) - add on",
-        "1–3 high-res cinematic stills from the scene"
-      ]
-    },
-    {
-      id: "add-yourself",
-      title: "Add Yourself Into an Episode",
-      price: 100,
-      description: "Submit a photo. We’ll build you (or a friend) into a real Mudderfuger scene as a skater, partygoer, cop, or background freak.",
-      includes: [
-        "Custom AI version of your face",
-        "Name or @handle used in the skit",
-        "Tag in caption + option for a collab post - add on"
-      ]
-    },
-    {
-      id: "submit-song",
-      title: "Submit a Song",
-      price: 150,
-      description: null,
-      includes: [
-        "At least 8–10 seconds of your music in a real skit",
-        "Tag in caption + option for a collab post - add on"
-      ]
-    },
-    {
-      id: "collab-post",
-      title: "📩 Collab Post Listing",
-      price: 50,
-      description: "Be added as a collaborator on the Instagram  (shows up on your page too). Only available with a Brand, Character, or Song package.",
-      includes: null
-    },
-  ];
+import { imgs } from '@/data/imgs';
+import { products } from '@/data/products';
 
 // Helper to get N unique random images from the pool
 function getNUniqueRandomImages(

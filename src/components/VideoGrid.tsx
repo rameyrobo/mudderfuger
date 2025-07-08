@@ -1,21 +1,6 @@
 import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
-
-const videos = [
-  { id: 1, title: 'ep1: INTRO', url:'https://mudderfuger.b-cdn.net/_vids/1_mudderfuger_intro.mp4' },
-  { id: 2, title: 'ep2: walking to the park', url: 'https://mudderfuger.b-cdn.net/_vids/2_walking_to_the_park.mp4' },
-  { id: 3, title: 'ep3: skatepark', url: 'https://mudderfuger.b-cdn.net/_vids/3_skatepark.mp4' },
-  { id: 4, title: 'ep4: dinner', url: 'https://mudderfuger.b-cdn.net/_vids/3.5_dinner.mp4' },
-  { id: 5, title: 'ep5: walking to work', url: 'https://mudderfuger.b-cdn.net/_vids/4_photogrpher_walking_to_work.mp4' },
-  { id: 6, title: 'ep6: donut shop', url: 'https://mudderfuger.b-cdn.net/_vids/5_donut_shop.mp4' },
-  { id: 7, title: 'ep7: jail', url: 'https://mudderfuger.b-cdn.net/_vids/6_jail_mudderfuger.mp4' },
-  { id: 8, title: 'ep8: phone in jail', url: 'https://mudderfuger.b-cdn.net/_vids/7_jail_phone_cops.mp4' },
-  { id: 9, title: 'ep9: out of jail', url: 'https://mudderfuger.b-cdn.net/_vids/8_mudderfuger_out_of_jail.mp4' },
-  { id: 10, title: 'ep10: out of jail pt2', url: 'https://mudderfuger.b-cdn.net/_vids/9_out_of_jail_selfi-hevc.mp4' },
-  { id: 11, title: 'ep11: police station', url: 'https://mudderfuger.b-cdn.net/_vids/10_police_station_skate.mp4' },
-  { id: 12, title: 'ep12: skatepark pt2', url: 'https://mudderfuger.b-cdn.net/_vids/11_mudderfuger_skate_part.mp4' },
-  { id: 13, title: 'ep13: wake up', url: 'https://mudderfuger.b-cdn.net/_vids/12_wake_up_mudderfuger.mp4' }
-];
+import { videos } from '@/data/videos';
 
 export default function VideoGrid({
     isMuted,
