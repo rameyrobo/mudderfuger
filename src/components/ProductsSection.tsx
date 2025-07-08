@@ -244,16 +244,16 @@ export default function ProductsSection() {
           </div>
       ))}
       {modalIdx !== null && (
-      <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/90 transition-all lg:hidden">
-        <div className="absolute inset-0" onClick={() => handleModalClose()}></div>
-        <div className="relative max-w-lg w-full mx-4 bg-black text-white rounded-lg shadow-2xl p-6 z-10 flex flex-col items-center">
+      <div className="absolute top-0 left-0 w-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0 lg:hidden">
+        <div className="absolute top-0 left-0 w-full min-h-full bg-black/90 z-[-1]" onClick={() => handleModalClose()}></div>
+        <div className="relative max-w-lg w-full mx-0 bg-black text-white rounded-lg shadow-2xl p-9 z-10 flex flex-col items-center h-full">
           <button
             onClick={() => handleModalClose()}
             className="
             font-arial-bold
             absolute 
-            -top-2.5 
-            right-2 
+            top-px  
+            right-3 
             text-4xl 
             font-light 
             z-20 
