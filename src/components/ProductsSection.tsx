@@ -312,7 +312,13 @@ export default function ProductsSection() {
                     <label key={index} className="block mb-4 font-arial text-base">
                       <span className="block mb-1">{field.name}</span>
                       <select
-                        value={customFieldValues[index] || (options.length > 0 ? options[0] : '')}
+                        value={
+                          typeof customFieldValues[index] === 'string'
+                            ? customFieldValues[index]
+                            : options.length > 0
+                              ? options[0]
+                              : ''
+                        }
                         onChange={e => handleCustomFieldChange(index, e.target.value)}
                         className="w-full p-2 rounded text-black"
                       >
