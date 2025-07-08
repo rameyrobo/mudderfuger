@@ -25,6 +25,9 @@ export default function ProductsSection() {
   const [modalIdx, setModalIdx] = useState<number | null>(null);
   const [modalImage, setModalImage] = useState<string | null>(null);
 
+  // State to track custom field values for the modal product
+  const [customFieldValues, setCustomFieldValues] = useState<{ [key: number]: any }>({});
+
   useEffect(() => {
     setImageAssignments(getNUniqueRandomImages(imgs, products.length));
   }, []);
@@ -52,6 +55,27 @@ export default function ProductsSection() {
     };
   }, [modalIdx]);
 
+  useEffect(() => {
+    // Reset custom field values when modal changes
+    if (modalIdx !== null) {
+      const product = products[modalIdx];
+      const initialValues: { [key: number]: any } = {};
+      if (product.customFields) {
+        product.customFields.forEach((field, index) => {
+          if (field.type === 'checkbox') {
+            initialValues[index] = false;
+          } else if (field.type === 'dropdown') {
+            const options = field.options ? field.options.split('|') : [];
+            initialValues[index] = options.length > 0 ? options[0] : '';
+          }
+        });
+      }
+      setCustomFieldValues(initialValues);
+    } else {
+      setCustomFieldValues({});
+    }
+  }, [modalIdx]);
+
   const handleMouseLeave = (idx: number) => {
     setFading(f => f.map((fade, i) => i === idx ? true : fade));
     setTimeout(() => {
@@ -71,6 +95,13 @@ export default function ProductsSection() {
   const handleModalClose = () => {
     setModalIdx(null);
     setModalImage(null);
+  };
+
+  const handleCustomFieldChange = (index: number, value: any) => {
+    setCustomFieldValues(prev => ({
+      ...prev,
+      [index]: value,
+    }));
   };
 
   return (
@@ -180,26 +211,6 @@ export default function ProductsSection() {
                   {product.description}
                   </p>
                 )}
-                {product.includes && product.includes.length > 0 && (
-                  <ul className="list-disc list-inside text-sm mb-4 text-left mx-auto max-w-[90%]">
-                    {product.includes.map((item, i) => (
-                      <li 
-                        className="
-                        font-arial
-                        text-xs
-                        lg:text-base 
-                        mb-1 
-                        max-w-max
-                        pl-[20px]
-                        indent-[-18px]
-                        lg:indent-[-24px]"
-                        key={i}
-                      >
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </div>
               <button
                 className="
@@ -215,41 +226,23 @@ export default function ProductsSection() {
                   rounded 
                   mt-2
                   cursor-pointer
-                  hidden
-                  uppercase
-                  lg:inline-block
-                  snipcart-checkout"
-                data-item-id={product.id}
-                data-item-name={product.title}
-                data-item-price={product.price.toFixed(2)}
-                data-item-url="/"
-                data-item-description={product.description || ""}
-                tabIndex={-1}
-              >
-                Add to Cart
-              </button>
-              <button
-                className="
-                  font-arial-bold
-                  snipcart-add-item
-                  opacity-0 
-                  group-hover:max-h-96
-                  group-hover:opacity-95
-                  bg-white 
-                  text-black 
-                  px-4 
-                  py-2 
-                  rounded 
-                  mt-2
-                  cursor-pointer
                   inline-block
-                  lg:hidden
                   snipcart-checkout"
                 data-item-id={product.id}
                 data-item-name={product.title}
                 data-item-price={product.price.toFixed(2)}
                 data-item-url="/"
                 data-item-description={product.description || ""}
+                {...(product.customFields?.[0] && {
+                  'data-item-custom1-name': product.customFields[0].name,
+                  'data-item-custom1-type': product.customFields[0].type,
+                  'data-item-custom1-options': product.customFields[0].options,
+                })}
+                {...(product.customFields?.[1] && {
+                  'data-item-custom2-name': product.customFields[1].name,
+                  'data-item-custom2-type': product.customFields[1].type,
+                  'data-item-custom2-options': product.customFields[1].options,
+                })}
                 tabIndex={-1}
               >
                 See Details
@@ -258,9 +251,9 @@ export default function ProductsSection() {
           </div>
       ))}
       {modalIdx !== null && (
-      <div className="absolute top-0 left-0 w-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0 lg:hidden">
+      <div className="absolute top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0">
         <div className="absolute top-0 left-0 w-full min-h-full bg-black/90 z-[-1]" onClick={() => handleModalClose()}></div>
-        <div className="relative max-w-lg w-full mx-0 bg-black text-white rounded-lg shadow-2xl p-9 z-10 flex flex-col items-center h-full">
+        <div className="relative w-full h-full mx-0 bg-black text-white rounded-lg shadow-2xl p-9 px-16 lg:px-96 z-10 flex flex-col items-center overflow-y-scroll">
           <button
             onClick={() => handleModalClose()}
             className="
@@ -286,16 +279,53 @@ export default function ProductsSection() {
               className="w-full max-h-70 object-contain rounded mb-4"
             />
           )}
-          <h3 className="text-2xl font-bold mb-2 font-arial-bold uppercase">{products[modalIdx].title}</h3>
+          <h3 className="text-l font-bold mb-2 font-arial-bold uppercase max-w-xl">{products[modalIdx].title}</h3>
           {products[modalIdx].description && (
-            <p className="mb-2 text-base font-arial">{products[modalIdx].description}</p>
+            <p className="mb-4 max-w-sm text-base font-arial">{products[modalIdx].description}</p>
           )}
           {products[modalIdx].includes && products[modalIdx].includes.length > 0 && (
-            <ul className="list-disc list-inside text-sm mb-4 text-left mx-auto max-w-[90%]">
+            <ul className="list-disc list-inside text-sm mb-4 text-left mx-auto max-w-sm">
               {products[modalIdx].includes.map((item, i) => (
                 <li key={i} className="font-arial mb-2 pl-[19.8px] indent-[-21.1px]">{item}</li>
               ))}
             </ul>
+          )}
+          {/* Render custom fields form */}
+          {products[modalIdx].customFields && products[modalIdx].customFields.length > 0 && (
+            <form className="mb-4 w-full max-w-sm text-left">
+              {products[modalIdx].customFields.map((field, index) => {
+                if (field.type === 'checkbox') {
+                  return (
+                    <label key={index} className="flex items-center mb-2 font-arial text-base cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={!!customFieldValues[index]}
+                        onChange={e => handleCustomFieldChange(index, e.target.checked)}
+                        className="mr-2"
+                      />
+                      {field.name}
+                    </label>
+                  );
+                } else if (field.type === 'dropdown') {
+                  const options = field.options ? field.options.split('|') : [];
+                  return (
+                    <label key={index} className="block mb-4 font-arial text-base">
+                      <span className="block mb-1">{field.name}</span>
+                      <select
+                        value={customFieldValues[index] || (options.length > 0 ? options[0] : '')}
+                        onChange={e => handleCustomFieldChange(index, e.target.value)}
+                        className="w-full p-2 rounded text-black"
+                      >
+                        {options.map((option, i) => (
+                          <option key={i} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </label>
+                  );
+                }
+                return null;
+              })}
+            </form>
           )}
           <button
             className="
@@ -315,6 +345,18 @@ export default function ProductsSection() {
             data-item-price={products[modalIdx].price.toFixed(2)}
             data-item-url="/"
             data-item-description={products[modalIdx].description || ""}
+            {...(products[modalIdx].customFields?.[0] && {
+              'data-item-custom1-name': products[modalIdx].customFields[0].name,
+              'data-item-custom1-type': products[modalIdx].customFields[0].type,
+              'data-item-custom1-options': products[modalIdx].customFields[0].options,
+              'data-item-custom1-value': customFieldValues[0] !== undefined ? customFieldValues[0].toString() : '',
+            })}
+            {...(products[modalIdx].customFields?.[1] && {
+              'data-item-custom2-name': products[modalIdx].customFields[1].name,
+              'data-item-custom2-type': products[modalIdx].customFields[1].type,
+              'data-item-custom2-options': products[modalIdx].customFields[1].options,
+              'data-item-custom2-value': customFieldValues[1] !== undefined ? customFieldValues[1].toString() : '',
+            })}
           >
             Buy Now
           </button>
