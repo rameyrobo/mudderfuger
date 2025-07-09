@@ -319,7 +319,25 @@ export default function ProductsSection() {
   return (
     <div className="fixed top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0">
       <div className="absolute top-0 left-0 w-full min-h-full bg-white/90 z-[-1]" onClick={() => handleModalClose()}></div>
-      <div className="relative w-full h-full mx-0 bg-white text-black rounded-lg shadow-2xl p-9 px-4 md:px-16 2xl:px-64 z-10 flex flex-col md:flex-row items-center gap-8 overflow-y-scroll">
+      <div className="
+      relative 
+      w-full 
+      h-full 
+      mx-0 
+      bg-white 
+      text-black 
+      rounded-lg 
+      shadow-2xl 
+      p-9
+      md:px-16 
+      2xl:px-64 
+      z-10 
+      flex 
+      flex-col 
+      md:flex-row 
+      items-center 
+      gap-8 
+      overflow-y-scroll">
         <button
           onClick={() => handleModalClose()}
           className="
@@ -374,7 +392,61 @@ export default function ProductsSection() {
               </h2>
             ) : null;
           })()}
-          <p className="text-xl font-semibold font-arial mb-2">${snipcartPrice}</p>
+          <div className="price-data flex flex-row content-start items-center justify-around w-full">
+            <p className="text-xl font-semibold font-arial mb flex-1">${snipcartPrice}</p>
+            {/* Custom Fields Form */}
+            {product?.customFields && product.customFields.length > 0 && (
+              <form className="w-full max-w-none text-left flex flex-row items-center content-end justify-evenly">
+                {product.customFields.map((field, index) => {
+                  if (field.type === 'checkbox') {
+                    const options = field.options?.split('|') ?? [];
+                    const trueOption = options.find(opt => opt.startsWith('true')) || '';
+                    return (
+                      <label key={index} className="flex items-center mb-2 font-arial text-base cursor-pointer max-w-32">
+                        <input
+                          type="checkbox"
+                          checked={customFieldValues[index] === trueOption}
+                          onChange={e => handleCustomFieldChange(index, e.target.checked)}
+                          className="mr-2"
+                        />
+                        {field.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '')}
+                        <span className="ml-1 text-sm text-gray-600">
+                          {field.name.match(/\[\+(\d+(\.\d{1,2})?)\]/)?.[0]}
+                        </span>
+                      </label>
+                    );
+                  } else if (field.type === 'dropdown') {
+                    const options = field.options ? field.options.split('|') : [];
+                    return (
+                      <label key={index} className="block mb-2 font-arial text-base flex-1 self-auto grow-0 shrink basis-3/12 translate-y-1">
+                        <span className="block mb-1">{field.name}</span>
+                        <select
+                          value={
+                            typeof customFieldValues[index] === 'string'
+                              ? customFieldValues[index]
+                              : options.length > 0
+                                ? options[0]
+                                : ''
+                          }
+                          onChange={e => handleCustomFieldChange(index, e.target.value)}
+                          className="w-full px-2 rounded text-black max-w-12"
+                        >
+                          {options.map((option, i) => {
+                            const match = option.match(/^(.+?)\[\+\d+(\.\d{1,2})?\]$/);
+                            const label = match ? match[1] : option;
+                            return (
+                              <option key={i} value={option}>{label.trim()}</option>
+                            );
+                          })}
+                        </select>
+                      </label>
+                    );
+                  }
+                  return null;
+                })}
+              </form>
+            )}
+          </div>
           {product?.description && (
             <p className="mb-4 max-w-sm text-base font-arial">{product.description}</p>
           )}
@@ -384,58 +456,6 @@ export default function ProductsSection() {
                 <li key={i} className="font-arial mb-2 pl-[19.8px] indent-[-21.1px]">{item}</li>
               ))}
             </ul>
-          )}
-          {/* Custom Fields Form */}
-          {product?.customFields && product.customFields.length > 0 && (
-            <form className="mb-4 w-full max-w-sm text-left">
-              {product.customFields.map((field, index) => {
-                if (field.type === 'checkbox') {
-                  const options = field.options?.split('|') ?? [];
-                  const trueOption = options.find(opt => opt.startsWith('true')) || '';
-                  return (
-                    <label key={index} className="flex items-center mb-2 font-arial text-base cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={customFieldValues[index] === trueOption}
-                        onChange={e => handleCustomFieldChange(index, e.target.checked)}
-                        className="mr-2"
-                      />
-                      {field.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '')}
-                      <span className="ml-1 text-sm text-gray-600">
-                        {field.name.match(/\[\+(\d+(\.\d{1,2})?)\]/)?.[0]}
-                      </span>
-                    </label>
-                  );
-                } else if (field.type === 'dropdown') {
-                  const options = field.options ? field.options.split('|') : [];
-                  return (
-                    <label key={index} className="block mb-4 font-arial text-base">
-                      <span className="block mb-1">{field.name}</span>
-                      <select
-                        value={
-                          typeof customFieldValues[index] === 'string'
-                            ? customFieldValues[index]
-                            : options.length > 0
-                              ? options[0]
-                              : ''
-                        }
-                        onChange={e => handleCustomFieldChange(index, e.target.value)}
-                        className="w-full p-2 rounded text-black max-w-12"
-                      >
-                        {options.map((option, i) => {
-                          const match = option.match(/^(.+?)\[\+\d+(\.\d{1,2})?\]$/);
-                          const label = match ? match[1] : option;
-                          return (
-                            <option key={i} value={option}>{label.trim()}</option>
-                          );
-                        })}
-                      </select>
-                    </label>
-                  );
-                }
-                return null;
-              })}
-            </form>
           )}
           <button
             className="
@@ -448,6 +468,7 @@ export default function ProductsSection() {
               py-2 
               rounded
               mt-2
+              uppercase
               cursor-pointer
               snipcart-checkout
             "
@@ -474,7 +495,7 @@ export default function ProductsSection() {
               }, {} as Record<string, string>))
             }
           >
-            Buy Now
+            Add to Cart
           </button>
         </div>
       </div>

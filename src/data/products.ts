@@ -52,7 +52,8 @@ export const products = [
     ],
     customFields: [
       {
-        name: "Story post add-on (+100)",
+        name: "Share on my Stories",
+        description: "",
         type: "checkbox",
         options: "false|true[+100.00]"
       },
