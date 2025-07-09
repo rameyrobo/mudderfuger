@@ -351,7 +351,7 @@ export default function ProductsSection() {
           <h1 className="text-l text-2xl font-bold mb-2 font-arial-bold uppercase max-w-xl">{product?.title}</h1>
           {(() => {
             const field1 = product?.customFields?.[0];
-            const field2 = product?.customFields?.[1];
+            // const field2 = product?.customFields?.[1]; <-- might add back in later
             const val1 = customFieldValues[0];
             const val2 = customFieldValues[1];
 
