@@ -39,7 +39,7 @@ export default function ProductsSection() {
     if (sponsorButton && selectedPlan) {
       const price = selectedPlan.itemPrice ?? selectedPlan.price ?? 0;
       sponsorButton.dataset.itemPrice = price.toFixed(2);
-      (sponsorButton as any).itemPrice = price.toFixed(2);
+      (sponsorButton as unknown as { itemPrice: string }).itemPrice = price.toFixed(2);
     }
   }, [selectedSponsorPlan]);
   // Log all products on mount
@@ -404,7 +404,7 @@ export default function ProductsSection() {
               <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
                 {products
                   .filter(p => p.category === "sponsor-me" && typeof p.price === "number")
-                  .map((tier, idx) => (
+                  .map((tier) => (
                   <div
                     key={tier.id}
                     className={`border border-gray-300 p-6 rounded-lg bg-white shadow transition-all ${
