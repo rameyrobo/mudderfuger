@@ -28,6 +28,20 @@ export default function ProductsSection() {
   // State to track custom field values for the modal product
   const [customFieldValues, setCustomFieldValues] = useState<{ [key: number]: string | boolean }>({});
 
+  // Sponsor plan selection state
+  const [selectedSponsorPlan, setSelectedSponsorPlan] = useState<string>("starter-sponsor");
+
+  // Dynamically update the sponsor-me button price for Snipcart
+  // This effect ensures the data-item-price attribute and dataset.itemPrice are always correct for the selected plan.
+  useEffect(() => {
+    const sponsorButton = document.querySelector<HTMLButtonElement>('.snipcart-add-item[data-item-id="sponsor-me"]');
+    const selectedPlan = products.find(p => p.id === selectedSponsorPlan);
+    if (sponsorButton && selectedPlan) {
+      const price = selectedPlan.itemPrice ?? selectedPlan.price ?? 0;
+      sponsorButton.dataset.itemPrice = price.toFixed(2);
+      (sponsorButton as any).itemPrice = price.toFixed(2);
+    }
+  }, [selectedSponsorPlan]);
   // Log all products on mount
   useEffect(() => {
     console.log("All products:", products);
@@ -387,12 +401,18 @@ export default function ProductsSection() {
         <div className={`flex flex-col items-start ${product?.category === 'sponsor-me' ? 'w-full' : 'w-full md:w-7/12 lg:w-5/12'}`}>
           {product?.category === "sponsor-me" ? (
             <>
-              {console.log("Sponsor Me tiers:", products.filter(p => p.category === "sponsor-me"))}
               <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
                 {products
                   .filter(p => p.category === "sponsor-me" && typeof p.price === "number")
                   .map((tier, idx) => (
-                  <div key={tier.id} className="border border-gray-300 p-6 rounded-lg bg-white shadow">
+                  <div
+                    key={tier.id}
+                    className={`border border-gray-300 p-6 rounded-lg bg-white shadow transition-all ${
+                      selectedSponsorPlan === tier.id
+                        ? "border-black ring-2 ring-black"
+                        : ""
+                    }`}
+                  >
                     <h2 className="text-lg font-arial-bold mb-2">{tier.title}</h2>
                     <p className="text-xl font-arial-bold mb-4">
                       {tier.id === "official-brand-partner" ? "$15k–$30k" : `$${tier.itemPrice ?? tier.price}`}{" "}
@@ -414,38 +434,61 @@ export default function ProductsSection() {
                       </a>
                     ) : (
                       <button
-                        className="
-                          font-arial-bold 
-                          snipcart-add-item 
-                          bg-white  
-                          border-2 
-                          text-black  
-                          px-4  
-                          py-2  
-                          rounded 
-                          mt-2 
-                          uppercase 
-                          cursor-pointer"
-                        data-item-id={tier.id}
-                        data-item-name={tier.title}
-                        data-item-url="/"
-                        data-item-description={tier.description || ""}
-                        data-item-selected-plan={tier.id}
-                        data-item-price={(tier.itemPrice ?? tier.price).toString()}
-                        {...{
-                          [`data-plan${idx + 1}-id`]: tier.id,
-                          [`data-plan${idx + 1}-name`]: tier.title,
-                          [`data-plan${idx + 1}-frequency`]: 'monthly',
-                          [`data-plan${idx + 1}-interval`]: '1',
-                          [`data-plan${idx + 1}-price`]: (tier.itemPrice ?? tier.price).toString(),
-}}
+                        id={`select-plan-${tier.id}`}
+                        type="button"
+                        className={`
+                          font-arial-bold
+                          border-2
+                          ${selectedSponsorPlan === tier.id
+                            ? "bg-black text-white border-black"
+                            : "bg-white text-black border-gray-300 hover:border-black"}
+                          px-4
+                          py-2
+                          rounded
+                          mt-2
+                          uppercase
+                          cursor-pointer
+                          transition-all
+                        `}
+                        onClick={() => setSelectedSponsorPlan(tier.id)}
+                        aria-pressed={selectedSponsorPlan === tier.id}
                       >
-                        Choose Plan
+                        {selectedSponsorPlan === tier.id ? "Selected" : "Choose Plan"}
                       </button>
                     )}
                   </div>
-                  ))}
+                ))}
               </div>
+              {/* Single Add to Cart Button */}
+              <button
+                className="snipcart-add-item snipcart-checkout font-arial-bold bg-black text-white px-6 py-3 rounded mt-6 uppercase"
+                data-item-id="sponsor-me"
+                data-item-name="Sponsor Me"
+                data-item-url="/"
+                data-item-description="Pick your sponsor level and get Mudderfuged."
+                data-item-selected-plan={selectedSponsorPlan}
+                data-item-price={(() => {
+                  const planProduct = products.find(p => p.id === selectedSponsorPlan);
+                  return (planProduct?.itemPrice ?? planProduct?.price ?? 0).toFixed(2);
+                })()}
+                data-plan1-id="starter-sponsor"
+                data-plan1-name="Starter Sponsor"
+                data-plan1-frequency="monthly"
+                data-plan1-interval="1"
+                data-plan1-price="500"
+                data-plan2-id="monthly-main-sponsor"
+                data-plan2-name="Monthly Main Sponsor"
+                data-plan2-frequency="monthly"
+                data-plan2-interval="1"
+                data-plan2-price="1500"
+                data-plan3-id="official-brand-partner"
+                data-plan3-name="Official Brand Partner"
+                data-plan3-frequency="monthly"
+                data-plan3-interval="1"
+                data-plan3-price="15000"
+              >
+                Add to Cart
+              </button>
             </>
           ) : (
             <>
