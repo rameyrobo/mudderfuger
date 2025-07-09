@@ -2,7 +2,7 @@ export const products = [
   {
     id: "sponsor-me",
     title: "Sponsor Me",
-    price: 0,
+    itemPrice: 0,
     description: "Pick your sponsor level and get Mudderfuged.",
     includes: [],
     category: "sponsor-me"
