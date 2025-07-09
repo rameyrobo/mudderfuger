@@ -78,7 +78,7 @@ export const products = [
   {
     id: "monthly-main-sponsor",
     title: "Monthly Main Sponsor",
-    itemPrice: 1500,
+    price: 1500,
     category: "sponsor-me",
     description: "Ideal for brands who want real visibility.",
     includes: [
@@ -94,7 +94,7 @@ export const products = [
     id: "official-brand-partner",
     title: "Official Brand Partner",
     category: "sponsor-me",
-    itemPrice: 15000,
+    price: 15000,
     description: "Locked-in brand collab. Premium exposure. Real impact. Price is negotiable based on deliverables.",
     includes: [
       "📅 12-month contract with priority scheduling",
