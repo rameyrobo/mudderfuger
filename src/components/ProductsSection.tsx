@@ -29,12 +29,6 @@ export default function ProductsSection() {
   const [customFieldValues, setCustomFieldValues] = useState<{ [key: number]: string | boolean }>({});
 
   useEffect(() => {
-  if (typeof window !== 'undefined') {
-    (window as any).productsDebug = products;
-  }
-}, []);
-
-  useEffect(() => {
     setImageAssignments(getNUniqueRandomImages(imgs, products.length));
   }, []);
 
