@@ -29,6 +29,12 @@ export default function ProductsSection() {
   const [customFieldValues, setCustomFieldValues] = useState<{ [key: number]: string | boolean }>({});
 
   useEffect(() => {
+  if (typeof window !== 'undefined') {
+    (window as any).productsDebug = products;
+  }
+}, []);
+
+  useEffect(() => {
     setImageAssignments(getNUniqueRandomImages(imgs, products.length));
   }, []);
 
@@ -101,22 +107,14 @@ export default function ProductsSection() {
     const field = product?.customFields?.[index];
 
     if (field?.type === 'checkbox') {
-      const match = field.options?.match(/\[\+?(-?\d+(\.\d{1,2})?)\]/); // Extract from options
-      const price = match ? parseFloat(match[1]).toFixed(2) : '0.00';
-      const cleanName = field.name.replace(/\[\+?(-?\d+(\.\d{1,2})?)\]/, '').trim();
-
-      if (value === true) {
-        const fullValue = `${cleanName} [+${price}]`;
-        setCustomFieldValues(prev => ({
-          ...prev,
-          [index]: fullValue,
-        }));
-      } else {
-        setCustomFieldValues(prev => ({
-          ...prev,
-          [index]: '',
-        }));
-      }
+      const options = field.options?.split('|') ?? [];
+      const selectedValue = value
+        ? options.find(opt => opt.startsWith('true'))
+        : options.find(opt => opt.startsWith('false'));
+      setCustomFieldValues(prev => ({
+        ...prev,
+        [index]: selectedValue || '',
+      }));
     } else {
       setCustomFieldValues(prev => ({
         ...prev,
@@ -134,7 +132,7 @@ export default function ProductsSection() {
       Object.entries(customFieldValues).reduce((acc, [indexStr, val]) => {
         const index = parseInt(indexStr);
         const field = product.customFields?.[index];
-        return acc + extractPrice(val, field?.name);
+        return acc + extractPrice(val, field?.options);
       }, 0)
     ).toFixed(2);
   }, [customFieldValues, product]);
@@ -150,6 +148,25 @@ export default function ProductsSection() {
     }
     return 0;
   }
+
+  // Effect to update custom field values on the Buy Now button directly
+  useEffect(() => {
+    const buyNowButton = document.querySelector('button.snipcart-add-item');
+
+    if (!buyNowButton || !product || !product.customFields) return;
+
+    product.customFields.forEach((field, index) => {
+      const value = customFieldValues[index];
+
+      if (field.type === 'checkbox') {
+        const isTrue = typeof value === 'string' && value.startsWith('true');
+        buyNowButton.setAttribute(`data-item-custom${index + 1}-value`, isTrue ? 'true' : 'false');
+      } else if (field.type === 'dropdown') {
+        const stringVal = typeof value === 'string' ? value.split('[')[0] : '';
+        buyNowButton.setAttribute(`data-item-custom${index + 1}-value`, stringVal);
+      }
+    });
+  }, [customFieldValues, product]);
 
   if (modalIdx === null) {
     return (
@@ -350,11 +367,13 @@ export default function ProductsSection() {
             <form className="mb-4 w-full max-w-sm text-left">
               {product.customFields.map((field, index) => {
                 if (field.type === 'checkbox') {
+                  const options = field.options?.split('|') ?? [];
+                  const trueOption = options.find(opt => opt.startsWith('true')) || '';
                   return (
                     <label key={index} className="flex items-center mb-2 font-arial text-base cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={!!customFieldValues[index]}
+                        checked={customFieldValues[index] === trueOption}
                         onChange={e => handleCustomFieldChange(index, e.target.checked)}
                         className="mr-2"
                       />
@@ -380,9 +399,13 @@ export default function ProductsSection() {
                         onChange={e => handleCustomFieldChange(index, e.target.value)}
                         className="w-full p-2 rounded text-black"
                       >
-                        {options.map((option, i) => (
-                          <option key={i} value={option}>{option}</option>
-                        ))}
+                        {options.map((option, i) => {
+                          const match = option.match(/^(.+?)\[\+\d+(\.\d{1,2})?\]$/);
+                          const label = match ? match[1] : option;
+                          return (
+                            <option key={i} value={option}>{label.trim()}</option>
+                          );
+                        })}
                       </select>
                     </label>
                   );
@@ -408,7 +431,7 @@ export default function ProductsSection() {
             "
             data-item-id={product?.id}
             data-item-name={product?.title}
-            data-item-price={snipcartPrice}
+            data-item-price={product?.price.toFixed(2)}
             data-item-url="/"
             data-item-description={product?.description || ""}
             {
@@ -416,7 +439,13 @@ export default function ProductsSection() {
                 acc[`data-item-custom${i + 1}-name`] = field.name;
                 acc[`data-item-custom${i + 1}-type`] = field.type;
                 if (field.options) acc[`data-item-custom${i + 1}-options`] = field.options;
-                acc[`data-item-custom${i + 1}-value`] = customFieldValues[i] !== undefined ? customFieldValues[i].toString() : '';
+                const val = customFieldValues[i];
+                if (typeof val === 'boolean') {
+                  acc[`data-item-custom${i + 1}-value`] = val ? 'true' : 'false';
+                } else if (typeof val === 'string') {
+                  const stripped = val.split('[')[0]; // remove price annotation
+                  acc[`data-item-custom${i + 1}-value`] = stripped;
+                }
                 return acc;
               }, {} as Record<string, string>))
             }
