@@ -52,9 +52,9 @@ export const products = [
     ],
     customFields: [
       {
-        name: "Story post add-on",
+        name: "Story post add-on (+100)",
         type: "checkbox",
-        options: "true[+100.00]|false"
+        options: "false|true[+100.00]"
       },
       {
         name: "Revisions",

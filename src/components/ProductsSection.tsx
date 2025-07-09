@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { imgs } from '@/data/imgs';
 import { products } from '@/data/products';
@@ -98,15 +98,63 @@ export default function ProductsSection() {
   };
 
   const handleCustomFieldChange = (index: number, value: string | boolean) => {
-    setCustomFieldValues(prev => ({
-      ...prev,
-      [index]: value,
-    }));
+    const field = product?.customFields?.[index];
+
+    if (field?.type === 'checkbox') {
+      const match = field.options?.match(/\[\+?(-?\d+(\.\d{1,2})?)\]/); // Extract from options
+      const price = match ? parseFloat(match[1]).toFixed(2) : '0.00';
+      const cleanName = field.name.replace(/\[\+?(-?\d+(\.\d{1,2})?)\]/, '').trim();
+
+      if (value === true) {
+        const fullValue = `${cleanName} [+${price}]`;
+        setCustomFieldValues(prev => ({
+          ...prev,
+          [index]: fullValue,
+        }));
+      } else {
+        setCustomFieldValues(prev => ({
+          ...prev,
+          [index]: '',
+        }));
+      }
+    } else {
+      setCustomFieldValues(prev => ({
+        ...prev,
+        [index]: value,
+      }));
+    }
   };
 
-  return (
-    <div className="w-full grid grid-cols-2 gap-0">
-      {products.map((product, idx) => (
+  // Modal product and price calculation hooks
+  const product = modalIdx !== null ? products[modalIdx] : null;
+  const snipcartPrice = useMemo(() => {
+    if (!product) return "0.00";
+    return (
+      product.price +
+      Object.entries(customFieldValues).reduce((acc, [indexStr, val]) => {
+        const index = parseInt(indexStr);
+        const field = product.customFields?.[index];
+        return acc + extractPrice(val, field?.name);
+      }, 0)
+    ).toFixed(2);
+  }, [customFieldValues, product]);
+
+  function extractPrice(value: string | boolean, label?: string): number {
+    if (typeof value === 'boolean' && value && label) {
+      const match = label.match(/\[\+?(-?\d+(\.\d{1,2})?)\]/);
+      return match ? parseFloat(match[1]) : 0;
+    }
+    if (typeof value === 'string') {
+      const match = value.match(/\[\+?(-?\d+(\.\d{1,2})?)\]/);
+      return match ? parseFloat(match[1]) : 0;
+    }
+    return 0;
+  }
+
+  if (modalIdx === null) {
+    return (
+      <div className="w-full grid grid-cols-2 gap-0">
+        {products.map((product, idx) => (
         <div
           key={product.id}
           id={product.id}
@@ -250,50 +298,57 @@ export default function ProductsSection() {
             </div>
           </div>
       ))}
-      {modalIdx !== null && (
-      <div className="absolute top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0">
-        <div className="absolute top-0 left-0 w-full min-h-full bg-black/90 z-[-1]" onClick={() => handleModalClose()}></div>
-        <div className="relative w-full h-full mx-0 bg-black text-white rounded-lg shadow-2xl p-9 px-16 lg:px-96 z-10 flex flex-col items-center overflow-y-scroll">
-          <button
-            onClick={() => handleModalClose()}
-            className="
-            font-arial-bold
-            absolute 
-            top-px  
-            right-3 
-            text-4xl 
-            font-light 
-            z-20 
-            cursor-pointer 
-            text-white"
-            aria-label="Close"
-          >
-            ×
-          </button>
+      </div>
+    );
+  }
+  // Modal render
+  return (
+    <div className="fixed top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0">
+      <div className="absolute top-0 left-0 w-full min-h-full bg-white/90 z-[-1]" onClick={() => handleModalClose()}></div>
+      <div className="relative w-full h-full mx-0 bg-white text-black rounded-lg shadow-2xl p-9 px-4 md:px-16 2xl:px-64 z-10 flex flex-col md:flex-row items-start gap-8 overflow-y-scroll">
+        <button
+          onClick={() => handleModalClose()}
+          className="
+          font-arial-bold
+          absolute 
+          top-px  
+          right-3 
+          text-4xl 
+          font-light 
+          z-20 
+          cursor-pointer 
+          text-black"
+          aria-label="Close"
+        >
+          ×
+        </button>
+        <div className="w-full md:w-1/2 flex justify-center">
           {modalImage && (
             <Image
               src={modalImage}
               alt=""
               width={600}
               height={800}
-              className="w-full max-h-70 object-contain rounded mb-4"
+              className="w-full max-h-[80vh] object-contain rounded mb-4 md:mb-0"
             />
           )}
-          <h3 className="text-l font-bold mb-2 font-arial-bold uppercase max-w-xl">{products[modalIdx].title}</h3>
-          {products[modalIdx].description && (
-            <p className="mb-4 max-w-sm text-base font-arial">{products[modalIdx].description}</p>
+        </div>
+        <div className="w-full md:w-1/2 flex flex-col items-start">
+          <h3 className="text-l font-bold mb-2 font-arial-bold uppercase max-w-xl">{product?.title}</h3>
+          {product?.description && (
+            <p className="mb-4 max-w-sm text-base font-arial">{product.description}</p>
           )}
-          {products[modalIdx].includes && products[modalIdx].includes.length > 0 && (
-            <ul className="list-disc list-inside text-sm mb-4 text-left mx-auto max-w-sm">
-              {products[modalIdx].includes.map((item, i) => (
+          {product?.includes && product.includes.length > 0 && (
+            <ul className="list-disc list-inside text-sm mb-4 text-left mx-auto">
+              {product.includes.map((item, i) => (
                 <li key={i} className="font-arial mb-2 pl-[19.8px] indent-[-21.1px]">{item}</li>
               ))}
             </ul>
           )}
-          {/* Render custom fields form */}
-          {products[modalIdx].customFields && products[modalIdx].customFields.length > 0 && (
+          {/* Custom Fields Form */}
+          {product?.customFields && product.customFields.length > 0 && (
             <form className="mb-4 w-full max-w-sm text-left">
-              {products[modalIdx].customFields.map((field, index) => {
+              {product.customFields.map((field, index) => {
                 if (field.type === 'checkbox') {
                   return (
                     <label key={index} className="flex items-center mb-2 font-arial text-base cursor-pointer">
@@ -303,7 +358,10 @@ export default function ProductsSection() {
                         onChange={e => handleCustomFieldChange(index, e.target.checked)}
                         className="mr-2"
                       />
-                      {field.name}
+                      {field.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '')}
+                      <span className="ml-1 text-sm text-gray-600">
+                        {field.name.match(/\[\+(\d+(\.\d{1,2})?)\]/)?.[0]}
+                      </span>
                     </label>
                   );
                 } else if (field.type === 'dropdown') {
@@ -333,42 +391,40 @@ export default function ProductsSection() {
               })}
             </form>
           )}
+          <p className="text-base font-arial mb-2">Total: ${snipcartPrice}</p>
           <button
             className="
               font-arial-bold
               snipcart-add-item
               bg-white 
+              border-2
               text-black 
               px-4 
               py-2 
-              rounded 
+              rounded
               mt-2
               cursor-pointer
               snipcart-checkout
             "
-            data-item-id={products[modalIdx].id}
-            data-item-name={products[modalIdx].title}
-            data-item-price={products[modalIdx].price.toFixed(2)}
+            data-item-id={product?.id}
+            data-item-name={product?.title}
+            data-item-price={snipcartPrice}
             data-item-url="/"
-            data-item-description={products[modalIdx].description || ""}
-            {...(products[modalIdx].customFields?.[0] && {
-              'data-item-custom1-name': products[modalIdx].customFields[0].name,
-              'data-item-custom1-type': products[modalIdx].customFields[0].type,
-              'data-item-custom1-options': products[modalIdx].customFields[0].options,
-              'data-item-custom1-value': customFieldValues[0] !== undefined ? customFieldValues[0].toString() : '',
-            })}
-            {...(products[modalIdx].customFields?.[1] && {
-              'data-item-custom2-name': products[modalIdx].customFields[1].name,
-              'data-item-custom2-type': products[modalIdx].customFields[1].type,
-              'data-item-custom2-options': products[modalIdx].customFields[1].options,
-              'data-item-custom2-value': customFieldValues[1] !== undefined ? customFieldValues[1].toString() : '',
-            })}
+            data-item-description={product?.description || ""}
+            {
+              ...((product?.customFields || []).reduce((acc, field, i) => {
+                acc[`data-item-custom${i + 1}-name`] = field.name;
+                acc[`data-item-custom${i + 1}-type`] = field.type;
+                if (field.options) acc[`data-item-custom${i + 1}-options`] = field.options;
+                acc[`data-item-custom${i + 1}-value`] = customFieldValues[i] !== undefined ? customFieldValues[i].toString() : '';
+                return acc;
+              }, {} as Record<string, string>))
+            }
           >
             Buy Now
           </button>
         </div>
       </div>
-    )}
     </div>
   );
 }
