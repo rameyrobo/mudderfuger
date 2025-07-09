@@ -307,7 +307,7 @@ export default function ProductsSection() {
                   snipcart-checkout"
                 data-item-id={product.id}
                 data-item-name={product.title}
-                data-item-price={product.price.toFixed(2)}
+                data-item-price={(product.itemPrice ?? product.price ?? 0).toFixed(2)}
                 data-item-url="/"
                 data-item-max-quantity="1"
                 data-item-stackable="always"
