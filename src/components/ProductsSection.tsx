@@ -28,6 +28,11 @@ export default function ProductsSection() {
   // State to track custom field values for the modal product
   const [customFieldValues, setCustomFieldValues] = useState<{ [key: number]: string | boolean }>({});
 
+  // Log all products on mount
+  useEffect(() => {
+    console.log("All products:", products);
+  }, []);
+
   useEffect(() => {
     setImageAssignments(getNUniqueRandomImages(imgs, products.length));
   }, []);
@@ -39,6 +44,13 @@ export default function ProductsSection() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
+  }, [modalIdx]);
+
+  // Log the modal product when modalIdx changes
+  useEffect(() => {
+    if (modalIdx !== null) {
+      console.log("Modal Product:", products[modalIdx]);
+    }
   }, [modalIdx]);
 
   useEffect(() => {
@@ -118,11 +130,14 @@ export default function ProductsSection() {
   };
 
   // Modal product and price calculation hooks
-  const product = modalIdx !== null ? products[modalIdx] : null;
+  const rawProduct = modalIdx !== null ? products[modalIdx] : null;
+  const product = rawProduct?.id === "sponsor-me"
+    ? products.find(p => p.category === "sponsor-me") || rawProduct
+    : rawProduct;
   const snipcartPrice = useMemo(() => {
     if (!product) return "0.00";
     return (
-      product.price +
+      (product.itemPrice ?? product.price) +
       Object.entries(customFieldValues).reduce((acc, [indexStr, val]) => {
         const index = parseInt(indexStr);
         const field = product.customFields?.[index];
@@ -165,7 +180,9 @@ export default function ProductsSection() {
   if (modalIdx === null) {
     return (
       <div className="w-full grid grid-cols-2 gap-0">
-        {products.map((product, idx) => (
+        {products
+          .filter(p => p.id === "sponsor-me" || !["starter-sponsor", "monthly-main-sponsor", "official-brand-partner"].includes(p.id))
+          .map((product, idx) => (
         <div
           key={product.id}
           id={product.id}
@@ -354,149 +371,217 @@ export default function ProductsSection() {
         >
           ×
         </button>
-        <div className="w-full md:w-5/12 lg:w-7/12 flex justify-center">
-          {modalImage && (
-            <Image
-              src={modalImage}
-              alt=""
-              width={600}
-              height={800}
-              className="w-full max-h-96 md:max-h-[80vh] object-contain rounded mb-4 md:mb-0"
-            />
-          )}
-        </div>
-        <div className="w-full md:w-7/12 lg:w-5/12 flex flex-col items-start">
-          <h1 className="text-l text-2xl font-bold mb-2 font-arial-bold uppercase max-w-xl">{product?.title}</h1>
-          {(() => {
-            const field1 = product?.customFields?.[0];
-            // const field2 = product?.customFields?.[1]; <-- might add back in later
-            const val1 = customFieldValues[0];
-            const val2 = customFieldValues[1];
-
-            const isTrue = typeof val1 === 'string' && val1.startsWith('true');
-            const option1Text = isTrue ? field1?.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '').trim() : '';
-            let option2Text = '';
-            if (typeof val2 === 'string' && !val2.startsWith('0')) {
-              const count = val2.split('[')[0];
-              const plural = count === '1' ? 'revision' : 'revisions';
-              option2Text = `${count} ${plural}`;
-            }
-
-            const parts = [];
-            if (option1Text) parts.push(option1Text);
-            if (option2Text) parts.push(option2Text);
-
-            return parts.length > 0 ? (
-              <h2 className="font-arial-bold text-base text-black mb-4">
-                w/ {parts.join(' and ')}
-              </h2>
-            ) : null;
-          })()}
-          <div className="price-data flex flex-row content-start items-center justify-around w-full">
-            <p className="text-xl font-semibold font-arial mb flex-1">${snipcartPrice}</p>
-            {/* Custom Fields Form */}
-            {product?.customFields && product.customFields.length > 0 && (
-              <form className="w-full max-w-none text-left flex flex-row items-center content-end justify-evenly">
-                {product.customFields.map((field, index) => {
-                  if (field.type === 'checkbox') {
-                    const options = field.options?.split('|') ?? [];
-                    const trueOption = options.find(opt => opt.startsWith('true')) || '';
-                    return (
-                      <label key={index} className="flex items-center mb-2 font-arial text-base cursor-pointer max-w-32">
-                        <input
-                          type="checkbox"
-                          checked={customFieldValues[index] === trueOption}
-                          onChange={e => handleCustomFieldChange(index, e.target.checked)}
-                          className="mr-2"
-                        />
-                        {field.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '')}
-                        <span className="ml-1 text-sm text-gray-600">
-                          {field.name.match(/\[\+(\d+(\.\d{1,2})?)\]/)?.[0]}
-                        </span>
-                      </label>
-                    );
-                  } else if (field.type === 'dropdown') {
-                    const options = field.options ? field.options.split('|') : [];
-                    return (
-                      <label key={index} className="block mb-2 font-arial text-base flex-1 self-auto grow-0 shrink basis-3/12 translate-y-1">
-                        <span className="block mb-1">{field.name}</span>
-                        <select
-                          value={
-                            typeof customFieldValues[index] === 'string'
-                              ? customFieldValues[index]
-                              : options.length > 0
-                                ? options[0]
-                                : ''
-                          }
-                          onChange={e => handleCustomFieldChange(index, e.target.value)}
-                          className="w-full px-2 rounded text-black max-w-12"
-                        >
-                          {options.map((option, i) => {
-                            const match = option.match(/^(.+?)\[\+\d+(\.\d{1,2})?\]$/);
-                            const label = match ? match[1] : option;
-                            return (
-                              <option key={i} value={option}>{label.trim()}</option>
-                            );
-                          })}
-                        </select>
-                      </label>
-                    );
-                  }
-                  return null;
-                })}
-              </form>
+        {product?.id !== "sponsor-me" && (
+          <div className="w-full md:w-5/12 lg:w-7/12 flex justify-center">
+            {modalImage && (
+              <Image
+                src={modalImage}
+                alt=""
+                width={600}
+                height={800}
+                className="w-full max-h-96 md:max-h-[80vh] object-contain rounded mb-4 md:mb-0"
+              />
             )}
           </div>
-          {product?.description && (
-            <p className="mb-4 max-w-sm text-base font-arial">{product.description}</p>
-          )}
-          {product?.includes && product.includes.length > 0 && (
-            <ul className="list-disc list-inside text-sm mb-4 text-left ml-6 mr-auto">
-              {product.includes.map((item, i) => (
-                <li key={i} className="font-arial mb-2 pl-[19.8px] indent-[-21.1px]">{item}</li>
-              ))}
-            </ul>
-          )}
-          <button
-            className="
-              font-arial-bold
-              snipcart-add-item
-              bg-white 
-              border-2
-              text-black 
-              px-4 
-              py-2 
-              rounded
-              mt-2
-              uppercase
-              cursor-pointer
-              snipcart-checkout
-            "
-            data-item-id={product?.id}
-            data-item-name={product?.title}
-            data-item-price={product?.price.toFixed(2)}
-            data-item-url="/"
-            data-item-max-quantity="1"
-            data-item-stackable="always"
-            data-item-description={product?.description || ""}
-            {
-              ...((product?.customFields || []).reduce((acc, field, i) => {
-                acc[`data-item-custom${i + 1}-name`] = field.name;
-                acc[`data-item-custom${i + 1}-type`] = field.type;
-                if (field.options) acc[`data-item-custom${i + 1}-options`] = field.options;
-                const val = customFieldValues[i];
-                if (typeof val === 'boolean') {
-                  acc[`data-item-custom${i + 1}-value`] = val ? 'true' : 'false';
-                } else if (typeof val === 'string') {
-                  const stripped = val.split('[')[0]; // remove price annotation
-                  acc[`data-item-custom${i + 1}-value`] = stripped;
+        )}
+        <div className={`flex flex-col items-start ${product?.category === 'sponsor-me' ? 'w-full' : 'w-full md:w-7/12 lg:w-5/12'}`}>
+          {product?.category === "sponsor-me" ? (
+            <>
+              {console.log("Sponsor Me tiers:", products.filter(p => p.category === "sponsor-me"))}
+              <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                {products
+                  .filter(p => p.category === "sponsor-me" && typeof p.price === "number")
+                  .map((tier, idx) => (
+                  <div key={tier.id} className="border border-gray-300 p-6 rounded-lg bg-white shadow">
+                    <h2 className="text-lg font-arial-bold mb-2">{tier.title}</h2>
+                    <p className="text-xl font-arial-bold mb-4">
+                      {tier.id === "official-brand-partner" ? "$15k–$30k" : `$${tier.itemPrice ?? tier.price}`}{" "}
+                      <span className="text-sm font-normal">
+                        {tier.id === "official-brand-partner" ? "/year" : "/month"}
+                      </span>
+                    </p>
+                    <ul className="font-arial text-sm mb-6 list-disc list-inside">
+                      {tier.includes.map((item, i) => (
+                        <li key={i} className="leading-8">{item}</li>
+                      ))}
+                    </ul>
+                    {tier.id === "official-brand-partner" ? (
+                      <a
+                        href="mailto:collab@mudderfuger.ai"
+                        className="bg-black text-white px-4 py-2 rounded font-arial-bold inline-block"
+                      >
+                        Inquire
+                      </a>
+                    ) : (
+                      <button
+                        className="
+                          font-arial-bold 
+                          snipcart-add-item 
+                          bg-white  
+                          border-2 
+                          text-black  
+                          px-4  
+                          py-2  
+                          rounded 
+                          mt-2 
+                          uppercase 
+                          cursor-pointer"
+                        data-item-id={tier.id}
+                        data-item-name={tier.title}
+                        data-item-url="/"
+                        data-item-description={tier.description || ""}
+                        data-item-selected-plan={tier.id}
+                        data-item-price={(tier.itemPrice ?? tier.price).toString()}
+                        {...{
+                          [`data-plan${idx + 1}-id`]: tier.id,
+                          [`data-plan${idx + 1}-name`]: tier.title,
+                          [`data-plan${idx + 1}-frequency`]: 'monthly',
+                          [`data-plan${idx + 1}-interval`]: '1',
+                          [`data-plan${idx + 1}-price`]: (tier.itemPrice ?? tier.price).toString(),
+}}
+                      >
+                        Choose Plan
+                      </button>
+                    )}
+                  </div>
+                  ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 className="text-l text-2xl font-bold mb-2 font-arial-bold uppercase max-w-xl">{product?.title}</h1>
+              {(() => {
+                const field1 = product?.customFields?.[0];
+                // const field2 = product?.customFields?.[1]; <-- might add back in later
+                const val1 = customFieldValues[0];
+                const val2 = customFieldValues[1];
+
+                const isTrue = typeof val1 === 'string' && val1.startsWith('true');
+                const option1Text = isTrue ? field1?.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '').trim() : '';
+                let option2Text = '';
+                if (typeof val2 === 'string' && !val2.startsWith('0')) {
+                  const count = val2.split('[')[0];
+                  const plural = count === '1' ? 'revision' : 'revisions';
+                  option2Text = `${count} ${plural}`;
                 }
-                return acc;
-              }, {} as Record<string, string>))
-            }
-          >
-            Add to Cart
-          </button>
+
+                const parts = [];
+                if (option1Text) parts.push(option1Text);
+                if (option2Text) parts.push(option2Text);
+
+                return parts.length > 0 ? (
+                  <h2 className="font-arial-bold text-base text-black mb-4">
+                    w/ {parts.join(' and ')}
+                  </h2>
+                ) : null;
+              })()}
+              <div className="price-data flex flex-row content-start items-center justify-around w-full">
+                <p className="text-xl font-semibold font-arial mb flex-1">${snipcartPrice}</p>
+                {/* Custom Fields Form */}
+                {product?.customFields && product.customFields.length > 0 && (
+                  <form className="w-full max-w-none text-left flex flex-row items-center content-end justify-evenly">
+                    {product.customFields.map((field, index) => {
+                      if (field.type === 'checkbox') {
+                        const options = field.options?.split('|') ?? [];
+                        const trueOption = options.find(opt => opt.startsWith('true')) || '';
+                        return (
+                          <label key={index} className="flex items-center mb-2 font-arial text-base cursor-pointer max-w-32">
+                            <input
+                              type="checkbox"
+                              checked={customFieldValues[index] === trueOption}
+                              onChange={e => handleCustomFieldChange(index, e.target.checked)}
+                              className="mr-2"
+                            />
+                            {field.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '')}
+                            <span className="ml-1 text-sm text-gray-600">
+                              {field.name.match(/\[\+(\d+(\.\d{1,2})?)\]/)?.[0]}
+                            </span>
+                          </label>
+                        );
+                      } else if (field.type === 'dropdown') {
+                        const options = field.options ? field.options.split('|') : [];
+                        return (
+                          <label key={index} className="block mb-2 font-arial text-base flex-1 self-auto grow-0 shrink basis-3/12 translate-y-1">
+                            <span className="block mb-1">{field.name}</span>
+                            <select
+                              value={
+                                typeof customFieldValues[index] === 'string'
+                                  ? customFieldValues[index]
+                                  : options.length > 0
+                                    ? options[0]
+                                    : ''
+                              }
+                              onChange={e => handleCustomFieldChange(index, e.target.value)}
+                              className="w-full px-2 rounded text-black max-w-12"
+                            >
+                              {options.map((option, i) => {
+                                const match = option.match(/^(.+?)\[\+\d+(\.\d{1,2})?\]$/);
+                                const label = match ? match[1] : option;
+                                return (
+                                  <option key={i} value={option}>{label.trim()}</option>
+                                );
+                              })}
+                            </select>
+                          </label>
+                        );
+                      }
+                      return null;
+                    })}
+                  </form>
+                )}
+              </div>
+              {product?.description && (
+                <p className="mb-4 max-w-sm text-base font-arial">{product.description}</p>
+              )}
+              {product?.includes && product.includes.length > 0 && (
+                <ul className="list-disc list-inside text-sm mb-4 text-left ml-6 mr-auto">
+                  {product.includes.map((item, i) => (
+                    <li key={i} className="font-arial mb-2 pl-[19.8px] indent-[-21.1px]">{item}</li>
+                  ))}
+                </ul>
+              )}
+              <button
+                className="
+                  font-arial-bold
+                  snipcart-add-item
+                  bg-white 
+                  border-2
+                  text-black 
+                  px-4 
+                  py-2 
+                  rounded
+                  mt-2
+                  uppercase
+                  cursor-pointer
+                  snipcart-checkout
+                "
+                data-item-id={product?.id}
+                data-item-name={product?.title}
+                data-item-price={(product?.itemPrice ?? product?.price).toFixed(2)}
+                data-item-url="/"
+                data-item-max-quantity="1"
+                data-item-stackable="always"
+                data-item-description={product?.description || ""}
+                {
+                  ...((product?.customFields || []).reduce((acc, field, i) => {
+                    acc[`data-item-custom${i + 1}-name`] = field.name;
+                    acc[`data-item-custom${i + 1}-type`] = field.type;
+                    if (field.options) acc[`data-item-custom${i + 1}-options`] = field.options;
+                    const val = customFieldValues[i];
+                    if (typeof val === 'boolean') {
+                      acc[`data-item-custom${i + 1}-value`] = val ? 'true' : 'false';
+                    } else if (typeof val === 'string') {
+                      const stripped = val.split('[')[0]; // remove price annotation
+                      acc[`data-item-custom${i + 1}-value`] = stripped;
+                    }
+                    return acc;
+                  }, {} as Record<string, string>))
+                }
+              >
+                Add to Cart
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

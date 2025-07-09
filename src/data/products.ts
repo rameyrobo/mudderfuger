@@ -1,15 +1,11 @@
 export const products = [
   {
     id: "sponsor-me",
-    title: "sponsor me",
-    price: 300,
-    description: null,
-    includes: [
-      "Your brand or @name on a shirt, sign, wall, or background prop",
-      "Optional name drop or dialogue shoutout",
-      "Tag in caption + option for a collab post (if requested) - add on",
-      "1–3 high-res cinematic stills from the scene"
-    ]
+    title: "Sponsor Me",
+    price: 0,
+    description: "Pick your sponsor level and get Mudderfuged.",
+    includes: [],
+    category: "sponsor-me"
   },
   {
     id: "add-yourself",
@@ -62,6 +58,54 @@ export const products = [
         type: "dropdown",
         options: "0|1[+75.00]|2[+150.00]|3[+225.00]"
       }
+    ]
+  },
+  // --- NEW SPONSOR PRODUCTS ---
+  {
+    id: "starter-sponsor",
+    title: "Starter Sponsor",
+    price: 500,
+    category: "sponsor-me",
+    description: "Great for indie brands or first-time collabs.",
+    includes: [
+      "🎥 1 skit or reel/month featuring your product - collab post optional",
+      "📲 2 story posts/month w/ call to action",
+      "🛍️ Optional product link in story",
+      "🎯 Tag in post + mention in caption",
+      "⚠️ Non-exclusive: Mudderfuger may feature similar product categories (e.g., another clothing brand) during the same month."
+    ]
+  },
+  {
+    id: "monthly-main-sponsor",
+    title: "Monthly Main Sponsor",
+    itemPrice: 1500,
+    category: "sponsor-me",
+    description: "Ideal for brands who want real visibility.",
+    includes: [
+      "🎥 4 custom AI skits/month (product in use or on display)",
+      "📲 6 story posts/month with strong CTAs",
+      "🤝 Optional collab post for double reach",
+      "🛍️ Product featured in Mudderfuger merch shop - optional",
+      "🔗 Optional brand link or tag in bio",
+      "✅ Category exclusive: Only your brand (e.g., clothing) will be featured in that category for the full month."
+    ]
+  },
+  {
+    id: "official-brand-partner",
+    title: "Official Brand Partner",
+    category: "sponsor-me",
+    itemPrice: 15000,
+    description: "Locked-in brand collab. Premium exposure. Real impact. Price is negotiable based on deliverables.",
+    includes: [
+      "📅 12-month contract with priority scheduling",
+      "🎥 Up to 6 high-quality skits/month",
+      "📲 10+ story posts/month",
+      "🎬 Ability to help shape custom storylines/skits",
+      "🛒 Exclusive co-branded merch drops (profit split or flat fee)",
+      "🔗 Brand name in bio year-round",
+      "🎯 Featured placement on Sponsor Me page",
+      "📝 Signed content plan + reporting",
+      "✅ Full category exclusivity across all channels during term"
     ]
   },
 ];
