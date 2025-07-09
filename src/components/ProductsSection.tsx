@@ -219,7 +219,8 @@ export default function ProductsSection() {
                 font-bold  
                 uppercase
                 tracking-wide  
-                transition-all bg-black 
+                transition-all 
+                bg-black 
                 justify-self-center
                 px-3.5
                 py-4   
@@ -291,6 +292,8 @@ export default function ProductsSection() {
                 data-item-name={product.title}
                 data-item-price={product.price.toFixed(2)}
                 data-item-url="/"
+                data-item-max-quantity="1"
+                data-item-stackable="always"
                 data-item-description={product.description || ""}
                 {...(product.customFields?.[0] && {
                   'data-item-custom1-name': product.customFields[0].name,
@@ -316,7 +319,7 @@ export default function ProductsSection() {
   return (
     <div className="fixed top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0">
       <div className="absolute top-0 left-0 w-full min-h-full bg-white/90 z-[-1]" onClick={() => handleModalClose()}></div>
-      <div className="relative w-full h-full mx-0 bg-white text-black rounded-lg shadow-2xl p-9 px-4 md:px-16 2xl:px-64 z-10 flex flex-col md:flex-row items-start gap-8 overflow-y-scroll">
+      <div className="relative w-full h-full mx-0 bg-white text-black rounded-lg shadow-2xl p-9 px-4 md:px-16 2xl:px-64 z-10 flex flex-col md:flex-row items-center gap-8 overflow-y-scroll">
         <button
           onClick={() => handleModalClose()}
           className="
@@ -333,24 +336,50 @@ export default function ProductsSection() {
         >
           ×
         </button>
-        <div className="w-full md:w-1/2 flex justify-center">
+        <div className="w-full md:w-5/12 lg:w-7/12 flex justify-center">
           {modalImage && (
             <Image
               src={modalImage}
               alt=""
               width={600}
               height={800}
-              className="w-full max-h-[80vh] object-contain rounded mb-4 md:mb-0"
+              className="w-full max-h-96 md:max-h-[80vh] object-contain rounded mb-4 md:mb-0"
             />
           )}
         </div>
-        <div className="w-full md:w-1/2 flex flex-col items-start">
-          <h3 className="text-l font-bold mb-2 font-arial-bold uppercase max-w-xl">{product?.title}</h3>
+        <div className="w-full md:w-7/12 lg:w-5/12 flex flex-col items-start">
+          <h1 className="text-l text-2xl font-bold mb-2 font-arial-bold uppercase max-w-xl">{product?.title}</h1>
+          {(() => {
+            const field1 = product?.customFields?.[0];
+            const field2 = product?.customFields?.[1];
+            const val1 = customFieldValues[0];
+            const val2 = customFieldValues[1];
+
+            const isTrue = typeof val1 === 'string' && val1.startsWith('true');
+            const option1Text = isTrue ? field1?.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '').trim() : '';
+            let option2Text = '';
+            if (typeof val2 === 'string' && !val2.startsWith('0')) {
+              const count = val2.split('[')[0];
+              const plural = count === '1' ? 'revision' : 'revisions';
+              option2Text = `${count} ${plural}`;
+            }
+
+            const parts = [];
+            if (option1Text) parts.push(option1Text);
+            if (option2Text) parts.push(option2Text);
+
+            return parts.length > 0 ? (
+              <h2 className="font-arial-bold text-base text-black mb-4">
+                w/ {parts.join(' and ')}
+              </h2>
+            ) : null;
+          })()}
+          <p className="text-xl font-semibold font-arial mb-2">${snipcartPrice}</p>
           {product?.description && (
             <p className="mb-4 max-w-sm text-base font-arial">{product.description}</p>
           )}
           {product?.includes && product.includes.length > 0 && (
-            <ul className="list-disc list-inside text-sm mb-4 text-left mx-auto">
+            <ul className="list-disc list-inside text-sm mb-4 text-left ml-6 mr-auto">
               {product.includes.map((item, i) => (
                 <li key={i} className="font-arial mb-2 pl-[19.8px] indent-[-21.1px]">{item}</li>
               ))}
@@ -391,7 +420,7 @@ export default function ProductsSection() {
                               : ''
                         }
                         onChange={e => handleCustomFieldChange(index, e.target.value)}
-                        className="w-full p-2 rounded text-black"
+                        className="w-full p-2 rounded text-black max-w-12"
                       >
                         {options.map((option, i) => {
                           const match = option.match(/^(.+?)\[\+\d+(\.\d{1,2})?\]$/);
@@ -408,7 +437,6 @@ export default function ProductsSection() {
               })}
             </form>
           )}
-          <p className="text-base font-arial mb-2">Total: ${snipcartPrice}</p>
           <button
             className="
               font-arial-bold
@@ -427,6 +455,8 @@ export default function ProductsSection() {
             data-item-name={product?.title}
             data-item-price={product?.price.toFixed(2)}
             data-item-url="/"
+            data-item-max-quantity="1"
+            data-item-stackable="always"
             data-item-description={product?.description || ""}
             {
               ...((product?.customFields || []).reduce((acc, field, i) => {
