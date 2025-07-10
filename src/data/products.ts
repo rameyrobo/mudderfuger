@@ -5,7 +5,30 @@ export const products = [
     itemPrice: 0,
     description: "Pick your sponsor level and get Mudderfuged.",
     includes: [],
-    category: "sponsor-me"
+    category: "sponsor-me",
+    availablePlans: [
+      {
+        id: "starter-sponsor",
+        name: "Starter Sponsor",
+        frequency: "monthly",
+        interval: 1,
+        itemPrice: 500
+      },
+      {
+        id: "monthly-main-sponsor",
+        name: "Monthly Main Sponsor",
+        frequency: "monthly",
+        interval: 1,
+        itemPrice: 1500
+      },
+      {
+        id: "official-brand-partner",
+        name: "Official Brand Partner",
+        frequency: "monthly",
+        interval: 1,
+        itemPrice: 15000
+      }
+    ]
   },
   {
     id: "add-yourself",

@@ -60,6 +60,23 @@ export default function ProductsSection() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [modalIdx]);
 
+  // Update browser URL to reflect selected product when modal is open
+  useEffect(() => {
+    if (modalIdx !== null) {
+      const productSlug = products[modalIdx]?.id;
+      if (productSlug) {
+        const newUrl = `/products/${productSlug}`;
+        window.history.pushState({}, '', newUrl);
+      }
+    } else {
+      // Reset back to root or previous section
+      const isSponsorPage = window.location.pathname.startsWith('/products/');
+      if (isSponsorPage) {
+        window.history.pushState({}, '', '/');
+      }
+    }
+  }, [modalIdx]);
+
   // Log the modal product when modalIdx changes
   useEffect(() => {
     if (modalIdx !== null) {
@@ -102,6 +119,22 @@ export default function ProductsSection() {
     }
   }, [modalIdx]);
 
+  // Log Snipcart cart contents when Snipcart is ready
+  useEffect(() => {
+  const handleSnipcartReady = () => {
+    const state = Snipcart.store.getState();
+    const cart = state.cart;
+    console.log("🚀 Snipcart Cart Contents:", cart);
+    console.log("📦 Subscriptions (if any):", cart.subscriptions || []);
+    console.log("🛒 Items:", cart.items || []);
+  };
+
+  document.addEventListener('snipcart.ready', handleSnipcartReady);
+  return () => {
+    document.removeEventListener('snipcart.ready', handleSnipcartReady);
+  };
+}, []);
+
   const handleMouseLeave = (idx: number) => {
     setFading(f => f.map((fade, i) => i === idx ? true : fade));
     setTimeout(() => {
@@ -117,6 +150,8 @@ export default function ProductsSection() {
       setFading(f => f.map((fade, i) => i === idx ? false : fade));
     }, 0);
   };
+
+
 
   const handleModalClose = () => {
     setModalIdx(null);
@@ -148,6 +183,9 @@ export default function ProductsSection() {
   const product = rawProduct?.id === "sponsor-me"
     ? products.find(p => p.category === "sponsor-me") || rawProduct
     : rawProduct;
+
+  // Find the sponsor-me product (for dynamic plan mapping)
+  const sponsorMe = products.find(p => p.id === "sponsor-me");
   const snipcartPrice = useMemo(() => {
     if (!product) return "0.00";
     return (
@@ -471,21 +509,17 @@ export default function ProductsSection() {
                   const planProduct = products.find(p => p.id === selectedSponsorPlan);
                   return (planProduct?.itemPrice ?? planProduct?.price ?? 0).toFixed(2);
                 })()}
-                data-plan1-id="starter-sponsor"
-                data-plan1-name="Starter Sponsor"
-                data-plan1-frequency="monthly"
-                data-plan1-interval="1"
-                data-plan1-price="500"
-                data-plan2-id="monthly-main-sponsor"
-                data-plan2-name="Monthly Main Sponsor"
-                data-plan2-frequency="monthly"
-                data-plan2-interval="1"
-                data-plan2-price="1500"
-                data-plan3-id="official-brand-partner"
-                data-plan3-name="Official Brand Partner"
-                data-plan3-frequency="monthly"
-                data-plan3-interval="1"
-                data-plan3-price="15000"
+                {
+                  ...(sponsorMe?.availablePlans || []).reduce((attrs, plan, i) => {
+                    const idx = i + 1;
+                    attrs[`data-plan${idx}-id`] = plan.id;
+                    attrs[`data-plan${idx}-name`] = plan.name;
+                    attrs[`data-plan${idx}-frequency`] = plan.frequency;
+                    attrs[`data-plan${idx}-interval`] = String(plan.interval);
+                    attrs[`data-plan${idx}-price`] = String(plan.itemPrice);
+                    return attrs;
+                  }, {} as Record<string, string>)
+                }
               >
                 Add to Cart
               </button>
@@ -630,3 +664,4 @@ export default function ProductsSection() {
     </div>
   );
 }
+  
