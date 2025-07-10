@@ -47,6 +47,38 @@ export default function ProductsSection() {
     console.log("All products:", products);
   }, []);
 
+  // Open modal on page load and handle back/forward navigation for /products/:id
+  useEffect(() => {
+    const path = window.location.pathname;
+    const match = path.match(/^\/products\/([^/]+)$/);
+    if (match) {
+      const productId = match[1];
+      const idx = products.findIndex(p => p.id === productId);
+      if (idx !== -1) {
+        setModalIdx(idx);
+        setModalImage(getNUniqueRandomImages(imgs, products.length)[idx]);
+      }
+    }
+
+    const handlePopState = () => {
+      const newPath = window.location.pathname;
+      const match = newPath.match(/^\/products\/([^/]+)$/);
+      if (match) {
+        const productId = match[1];
+        const idx = products.findIndex(p => p.id === productId);
+        if (idx !== -1) {
+          setModalIdx(idx);
+          setModalImage(getNUniqueRandomImages(imgs, products.length)[idx]);
+        }
+      } else {
+        setModalIdx(null);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   useEffect(() => {
     setImageAssignments(getNUniqueRandomImages(imgs, products.length));
   }, []);
