@@ -188,6 +188,7 @@ export default function ProductsSection() {
   const handleModalClose = () => {
     setModalIdx(null);
     setModalImage(null);
+    window.location.href = '/#be-mf';
   };
 
   const handleCustomFieldChange = (index: number, value: string | boolean) => {
