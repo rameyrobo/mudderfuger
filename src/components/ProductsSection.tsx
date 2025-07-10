@@ -151,7 +151,7 @@ export default function ProductsSection() {
     }
   }, [modalIdx]);
 
-  // Log Snipcart cart contents when Snipcart is ready
+  /* Log Snipcart cart contents when Snipcart is ready
   useEffect(() => {
   const handleSnipcartReady = () => {
     const state = Snipcart.store.getState();
@@ -166,7 +166,7 @@ export default function ProductsSection() {
     document.removeEventListener('snipcart.ready', handleSnipcartReady);
   };
 }, []);
-
+*/
   const handleMouseLeave = (idx: number) => {
     setFading(f => f.map((fade, i) => i === idx ? true : fade));
     setTimeout(() => {
