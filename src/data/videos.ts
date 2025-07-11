@@ -11,5 +11,10 @@ export const videos = [
   { id: 10, title: 'ep10: out of jail pt2', url: 'https://mudderfuger.b-cdn.net/_vids/9_out_of_jail_selfi-hevc.mp4' },
   { id: 11, title: 'ep11: police station', url: 'https://mudderfuger.b-cdn.net/_vids/10_police_station_skate.mp4' },
   { id: 12, title: 'ep12: skatepark pt2', url: 'https://mudderfuger.b-cdn.net/_vids/11_mudderfuger_skate_part.mp4' },
-  { id: 13, title: 'ep13: wake up', url: 'https://mudderfuger.b-cdn.net/_vids/12_wake_up_mudderfuger.mp4' }
+  { id: 13, title: 'ep13: wake up', url: 'https://mudderfuger.b-cdn.net/_vids/12_wake_up_mudderfuger.mp4' },
+  { id: 14, title: 'ep14: Introduction', url: 'https://mudderfuger.b-cdn.net/_vids/13_Introduction_new_4x5_master.mp4' },
+  { id: 15, title: 'ep15: miranda', url: 'https://mudderfuger.b-cdn.net/_vids/14_miranda_4x5_master.mp4' },
+  { id: 16, title: 'ep16: 4TH', url: 'https://mudderfuger.b-cdn.net/_vids/15_4TH_4x5_master.mp4' },
+  { id: 17, title: 'ep17: mom_cop', url: 'https://mudderfuger.b-cdn.net/_vids/16_mom_cop_4x5_.mp4' },
+  { id: 18, title: 'ep18: donut_shop_cop_boss', url: 'https://mudderfuger.b-cdn.net/_vids/17_donut_shop_cop_boss_4x5.mp4' } 
 ];
