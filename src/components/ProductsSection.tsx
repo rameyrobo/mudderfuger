@@ -109,13 +109,6 @@ export default function ProductsSection() {
     }
   }, [modalIdx]);
 
-  // Log the modal product when modalIdx changes
-  useEffect(() => {
-    if (modalIdx !== null) {
-      console.log("Modal Product:", products[modalIdx]);
-    }
-  }, [modalIdx]);
-
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
@@ -151,22 +144,6 @@ export default function ProductsSection() {
     }
   }, [modalIdx]);
 
-  /* Log Snipcart cart contents when Snipcart is ready
-  useEffect(() => {
-  const handleSnipcartReady = () => {
-    const state = Snipcart.store.getState();
-    const cart = state.cart;
-    console.log("🚀 Snipcart Cart Contents:", cart);
-    console.log("📦 Subscriptions (if any):", cart.subscriptions || []);
-    console.log("🛒 Items:", cart.items || []);
-  };
-
-  document.addEventListener('snipcart.ready', handleSnipcartReady);
-  return () => {
-    document.removeEventListener('snipcart.ready', handleSnipcartReady);
-  };
-}, []);
-*/
   const handleMouseLeave = (idx: number) => {
     setFading(f => f.map((fade, i) => i === idx ? true : fade));
     setTimeout(() => {
@@ -188,8 +165,10 @@ export default function ProductsSection() {
   const handleModalClose = () => {
     setModalIdx(null);
     setModalImage(null);
+    setTimeout(() => {
     window.location.href = '/#be-mf';
-  };
+  }, 10)
+};
 
   const handleCustomFieldChange = (index: number, value: string | boolean) => {
     const field = product?.customFields?.[index];
@@ -313,35 +292,7 @@ export default function ProductsSection() {
           {/* Solid color overlay */}
           <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-80 transition-opacity z-10" />
             <div className="text-center px-4 relative z-20 max-w-[90%] group-hover:z-60">
-              <h3 className="
-                font-arial-bold
-                text-center  
-                text-black  
-                bg-white
-                font-bold  
-                uppercase
-                tracking-wide  
-                transition-all 
-                bg-black 
-                justify-self-center
-                px-3.5
-                py-4   
-                leading-6
-                rounded-sm 
-                text-base
-                group-hover:text-lg
-                group-hover:bg-transparent
-                group-hover:text-white
-                group-hover:bg-transparent
-                group-hover:leading-6
-                md:group-hover:leading-10
-                md:group-hover:text-4xl
-                sm:leading-8
-                md:text-xl
-                md:px-4
-                md:leading-7
-                lg:text-2xl
-                lg:px-8
+              <h3 className=" font-arial-bold text-center text-black bg-white font-bold uppercase tracking-wide transition-all bg-black justify-self-center px-3.5 py-4 leading-6 rounded-sm text-base group-hover:text-lg group-hover:bg-transparent group-hover:text-white group-hover:bg-transparent group-hover:leading-6 md:group-hover:leading-10 md:group-hover:text-4xl sm:leading-8 md:text-xl md:px-4 md:leading-7 lg:text-2xl lg:px-8
                 ">
                   {product.title}
               </h3>
