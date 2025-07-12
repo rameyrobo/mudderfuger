@@ -1,12 +1,18 @@
 import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 
+type Video = {
+  id: number;
+  title: string;
+  url: string;
+};
+
 export default function VideoGrid({
     isMuted,
     videos
   }: {
     isMuted: boolean;
-    videos: any[];
+    videos: Video[];
   }) {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [hoverTimeMap, setHoverTimeMap] = useState<{ [key: number]: number }>({});

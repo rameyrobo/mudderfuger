@@ -9,6 +9,15 @@ import ProductsSection from "../components/ProductsSection";
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 
 export default function HomePage() {
+  const [videos, setVideos] = useState<Video[]>([]);
+    useEffect(() => {
+      async function fetchVideos() {
+        const res = await fetch('/api/videos');
+        const data = await res.json();
+        setVideos(data);
+      }
+      fetchVideos();
+    }, []);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -123,7 +132,7 @@ export default function HomePage() {
           MuddaFuger&rsquo;s Story
         </h2>
       <ScrollingBannerVids />
-      <VideoGrid isMuted={isMuted} />
+      <VideoGrid isMuted={isMuted} videos={videos} />
       </section>
 
       <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full overflow-x-hidden relative">
@@ -158,3 +167,9 @@ export default function HomePage() {
     </main>
   );
 }
+
+type Video = {
+  id: number;
+  title: string;
+  url: string;
+};

@@ -1,6 +1,10 @@
 // src/app/api/videos/route.ts
 import { NextResponse } from 'next/server';
 
+type VideoFile = {
+  ObjectName: string;
+};
+
 export async function GET() {
   const apiKey = process.env.BUNNY_STORAGE_API_KEY;
 
@@ -20,9 +24,9 @@ export async function GET() {
 
   const files = await response.json();
 
-  const videos = files
-    .filter((f: any) => f.ObjectName.endsWith('.mp4'))
-    .map((file: any) => {
+  const videos = (files as VideoFile[])
+    .filter((f) => f.ObjectName.endsWith('.mp4'))
+    .map((file) => {
       const filename = file.ObjectName;
       const base = filename.replace('.mp4', '');
       const [idPart, ...rest] = base.split('_');
@@ -34,7 +38,7 @@ export async function GET() {
         url: `https://mudderfuger.b-cdn.net/_vids/${filename}`,
       };
     })
-    .sort((a: any, b: any) => a.id - b.id);
+    .sort((a, b) => a.id - b.id);
 
   return NextResponse.json(videos);
 }
