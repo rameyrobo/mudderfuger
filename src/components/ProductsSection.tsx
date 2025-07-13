@@ -546,7 +546,7 @@ export default function ProductsSection() {
                         const options = field.options?.split('|') ?? [];
                         const trueOption = options.find(opt => opt.startsWith('true')) || '';
                         return (
-                          <label key={index} className="flex items-center mb-2 font-arial text-base cursor-pointer max-w-32">
+                          <label key={index} className="flex items-center mb-2 font-arial text-base cursor-pointer max-w-32 leading-[1.3]">
                             <input
                               type="checkbox"
                               checked={customFieldValues[index] === trueOption}
