@@ -370,7 +370,7 @@ export default function ProductsSection() {
   }
   // Modal render
   return (
-    <div className="fixed top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0">
+    <div className="fixed top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0 opacity-[98]">
       <div className="absolute top-0 left-0 w-full min-h-full bg-white/90 z-[-1]" onClick={() => handleModalClose()}></div>
       <div className="
       relative 
@@ -424,15 +424,24 @@ export default function ProductsSection() {
           {product?.category === "sponsor-me" ? (
             <>
               <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+             {modalImage && (
+              <Image
+                src={modalImage}
+                alt=""
+                width={600}
+                height={800}
+                className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0"
+              />
+            )}
                 {products
                   .filter(p => p.category === "sponsor-me" && typeof p.price === "number")
                   .map((tier) => (
                   <div
                     key={tier.id}
-                    className={`border border-gray-300 p-6 rounded-lg bg-white shadow transition-all ${
+                    className={`border border-gray-300 p-6 rounded-lg bg-white shadow transition-all z-1 opacity-90 ${
                       selectedSponsorPlan === tier.id
-                        ? "border-black ring-2 ring-black"
-                        : ""
+                        ? "border-black ring-2 ring-black relative z-30"
+                        : "relative z-30"
                     }`}
                   >
                     <h2 className="text-lg font-arial-bold mb-2">{tier.title}</h2>
