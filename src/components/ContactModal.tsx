@@ -9,10 +9,25 @@ type FormValues = { name: string; email: string; message: string };
 function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
 
-  const onSubmit = (data: { name: string; email: string; message: string }) => {
-    // Handle form submission here (e.g., send data to a server)
-    console.log(data);
-    onClose(); // Close the modal after submission
+  const onSubmit = async (data: { name: string; email: string; message: string }) => {
+    try {
+      const res = await fetch('/api/transactions/send-contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        alert('Message sent!');
+        onClose();
+      } else {
+        alert('Failed to send message. Please try again later.');
+      }
+    } catch (error) {
+      alert('An error occurred. Please try again later.');
+      console.error(error);
+    }
   };
 
   if (!isOpen) return null;
@@ -45,13 +60,6 @@ function ContactModal({ isOpen, onClose }: ContactModalProps) {
           />
           {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>}
 
-          <label htmlFor="subject" className="font-arial uppercase block mb-1 font-medium">Subject:</label>
-          <input
-            id="name"
-            {...register('name', { required: 'Name is required' })}
-            className="font-arial w-full border border-gray-300 rounded px-3 py-2"
-          />
-          {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>}
 
           <label htmlFor="message" className="font-arial uppercase block mb-1 font-medium">Message:</label>
           <textarea
