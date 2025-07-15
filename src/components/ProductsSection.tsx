@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import ContactModal from './ContactModal';
 import Image from 'next/image';
 import { imgs } from '@/data/imgs';
 import { products } from '@/data/products';
@@ -29,7 +30,9 @@ export default function ProductsSection() {
   const [customFieldValues, setCustomFieldValues] = useState<{ [key: number]: string | boolean }>({});
 
   // Sponsor plan selection state
-  const [selectedSponsorPlan, setSelectedSponsorPlan] = useState<string>("starter-sponsor");
+  const [selectedSponsorPlan] = useState<string>("starter-sponsor");
+  // Contact modal state
+  const [isContactModalOpen, setContactModalOpen] = useState(false);
 
   // Dynamically update the sponsor-me button price for Snipcart
   // This effect ensures the data-item-price attribute and dataset.itemPrice are always correct for the selected plan.
@@ -196,8 +199,6 @@ export default function ProductsSection() {
     ? products.find(p => p.category === "sponsor-me") || rawProduct
     : rawProduct;
 
-  // Find the sponsor-me product (for dynamic plan mapping)
-  const sponsorMe = products.find(p => p.id === "sponsor-me");
   const snipcartPrice = useMemo(() => {
     if (!product) return "0.00";
     return (
@@ -457,65 +458,25 @@ export default function ProductsSection() {
                       ))}
                     </ul>
                     {tier.id === "official-brand-partner" ? (
-                      <a
-                        href="mailto:collab@mudderfuger.ai"
-                        className="bg-black text-white px-4 py-2 rounded font-arial-bold inline-block"
+                      <button
+                        type="button"
+                        onClick={() => setContactModalOpen(true)}
+                        className="font-arial-bold bg-black text-white px-4 py-2 rounded uppercase hover:bg-gray-800"
                       >
-                        Inquire
-                      </a>
+                        Contact Us
+                      </button>
                     ) : (
                       <button
-                        id={`select-plan-${tier.id}`}
                         type="button"
-                        className={`
-                          font-arial-bold
-                          border-2
-                          ${selectedSponsorPlan === tier.id
-                            ? "bg-black text-white border-black"
-                            : "bg-white text-black border-gray-300 hover:border-black"}
-                          px-4
-                          py-2
-                          rounded
-                          mt-2
-                          uppercase
-                          cursor-pointer
-                          transition-all
-                        `}
-                        onClick={() => setSelectedSponsorPlan(tier.id)}
-                        aria-pressed={selectedSponsorPlan === tier.id}
+                        onClick={() => setContactModalOpen(true)}
+                        className="font-arial-bold bg-black text-white px-4 py-2 rounded uppercase hover:bg-gray-800"
                       >
-                        {selectedSponsorPlan === tier.id ? "Selected" : "Choose Plan"}
+                        Contact Us
                       </button>
                     )}
                   </div>
                 ))}
               </div>
-              {/* Single Add to Cart Button */}
-              <button
-                className="snipcart-add-item snipcart-checkout font-arial-bold bg-black text-white px-6 py-3 rounded mt-6 uppercase"
-                data-item-id="sponsor-me"
-                data-item-name="Sponsor Me"
-                data-item-url="/"
-                data-item-description="Pick your sponsor level and get Mudderfuged."
-                data-item-selected-plan={selectedSponsorPlan}
-                data-item-price={(() => {
-                  const planProduct = products.find(p => p.id === selectedSponsorPlan);
-                  return (planProduct?.itemPrice ?? planProduct?.price ?? 0).toFixed(2);
-                })()}
-                {
-                  ...(sponsorMe?.availablePlans || []).reduce((attrs, plan, i) => {
-                    const idx = i + 1;
-                    attrs[`data-plan${idx}-id`] = plan.id;
-                    attrs[`data-plan${idx}-name`] = plan.name;
-                    attrs[`data-plan${idx}-frequency`] = plan.frequency;
-                    attrs[`data-plan${idx}-interval`] = String(plan.interval);
-                    attrs[`data-plan${idx}-price`] = String(plan.itemPrice);
-                    return attrs;
-                  }, {} as Record<string, string>)
-                }
-              >
-                Add to Cart
-              </button>
             </>
           ) : (
             <>
@@ -653,6 +614,8 @@ export default function ProductsSection() {
             </>
           )}
         </div>
+        {/* Contact Modal for sponsor-me plans */}
+        <ContactModal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)} />
       </div>
     </div>
   );
