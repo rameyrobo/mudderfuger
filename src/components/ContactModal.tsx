@@ -20,7 +20,7 @@ function ContactModal({ isOpen, onClose }: ContactModalProps) {
   return (
     <div className="font-arial fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
       <div className="font-arial uppercase bg-white text-black rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h2>Contact Us</h2>
+        <h2 className="text-3xl mb-7 font-bold">Contact Us</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <label htmlFor="name" className="font-arial block mb-1 font-medium">Name:</label>
           <input
@@ -62,8 +62,8 @@ function ContactModal({ isOpen, onClose }: ContactModalProps) {
           {errors.message && <p className="text-red-600 text-sm mt-1">{errors.message.message}</p>}
 
           <div className="flex justify-end space-x-2">
-            <button type="submit" className="font-arial uppercase bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Submit</button>
-            <button type="button" onClick={onClose} className="font-arial uppercase border border-gray-400 px-4 py-2 rounded hover:bg-gray-100">Cancel</button>
+            <button type="submit" className="font-arial uppercase bg-black text-white px-4 py-2 font-bold rounded hover:bg-gray-800 cursor-pointer">Submit</button>
+            <button type="button" onClick={onClose} className="font-arial uppercase border border-gray-400 px-4 py-2 rounded hover:bg-gray-100 cursor-pointer font-bold">Cancel</button>
           </div>
         </form>
       </div>
