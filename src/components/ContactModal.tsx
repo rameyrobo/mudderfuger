@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-function ContactModal({ isOpen, onClose }) {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+type ContactModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
 
-  const onSubmit = (data) => {
+type FormValues = { name: string; email: string; message: string };
+function ContactModal({ isOpen, onClose }: ContactModalProps) {
+  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
+
+  const onSubmit = (data: { name: string; email: string; message: string }) => {
     // Handle form submission here (e.g., send data to a server)
     console.log(data);
     onClose(); // Close the modal after submission
