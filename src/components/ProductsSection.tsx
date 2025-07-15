@@ -411,7 +411,11 @@ export default function ProductsSection() {
           opacity-100 
           mt-3
           px-3
-          py-2"
+          py-2
+          hover:invert
+          hover:text-red-700
+          transition-all
+          "
           aria-label="Close"
         >
         <span className="back-buton-arrow relative font-extrabold text-3xl bottom-px -top-0.5">⬅ </span> 
