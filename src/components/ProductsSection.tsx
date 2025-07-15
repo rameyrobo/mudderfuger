@@ -255,6 +255,7 @@ export default function ProductsSection() {
           className="group relative flex items-center justify-center h-[47vh] bg-black text-white overflow-hidden outline-none"
           onMouseLeave={() => handleMouseLeave(idx)}
           onClick={() => {
+            setContactModalOpen(false); // Close contact modal if open
             setModalImage(imageAssignments[idx]);
             setModalIdx(idx);
             // Change the image assignment right away
@@ -268,6 +269,7 @@ export default function ProductsSection() {
             }
           }}
           onFocus={() => {
+            setContactModalOpen(false); // Close contact modal if open
             setModalImage(imageAssignments[idx]);
             setModalIdx(idx);
             // Change the image assignment right away
@@ -329,7 +331,7 @@ export default function ProductsSection() {
               <button
                 className="
                   font-arial-bold
-                  snipcart-add-item
+                  uppercase
                   opacity-0 
                   group-hover:max-h-96
                   group-hover:opacity-95
@@ -395,18 +397,25 @@ export default function ProductsSection() {
         <button
           onClick={() => handleModalClose()}
           className="
-          font-arial-bold
-          absolute 
-          top-px  
-          right-3 
-          text-4xl 
-          font-light 
-          z-20 
-          cursor-pointer 
-          text-black"
+          font-arial-bold  
+          absolute   
+          top-px
+          uppercase    
+          text-4xl   
+          font-light   
+          z-20   
+          cursor-pointer   
+          text-black  
+          bg-white  
+          text-center  
+          opacity-100 
+          mt-3
+          px-3
+          py-2"
           aria-label="Close"
         >
-          ×
+        <span className="back-buton-arrow relative font-extrabold text-3xl bottom-px -top-0.5">⬅ </span> 
+        Back
         </button>
         {product?.id !== "sponsor-me" && (
           <div className="w-full md:w-5/12 lg:w-7/12 flex justify-center">
@@ -416,7 +425,7 @@ export default function ProductsSection() {
                 alt=""
                 width={600}
                 height={800}
-                className="w-full max-h-96 md:max-h-[80vh] object-contain rounded mb-4 md:mb-0"
+                className="w-full max-h-96 md:max-h-[80vh] object-contain mb-4 md:mb-0"
               />
             )}
           </div>
