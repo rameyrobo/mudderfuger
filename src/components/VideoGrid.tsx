@@ -18,6 +18,16 @@ export default function VideoGrid({
   const [hoverTimeMap, setHoverTimeMap] = useState<{ [key: number]: number }>({});
   const hoverRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
   const [localIsMuted, setLocalIsMuted] = useState<boolean>(isMuted);
+  const [preferWebm, setPreferWebm] = useState(false);
+
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    const isFirefox = ua.toLowerCase().includes('firefox');
+    if (isSafari || isFirefox) {
+      setPreferWebm(true);
+    }
+  }, []);
 
   useLayoutEffect(() => {
     Object.values(hoverRefs.current).forEach(video => {
@@ -102,14 +112,20 @@ export default function VideoGrid({
                   hoverRefs.current[video.id] = el;
                 }}
                 muted={localIsMuted}
-                preload="metadata"
+                preload="preload"
                 playsInline
                 onContextMenu={(e) => e.preventDefault()}
                 className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
                 onTouchStart={() => handleMouseEnter(video.id)}
               >
-                <source src={video.url} type="video/mp4" />
-                <source src={video.url.replace('.mp4', '.webm')} type="video/webm" />
+                <source
+                  src={
+                    preferWebm
+                      ? video.url.replace('.mp4', '.webm')
+                      : video.url
+                  }
+                  type={preferWebm ? 'video/webm' : 'video/mp4'}
+                />
               </video>
               <div className="absolute top-2 right-2 z-20 cursor-pointer" onClick={handleMuteToggle}>
                 {localIsMuted ? (
@@ -148,8 +164,14 @@ export default function VideoGrid({
               e.currentTarget.currentTime = time;
             }}
           >
-            <source src={selectedVideo} type="video/mp4" />
-            <source src={selectedVideo?.replace('.mp4', '.webm')} type="video/webm" />
+            <source
+              src={
+                preferWebm
+                  ? selectedVideo?.replace('.mp4', '.webm')
+                  : selectedVideo
+              }
+              type={preferWebm ? 'video/webm' : 'video/mp4'}
+            />
             
           </video>
         </div>
