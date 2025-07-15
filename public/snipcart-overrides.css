@@ -135,9 +135,7 @@ span.snipcart__font--secondary.snipcart__font--regular,
   color: #000 !important;
   border-color: #333 !important;
 }
-.snipcart-item-quantity.snipcart-item-line__quantity {
-  display: none;
-}
+
 .snipcart-custom-field-wrapper__input.snipcart__font--secondary.snipcart__font--std {
   max-width: calc(var(--spacing) * 24);
 }
