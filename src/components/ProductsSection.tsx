@@ -438,7 +438,7 @@ export default function ProductsSection() {
         <div className={`flex flex-col items-start ${product?.category === 'sponsor-me' ? 'w-full' : 'w-full md:w-7/12 lg:w-5/12'}`}>
           {product?.category === "sponsor-me" ? (
             <>
-              <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+              <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 text-left pt-28 md:mt-96 lg:pt-9 lg:mt-0">
              {modalImage && (
               <Image
                 src={modalImage}
@@ -468,7 +468,7 @@ export default function ProductsSection() {
                     </p>
                     <ul className="font-arial text-sm mb-6 list-disc list-inside">
                       {tier.includes.map((item, i) => (
-                        <li key={i} className="leading-8">{item}</li>
+                        <li key={i} className="leading-8 pl-[19.8px] indent-[-21.1px]">{item}</li>
                       ))}
                     </ul>
                     {tier.id === "official-brand-partner" ? (
