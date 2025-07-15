@@ -412,11 +412,12 @@ export default function ProductsSection() {
           mt-3
           px-3
           py-2
+          rounded-sm
           hover:invert
           hover:text-red-700
           transition-all
           "
-          aria-label="Close"
+          aria-label="Back to Products"
         >
         <span className="back-buton-arrow relative font-extrabold text-3xl bottom-px -top-0.5">⬅ </span> 
         Back
@@ -474,7 +475,7 @@ export default function ProductsSection() {
                       <button
                         type="button"
                         onClick={() => setContactModalOpen(true)}
-                        className="font-arial-bold bg-black text-white px-4 py-2 rounded uppercase hover:bg-gray-800"
+                        className="font-arial-bold bg-black text-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer"
                       >
                         Contact Us
                       </button>
@@ -482,7 +483,7 @@ export default function ProductsSection() {
                       <button
                         type="button"
                         onClick={() => setContactModalOpen(true)}
-                        className="font-arial-bold bg-black text-white px-4 py-2 rounded uppercase hover:bg-gray-800"
+                        className="font-arial-bold bg-black text-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer"
                       >
                         Contact Us
                       </button>
