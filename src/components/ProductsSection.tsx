@@ -477,7 +477,7 @@ export default function ProductsSection() {
                         onClick={() => setContactModalOpen(true)}
                         className="font-arial-bold bg-black text-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer"
                       >
-                        Contact Us
+                        Contact Me
                       </button>
                     ) : (
                       <button
@@ -485,7 +485,7 @@ export default function ProductsSection() {
                         onClick={() => setContactModalOpen(true)}
                         className="font-arial-bold bg-black text-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer"
                       >
-                        Contact Us
+                        Contact Me
                       </button>
                     )}
                   </div>
