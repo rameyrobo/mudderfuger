@@ -23,9 +23,11 @@ export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const animatedTextRef = useRef<HTMLSpanElement>(null);
+  const heroVideoUrl = 'https://mudderfuger.b-cdn.net/_vids/1_intro.mp4'
 
   const [isMuted, setIsMuted] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [preferWebm, setPreferWebm] = useState<null | boolean>(null);
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -34,6 +36,17 @@ export default function HomePage() {
       setIsMuted(newMuted);
     }
   };
+
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    const isFirefox = ua.toLowerCase().includes('firefox');
+    if (isSafari || isFirefox) {
+      setPreferWebm(true);
+    } else {
+      setPreferWebm(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!sentinelRef.current || !videoRef.current) return;
@@ -84,23 +97,25 @@ export default function HomePage() {
   return (
     <main className="bg-black text-white min-h-screen">
       <section ref={heroRef} className="w-full h-screen relative overflow-hidden">
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted={isMuted}
-          playsInline
-          className="absolute w-full h-full object-cover"
-        >
-          <source
-            src="https://mudderfuger.b-cdn.net/_vids/1_intro.mp4"
-            type="video/mp4"
-          />
-          <source
-            src="https://mudderfuger.b-cdn.net/_vids/1_intro.webm"
-            type="video/webm"
-          />
-        </video>
+        {preferWebm !== null && (
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            muted={isMuted}
+            playsInline
+            className="absolute w-full h-full object-cover"
+          >
+            <source
+              src={
+                preferWebm
+                  ? heroVideoUrl.replace('.mp4', '.webm')
+                  : heroVideoUrl
+              }
+              type={preferWebm ? 'video/webm' : 'video/mp4'}
+            />
+          </video>
+        )}
 
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
           <h1 className="font-arial text-3xl md:text-7xl font-extrabold uppercase tracking-tighter xl:text-8xl">
