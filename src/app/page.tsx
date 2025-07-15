@@ -7,23 +7,25 @@ import ScrollingBannerProds from "../components/ScrollingBannerProds"
 import VideoGrid from "../components/VideoGrid";
 import ProductsSection from "../components/ProductsSection";
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
+import ContactModal from "../components/ContactModal";
 
 export default function HomePage() {
   const [videos, setVideos] = useState<Video[]>([]);
-    useEffect(() => {
-      async function fetchVideos() {
-        const res = await fetch('/api/videos');
-        const data = await res.json();
-        setVideos(data);
-      }
-      fetchVideos();
-    }, []);
+  useEffect(() => {
+    async function fetchVideos() {
+      const res = await fetch('/api/videos');
+      const data = await res.json();
+      setVideos(data);
+    }
+    fetchVideos();
+  }, []);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const animatedTextRef = useRef<HTMLSpanElement>(null);
 
   const [isMuted, setIsMuted] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -104,11 +106,15 @@ export default function HomePage() {
           <h1 className="font-arial text-3xl md:text-7xl font-extrabold uppercase tracking-tighter xl:text-8xl">
             <span ref={animatedTextRef} className="text-red-500 opacity-95">Mudderfuger</span>
           </h1>
-          <Navbar onNavClick={() => {
-            if (videoRef.current && !videoRef.current.paused) {
-              videoRef.current.pause();
-            }
-          }} />
+          <Navbar
+            onNavClick={() => {
+              if (videoRef.current && !videoRef.current.paused) {
+                videoRef.current.pause();
+              }
+            }}
+            onContactClick={() => setIsModalOpen(true)}
+          />
+          <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
           <button
             onClick={toggleMute}
             className="font-arial bg-transparent text-white px-3 py-1 rounded hover:bg-black/80 transition-colors duration-300 tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4 translate-1.5 md:translate-x-4"
