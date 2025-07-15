@@ -12,7 +12,7 @@ export default function Navbar({
         <a href="#be-mf" onClick={onNavClick} className="font-arial-bold text-white focus:bg-black/90 focus-within:bg-black/90 hover:bg-black/90 transition-all text-xl px-5 py-1.5 rounded-sm tracking-wide focus:underline focus-within:underline hover:underline leading-4">Be a MF</a>
         <button
           onClick={onContactClick}
-          className="font-arial-bold uppercase text-white focus:bg-black/90 focus-within:bg-black/90 hover:bg-black/90 transition-all text-xl px-5 py-1.5 rounded-sm tracking-wide focus:underline focus-within:underline hover:underline leading-4"
+          className="font-arial-bold uppercase text-white focus:bg-black/90 focus-within:bg-black/90 hover:bg-black/90 transition-all text-xl px-5 py-1.5 rounded-sm tracking-wide focus:underline focus-within:underline hover:underline leading-4 cursor-pointer"
         >
           Contact
         </button>
