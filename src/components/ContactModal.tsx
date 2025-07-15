@@ -30,7 +30,7 @@ function ContactModal({ isOpen, onClose }: ContactModalProps) {
           />
           {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>}
 
-          <label htmlFor="email" className="font-arial block mb-1 font-medium">Email:</label>
+          <label htmlFor="email" className="font-arial uppercase block mb-1 font-medium">Email:</label>
           <input
             id="email"
             type="email"
@@ -45,7 +45,15 @@ function ContactModal({ isOpen, onClose }: ContactModalProps) {
           />
           {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>}
 
-          <label htmlFor="message" className="font-arial block mb-1 font-medium">Message:</label>
+          <label htmlFor="subject" className="font-arial uppercase block mb-1 font-medium">Subject:</label>
+          <input
+            id="name"
+            {...register('name', { required: 'Name is required' })}
+            className="font-arial w-full border border-gray-300 rounded px-3 py-2"
+          />
+          {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>}
+
+          <label htmlFor="message" className="font-arial uppercase block mb-1 font-medium">Message:</label>
           <textarea
             id="message"
             {...register('message', { required: 'Message is required' })}
@@ -54,8 +62,8 @@ function ContactModal({ isOpen, onClose }: ContactModalProps) {
           {errors.message && <p className="text-red-600 text-sm mt-1">{errors.message.message}</p>}
 
           <div className="flex justify-end space-x-2">
-            <button type="submit" className="font-arial bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Submit</button>
-            <button type="button" onClick={onClose} className="font-arial border border-gray-400 px-4 py-2 rounded hover:bg-gray-100">Cancel</button>
+            <button type="submit" className="font-arial uppercase bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Submit</button>
+            <button type="button" onClick={onClose} className="font-arial uppercase border border-gray-400 px-4 py-2 rounded hover:bg-gray-100">Cancel</button>
           </div>
         </form>
       </div>
