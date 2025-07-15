@@ -14,8 +14,8 @@ export async function POST(req: NextRequest) {
 
   try {
     await Email.send({
-      to: 'creator@mudderfuger.ai',
-      from: { email: 'creator@mudderfuger.ai', name: 'Mudderfuger Contact Form' },
+      to: process.env.EMAIL_SENDER!,
+      from: { email: process.env.EMAIL_SENDER!, name: 'Mudderfuger Contact Form' },
       subject: `New Contact Form Submission from ${name}`,
       text: `
 Name: ${name}
