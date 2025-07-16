@@ -30,7 +30,6 @@ export default function HomePage() {
   const [preferWebm, setPreferWebm] = useState<null | boolean>(null);
   const [shouldPause, setShouldPause] = useState(false); // NEW: track if video should be paused by nav/modal
   const shouldPauseRef = useRef(shouldPause);
-  const isModalOpenRef = useRef(isModalOpen);
 
   const toggleMute = () => {
     if (videoRef.current) {
