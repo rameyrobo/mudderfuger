@@ -98,23 +98,28 @@ export default function HomePage() {
     <main className="bg-black text-white min-h-screen">
       <section ref={heroRef} className="w-full h-screen relative overflow-hidden">
         {preferWebm !== null && (
-          <video
-            ref={videoRef}
-            autoPlay
-            loop
-            muted={isMuted}
-            playsInline
-            className="absolute w-full h-full object-cover"
-          >
-            <source
-              src={
-                preferWebm
-                  ? heroVideoUrl.replace('.mp4', '.webm')
-                  : heroVideoUrl
-              }
-              type={preferWebm ? 'video/webm' : 'video/mp4'}
-            />
-          </video>
+          <picture>
+            <source srcSet="/mudderfuger-thumbnail.avif" type="image/avif" />
+            <source srcSet="/mudderfuger-thumbnail.webp" type="image/webp" />
+            <video
+              ref={videoRef}
+              autoPlay
+              loop
+              muted={isMuted}
+              playsInline
+              poster="/mudderfuger-thumbnail.avif"
+              className="absolute w-full h-full object-cover"
+            >
+              <source
+                src={
+                  preferWebm
+                    ? heroVideoUrl.replace('.mp4', '.webm')
+                    : heroVideoUrl
+                }
+                type={preferWebm ? 'video/webm' : 'video/mp4'}
+              />
+            </video>
+          </picture>
         )}
 
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
