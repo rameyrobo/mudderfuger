@@ -341,6 +341,11 @@ export default function ProductsSection() {
                   py-2 
                   rounded 
                   mt-2
+                  hover:invert
+                  border-white
+                  border-2
+                  hover:text-red-700
+                  hover:border-red-700
                   cursor-pointer
                   inline-block
                   snipcart-checkout"
@@ -397,33 +402,37 @@ export default function ProductsSection() {
         <button
           onClick={() => handleModalClose()}
           className="
-          font-arial-bold  
-          absolute   
-          top-px
-          uppercase    
-          text-4xl   
-          font-light   
-          z-20   
-          cursor-pointer   
-          text-black  
-          bg-white  
-          text-center  
-          opacity-100 
-          mt-3
-          px-3
-          py-2
-          rounded-sm
-          hover:invert
-          hover:text-red-700
-          transition-all
+          font-arial-bold 
+          absolute 
+          top-px 
+          uppercase     
+          text-xl    
+          font-light    
+          z-20    
+          cursor-pointer    
+          text-black   
+          bg-white 
+          border-white
+          border-2  
+          text-center   
+          opacity-100  
+          mt-3 
+          px-3 
+          py-2 
+          rounded-sm 
+          hover:invert 
+          hover:text-red-700 
+          hover:border-red-700
+          transition-all 
+          left-7
           "
           aria-label="Back to Products"
         >
-        <span className="back-buton-arrow relative font-extrabold text-3xl bottom-px -top-0.5">⬅ </span> 
+        <span className="back-buton-arrow relative font-extrabold text-base bottom-px top-0">⬅ </span> 
         Back
         </button>
         {product?.id !== "sponsor-me" && (
-          <div className="w-full md:w-5/12 lg:w-7/12 flex justify-center">
+          <div className="w-full md:w-5/12 lg:w-7/12 flex justify-center mt-16 lg:mt-0">
             {modalImage && (
               <Image
                 src={modalImage}
@@ -459,7 +468,7 @@ export default function ProductsSection() {
                         : "relative z-30"
                     }`}
                   >
-                    <h2 className="text-lg font-arial-bold mb-2">{tier.title}</h2>
+                    <h2 className="text-2xl uppercase font-arial-bold mb-2">{tier.title}</h2>
                     <p className="text-xl font-arial-bold mb-4">
                       {tier.id === "official-brand-partner" ? "$15k–$30k" : `$${tier.itemPrice ?? tier.price}`}{" "}
                       <span className="text-sm font-normal">
@@ -599,6 +608,9 @@ export default function ProductsSection() {
                   uppercase
                   cursor-pointer
                   snipcart-checkout
+                  hover:invert
+                  hover:text-red-700  
+                  transition-all
                 "
                 data-item-id={product?.id}
                 data-item-name={product?.title}
