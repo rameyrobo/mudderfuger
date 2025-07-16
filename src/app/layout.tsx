@@ -99,7 +99,7 @@ export default function RootLayout({
           hidden
           id="snipcart"
         ></div>
-        
+        <Analytics/>
       </body>
     </html>
   );
