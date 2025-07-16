@@ -484,17 +484,17 @@ export default function ProductsSection() {
                       <button
                         type="button"
                         onClick={() => setContactModalOpen(true)}
-                        className="font-arial-bold bg-black text-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer"
+                        className="font-arial-bold bg-black text-white border-2 border-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:border-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer transition-color ease-in-out hover:scale-105 transition-transform"
                       >
-                        Contact Me
+                        Contact MF
                       </button>
                     ) : (
                       <button
                         type="button"
                         onClick={() => setContactModalOpen(true)}
-                        className="font-arial-bold bg-black text-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer"
+                        className="font-arial-bold bg-black text-white border-2 border-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:border-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer transition-color ease-in-out hover:scale-105 transition-transform "
                       >
-                        Contact Me
+                        Contact MF
                       </button>
                     )}
                   </div>
@@ -609,7 +609,8 @@ export default function ProductsSection() {
                   cursor-pointer
                   snipcart-checkout
                   hover:invert
-                  hover:text-red-700  
+                  hover:text-red-700 
+                  hover:scale-105
                   transition-all
                 "
                 data-item-id={product?.id}
