@@ -1,64 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import ContactModal from './ContactModal';
 import Image from 'next/image';
-
-const imgs = [
-{ id: 1, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-9.jpg' },
-{ id: 2, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-10.jpg' },
-{ id: 3, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-11.jpg' },
-{ id: 4, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-12.jpg' },
-{ id: 5, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-14.jpg' },
-{ id: 6, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-15.jpg' },
-{ id: 7, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-16.jpg' },
-{ id: 8, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-2.jpg' },
-{ id: 9, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-3.jpg' },
-{ id: 10, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-5.jpg' },
-{ id: 11, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-6.jpg' },
-{ id: 12, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-7.jpg' },
-{ id: 13, url: 'https://mudderfuger.b-cdn.net/_imgs/mudderfugger-8.jpg' }
-,
-];
-const products = [
-    {
-      id: "brand-placement",
-      title: "Brand/Product Placement",
-      price: 300,
-      description: null,
-      includes: [
-        "Your brand or @name on a shirt, sign, wall, or background prop",
-        "Optional name drop or dialogue shoutout",
-        "Tag in caption + option for a collab post (if requested) - add on",
-        "1–3 high-res cinematic stills from the scene"
-      ]
-    },
-    {
-      id: "add-yourself",
-      title: "Add Yourself Into an Episode",
-      price: 100,
-      description: "Submit a photo. We’ll build you (or a friend) into a real Mudderfuger scene as a skater, partygoer, cop, or background freak.",
-      includes: [
-        "Custom AI version of your face",
-        "Name or @handle used in the skit",
-        "Tag in caption + option for a collab post - add on"
-      ]
-    },
-    {
-      id: "submit-song",
-      title: "Submit a Song",
-      price: 150,
-      description: null,
-      includes: [
-        "At least 8–10 seconds of your music in a real skit",
-        "Tag in caption + option for a collab post - add on"
-      ]
-    },
-    {
-      id: "collab-post",
-      title: "📩 Collab Post Listing",
-      price: 50,
-      description: "Be added as a collaborator on the Instagram  (shows up on your page too). Only available with a Brand, Character, or Song package.",
-      includes: null
-    },
-  ];
+import { imgs } from '@/data/imgs';
+import { products } from '@/data/products';
 
 // Helper to get N unique random images from the pool
 function getNUniqueRandomImages(
@@ -82,6 +26,62 @@ export default function ProductsSection() {
   const [modalIdx, setModalIdx] = useState<number | null>(null);
   const [modalImage, setModalImage] = useState<string | null>(null);
 
+  // State to track custom field values for the modal product
+  const [customFieldValues, setCustomFieldValues] = useState<{ [key: number]: string | boolean }>({});
+
+  // Sponsor plan selection state
+  const [selectedSponsorPlan] = useState<string>("starter-sponsor");
+  // Contact modal state
+  const [isContactModalOpen, setContactModalOpen] = useState(false);
+
+  // Dynamically update the sponsor-me button price for Snipcart
+  // This effect ensures the data-item-price attribute and dataset.itemPrice are always correct for the selected plan.
+  useEffect(() => {
+    const sponsorButton = document.querySelector<HTMLButtonElement>('.snipcart-add-item[data-item-id="sponsor-me"]');
+    const selectedPlan = products.find(p => p.id === selectedSponsorPlan);
+    if (sponsorButton && selectedPlan) {
+      const price = selectedPlan.itemPrice ?? selectedPlan.price ?? 0;
+      sponsorButton.dataset.itemPrice = price.toFixed(2);
+      (sponsorButton as unknown as { itemPrice: string }).itemPrice = price.toFixed(2);
+    }
+  }, [selectedSponsorPlan]);
+  // Log all products on mount
+  useEffect(() => {
+    console.log("All products:", products);
+  }, []);
+
+  // Open modal on page load and handle back/forward navigation for /products/:id
+  useEffect(() => {
+    const path = window.location.pathname;
+    const match = path.match(/^\/products\/([^/]+)$/);
+    if (match) {
+      const productId = match[1];
+      const idx = products.findIndex(p => p.id === productId);
+      if (idx !== -1) {
+        setModalIdx(idx);
+        setModalImage(getNUniqueRandomImages(imgs, products.length)[idx]);
+      }
+    }
+
+    const handlePopState = () => {
+      const newPath = window.location.pathname;
+      const match = newPath.match(/^\/products\/([^/]+)$/);
+      if (match) {
+        const productId = match[1];
+        const idx = products.findIndex(p => p.id === productId);
+        if (idx !== -1) {
+          setModalIdx(idx);
+          setModalImage(getNUniqueRandomImages(imgs, products.length)[idx]);
+        }
+      } else {
+        setModalIdx(null);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   useEffect(() => {
     setImageAssignments(getNUniqueRandomImages(imgs, products.length));
   }, []);
@@ -93,6 +93,58 @@ export default function ProductsSection() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
+  }, [modalIdx]);
+
+  // Update browser URL to reflect selected product when modal is open
+  useEffect(() => {
+    if (modalIdx !== null) {
+      const productSlug = products[modalIdx]?.id;
+      if (productSlug) {
+        const newUrl = `/products/${productSlug}`;
+        window.history.pushState({}, '', newUrl);
+      }
+    } else {
+      // Reset back to root or previous section
+      const isSponsorPage = window.location.pathname.startsWith('/products/');
+      if (isSponsorPage) {
+        window.history.pushState({}, '', '/');
+      }
+    }
+  }, [modalIdx]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    if (modalIdx !== null) {
+      document.body.classList.add('overflow-y-hidden');
+    } else {
+      document.body.classList.remove('overflow-y-hidden');
+    }
+
+    return () => {
+      document.body.classList.remove('overflow-y-hidden');
+    };
+  }, [modalIdx]);
+
+  useEffect(() => {
+    // Reset custom field values when modal changes
+    if (modalIdx !== null) {
+      const product = products[modalIdx];
+      const initialValues: { [key: number]: string | boolean } = {};
+      if (product.customFields) {
+        product.customFields.forEach((field, index) => {
+          if (field.type === 'checkbox') {
+            initialValues[index] = false;
+          } else if (field.type === 'dropdown') {
+            const options = field.options ? field.options.split('|') : [];
+            initialValues[index] = options.length > 0 ? options[0] : '';
+          }
+        });
+      }
+      setCustomFieldValues(initialValues);
+    } else {
+      setCustomFieldValues({});
+    }
   }, [modalIdx]);
 
   const handleMouseLeave = (idx: number) => {
@@ -111,14 +163,91 @@ export default function ProductsSection() {
     }, 0);
   };
 
+
+
   const handleModalClose = () => {
     setModalIdx(null);
     setModalImage(null);
+    setTimeout(() => {
+    window.location.href = '/#be-mf';
+  }, 10)
+};
+
+  const handleCustomFieldChange = (index: number, value: string | boolean) => {
+    const field = product?.customFields?.[index];
+
+    if (field?.type === 'checkbox') {
+      const options = field.options?.split('|') ?? [];
+      const selectedValue = value
+        ? options.find(opt => opt.startsWith('true'))
+        : options.find(opt => opt.startsWith('false'));
+      setCustomFieldValues(prev => ({
+        ...prev,
+        [index]: selectedValue || '',
+      }));
+    } else {
+      setCustomFieldValues(prev => ({
+        ...prev,
+        [index]: value,
+      }));
+    }
   };
 
-  return (
-    <div className="w-full grid grid-cols-2 gap-0">
-      {products.map((product, idx) => (
+  // Modal product and price calculation hooks
+  const rawProduct = modalIdx !== null ? products[modalIdx] : null;
+  const product = rawProduct?.id === "sponsor-me"
+    ? products.find(p => p.category === "sponsor-me") || rawProduct
+    : rawProduct;
+
+  const snipcartPrice = useMemo(() => {
+    if (!product) return "0.00";
+    return (
+      (product.itemPrice ?? product.price) +
+      Object.entries(customFieldValues).reduce((acc, [indexStr, val]) => {
+        const index = parseInt(indexStr);
+        const field = product.customFields?.[index];
+        return acc + extractPrice(val, field?.options);
+      }, 0)
+    ).toFixed(2);
+  }, [customFieldValues, product]);
+
+  function extractPrice(value: string | boolean, label?: string): number {
+    if (typeof value === 'boolean' && value && label) {
+      const match = label.match(/\[\+?(-?\d+(\.\d{1,2})?)\]/);
+      return match ? parseFloat(match[1]) : 0;
+    }
+    if (typeof value === 'string') {
+      const match = value.match(/\[\+?(-?\d+(\.\d{1,2})?)\]/);
+      return match ? parseFloat(match[1]) : 0;
+    }
+    return 0;
+  }
+
+  // Effect to update custom field values on the Buy Now button directly
+  useEffect(() => {
+    const buyNowButton = document.querySelector('button.snipcart-add-item');
+
+    if (!buyNowButton || !product || !product.customFields) return;
+
+    product.customFields.forEach((field, index) => {
+      const value = customFieldValues[index];
+
+      if (field.type === 'checkbox') {
+        const isTrue = typeof value === 'string' && value.startsWith('true');
+        buyNowButton.setAttribute(`data-item-custom${index + 1}-value`, isTrue ? 'true' : 'false');
+      } else if (field.type === 'dropdown') {
+        const stringVal = typeof value === 'string' ? value.split('[')[0] : '';
+        buyNowButton.setAttribute(`data-item-custom${index + 1}-value`, stringVal);
+      }
+    });
+  }, [customFieldValues, product]);
+
+  if (modalIdx === null) {
+    return (
+      <div className="w-full grid grid-cols-2 gap-0">
+        {products
+          .filter(p => p.id === "sponsor-me" || !["starter-sponsor", "monthly-main-sponsor", "official-brand-partner"].includes(p.id))
+          .map((product, idx) => (
         <div
           key={product.id}
           id={product.id}
@@ -126,6 +255,7 @@ export default function ProductsSection() {
           className="group relative flex items-center justify-center h-[47vh] bg-black text-white overflow-hidden outline-none"
           onMouseLeave={() => handleMouseLeave(idx)}
           onClick={() => {
+            setContactModalOpen(false); // Close contact modal if open
             setModalImage(imageAssignments[idx]);
             setModalIdx(idx);
             // Change the image assignment right away
@@ -139,6 +269,7 @@ export default function ProductsSection() {
             }
           }}
           onFocus={() => {
+            setContactModalOpen(false); // Close contact modal if open
             setModalImage(imageAssignments[idx]);
             setModalIdx(idx);
             // Change the image assignment right away
@@ -164,34 +295,7 @@ export default function ProductsSection() {
           {/* Solid color overlay */}
           <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-80 transition-opacity z-10" />
             <div className="text-center px-4 relative z-20 max-w-[90%] group-hover:z-60">
-              <h3 className="
-                font-arial-bold
-                text-center  
-                text-black  
-                bg-white
-                font-bold  
-                uppercase
-                tracking-wide  
-                transition-all bg-black 
-                justify-self-center
-                px-3.5
-                py-4   
-                leading-6
-                rounded-sm 
-                text-base
-                group-hover:text-lg
-                group-hover:bg-transparent
-                group-hover:text-white
-                group-hover:bg-transparent
-                group-hover:leading-6
-                md:group-hover:leading-10
-                md:group-hover:text-4xl
-                sm:leading-8
-                md:text-xl
-                md:px-4
-                md:leading-7
-                lg:text-2xl
-                lg:px-8
+              <h3 className=" font-arial-bold text-center text-black bg-white font-bold uppercase tracking-wide transition-all bg-black justify-self-center px-3.5 py-4 leading-6 rounded-sm text-base group-hover:text-lg group-hover:bg-transparent group-hover:text-white group-hover:bg-transparent group-hover:leading-6 md:group-hover:leading-10 md:group-hover:text-4xl sm:leading-8 md:text-xl md:px-4 md:leading-7 lg:text-2xl lg:px-8
                 ">
                   {product.title}
               </h3>
@@ -223,58 +327,11 @@ export default function ProductsSection() {
                   {product.description}
                   </p>
                 )}
-                {product.includes && product.includes.length > 0 && (
-                  <ul className="list-disc list-inside text-sm mb-4 text-left mx-auto max-w-[90%]">
-                    {product.includes.map((item, i) => (
-                      <li 
-                        className="
-                        font-arial
-                        text-xs
-                        lg:text-base 
-                        mb-1 
-                        max-w-max
-                        pl-[20px]
-                        indent-[-18px]
-                        lg:indent-[-24px]"
-                        key={i}
-                      >
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </div>
               <button
                 className="
                   font-arial-bold
-                  snipcart-add-item
-                  opacity-0 
-                  group-hover:max-h-96
-                  group-hover:opacity-95
-                  bg-white 
-                  text-black 
-                  px-4 
-                  py-2 
-                  rounded 
-                  mt-2
-                  cursor-pointer
-                  hidden
                   uppercase
-                  lg:inline-block
-                  snipcart-checkout"
-                data-item-id={product.id}
-                data-item-name={product.title}
-                data-item-price={product.price.toFixed(2)}
-                data-item-url="/"
-                data-item-description={product.description || ""}
-                tabIndex={-1}
-              >
-                Add to Cart
-              </button>
-              <button
-                className="
-                  font-arial-bold
-                  snipcart-add-item
                   opacity-0 
                   group-hover:max-h-96
                   group-hover:opacity-95
@@ -284,15 +341,31 @@ export default function ProductsSection() {
                   py-2 
                   rounded 
                   mt-2
+                  hover:invert
+                  border-white
+                  border-2
+                  hover:text-red-700
+                  hover:border-red-700
                   cursor-pointer
                   inline-block
-                  lg:hidden
                   snipcart-checkout"
                 data-item-id={product.id}
                 data-item-name={product.title}
-                data-item-price={product.price.toFixed(2)}
+                data-item-price={(product.itemPrice ?? product.price ?? 0).toFixed(2)}
                 data-item-url="/"
+                data-item-max-quantity="1"
+                data-item-stackable="always"
                 data-item-description={product.description || ""}
+                {...(product.customFields?.[0] && {
+                  'data-item-custom1-name': product.customFields[0].name,
+                  'data-item-custom1-type': product.customFields[0].type,
+                  'data-item-custom1-options': product.customFields[0].options,
+                })}
+                {...(product.customFields?.[1] && {
+                  'data-item-custom2-name': product.customFields[1].name,
+                  'data-item-custom2-type': product.customFields[1].type,
+                  'data-item-custom2-options': product.customFields[1].options,
+                })}
                 tabIndex={-1}
               >
                 See Details
@@ -300,70 +373,277 @@ export default function ProductsSection() {
             </div>
           </div>
       ))}
-      {modalIdx !== null && (
-      <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/90 transition-all lg:hidden">
-        <div className="absolute inset-0" onClick={() => handleModalClose()}></div>
-        <div className="relative max-w-lg w-full mx-4 bg-black text-white rounded-lg shadow-2xl p-6 z-10 flex flex-col items-center">
-          <button
-            onClick={() => handleModalClose()}
-            className="
-            font-arial-bold
-            absolute 
-            -top-2.5 
-            right-2 
-            text-4xl 
-            font-light 
-            z-20 
-            cursor-pointer 
-            text-white"
-            aria-label="Close"
-          >
-            ×
-          </button>
-          {modalImage && (
-            <Image
-              src={modalImage}
-              alt=""
-              width={600}
-              height={800}
-              className="w-full max-h-70 object-contain rounded mb-4"
-            />
-          )}
-          <h3 className="text-2xl font-bold mb-2 font-arial-bold uppercase">{products[modalIdx].title}</h3>
-          {products[modalIdx].description && (
-            <p className="mb-2 text-base font-arial">{products[modalIdx].description}</p>
-          )}
-          {products[modalIdx].includes && products[modalIdx].includes.length > 0 && (
-            <ul className="list-disc list-inside text-sm mb-4 text-left mx-auto max-w-[90%]">
-              {products[modalIdx].includes.map((item, i) => (
-                <li key={i} className="font-arial mb-2 pl-[19.8px] indent-[-21.1px]">{item}</li>
-              ))}
-            </ul>
-          )}
-          <button
-            className="
-              font-arial-bold
-              snipcart-add-item
-              bg-white 
-              text-black 
-              px-4 
-              py-2 
-              rounded 
-              mt-2
-              cursor-pointer
-              snipcart-checkout
-            "
-            data-item-id={products[modalIdx].id}
-            data-item-name={products[modalIdx].title}
-            data-item-price={products[modalIdx].price.toFixed(2)}
-            data-item-url="/"
-            data-item-description={products[modalIdx].description || ""}
-          >
-            Buy Now
-          </button>
-        </div>
       </div>
-    )}
+    );
+  }
+  // Modal render
+  return (
+    <div className="fixed top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0 opacity-[98]">
+      <div className="absolute top-0 left-0 w-full min-h-full bg-white/90 z-[-1]" onClick={() => handleModalClose()}></div>
+      <div className="
+      relative 
+      w-full 
+      h-full 
+      mx-0 
+      bg-white 
+      text-black 
+      rounded-lg 
+      shadow-2xl 
+      p-9
+      md:px-16 
+      2xl:px-64 
+      z-10 
+      flex 
+      flex-col 
+      md:flex-row 
+      items-center 
+      gap-8 
+      overflow-y-scroll">
+        <button
+          onClick={() => handleModalClose()}
+          className="
+          font-arial-bold 
+          absolute 
+          top-px 
+          uppercase     
+          text-xl    
+          font-light    
+          z-20    
+          cursor-pointer    
+          text-black   
+          bg-white 
+          border-white
+          border-2  
+          text-center   
+          opacity-100  
+          mt-3 
+          px-3 
+          py-2 
+          rounded-sm 
+          hover:invert 
+          hover:text-red-700 
+          hover:border-red-700
+          transition-all 
+          left-7
+          "
+          aria-label="Back to Products"
+        >
+        <span className="back-buton-arrow relative font-extrabold text-base bottom-px top-0">⬅ </span> 
+        Back
+        </button>
+        {product?.id !== "sponsor-me" && (
+          <div className="w-full md:w-5/12 lg:w-7/12 flex justify-center mt-16 lg:mt-0">
+            {modalImage && (
+              <Image
+                src={modalImage}
+                alt=""
+                width={600}
+                height={800}
+                className="w-full max-h-96 md:max-h-[80vh] object-contain mb-4 md:mb-0"
+              />
+            )}
+          </div>
+        )}
+        <div className={`flex flex-col items-start ${product?.category === 'sponsor-me' ? 'w-full' : 'w-full md:w-7/12 lg:w-5/12'}`}>
+          {product?.category === "sponsor-me" ? (
+            <>
+              <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 text-left pt-28 md:mt-96 lg:pt-9 lg:mt-0">
+             {modalImage && (
+              <Image
+                src={modalImage}
+                alt=""
+                width={600}
+                height={800}
+                className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0"
+              />
+            )}
+                {products
+                  .filter(p => p.category === "sponsor-me" && typeof p.price === "number")
+                  .map((tier) => (
+                  <div
+                    key={tier.id}
+                    className={`border border-gray-300 p-6 rounded-lg bg-white shadow transition-all z-1 opacity-90 ${
+                      selectedSponsorPlan === tier.id
+                        ? "border-black ring-2 ring-black relative z-30"
+                        : "relative z-30"
+                    }`}
+                  >
+                    <h2 className="text-2xl uppercase font-arial-bold mb-2">{tier.title}</h2>
+                    <p className="text-xl font-arial-bold mb-4">
+                      {tier.id === "official-brand-partner" ? "$15k–$30k" : `$${tier.itemPrice ?? tier.price}`}{" "}
+                      <span className="text-sm font-normal">
+                        {tier.id === "official-brand-partner" ? "/year" : "/month"}
+                      </span>
+                    </p>
+                    <ul className="font-arial text-sm mb-6 list-disc list-inside">
+                      {tier.includes.map((item, i) => (
+                        <li key={i} className="leading-8 pl-[19.8px] indent-[-21.1px]">{item}</li>
+                      ))}
+                    </ul>
+                    {tier.id === "official-brand-partner" ? (
+                      <button
+                        type="button"
+                        onClick={() => setContactModalOpen(true)}
+                        className="font-arial-bold bg-black text-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer"
+                      >
+                        Contact Me
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setContactModalOpen(true)}
+                        className="font-arial-bold bg-black text-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer"
+                      >
+                        Contact Me
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 className="text-l text-2xl font-bold mb-2 font-arial-bold uppercase max-w-xl">{product?.title}</h1>
+              {(() => {
+                const field1 = product?.customFields?.[0];
+                // const field2 = product?.customFields?.[1]; <-- might add back in later
+                const val1 = customFieldValues[0];
+                const val2 = customFieldValues[1];
+
+                const isTrue = typeof val1 === 'string' && val1.startsWith('true');
+                const option1Text = isTrue ? field1?.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '').trim() : '';
+                let option2Text = '';
+                if (typeof val2 === 'string' && !val2.startsWith('0')) {
+                  const count = val2.split('[')[0];
+                  const plural = count === '1' ? 'revision' : 'revisions';
+                  option2Text = `${count} ${plural}`;
+                }
+
+                const parts = [];
+                if (option1Text) parts.push(option1Text);
+                if (option2Text) parts.push(option2Text);
+
+                return parts.length > 0 ? (
+                  <h2 className="font-arial-bold text-base text-black mb-4">
+                    w/ {parts.join(' and ')}
+                  </h2>
+                ) : null;
+              })()}
+              <div className="price-data flex flex-row content-start items-center justify-around w-full">
+                <p className="text-xl font-semibold font-arial mb flex-1">${snipcartPrice}</p>
+                {/* Custom Fields Form */}
+                {product?.customFields && product.customFields.length > 0 && (
+                  <form className="w-full max-w-none text-left flex flex-row items-center content-end justify-evenly">
+                    {product.customFields.map((field, index) => {
+                      if (field.type === 'checkbox') {
+                        const options = field.options?.split('|') ?? [];
+                        const trueOption = options.find(opt => opt.startsWith('true')) || '';
+                        return (
+                          <label key={index} className="flex items-center mb-2 font-arial text-base cursor-pointer max-w-32 leading-[1.3]">
+                            <input
+                              type="checkbox"
+                              checked={customFieldValues[index] === trueOption}
+                              onChange={e => handleCustomFieldChange(index, e.target.checked)}
+                              className="mr-2"
+                            />
+                            {field.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '')}
+                            <span className="ml-1 text-sm text-gray-600">
+                              {field.name.match(/\[\+(\d+(\.\d{1,2})?)\]/)?.[0]}
+                            </span>
+                          </label>
+                        );
+                      } else if (field.type === 'dropdown') {
+                        const options = field.options ? field.options.split('|') : [];
+                        return (
+                          <label key={index} className="block mb-2 font-arial text-base flex-1 self-auto grow-0 shrink basis-3/12 translate-y-1">
+                            <span className="block mb-1">{field.name}</span>
+                            <select
+                              value={
+                                typeof customFieldValues[index] === 'string'
+                                  ? customFieldValues[index]
+                                  : options.length > 0
+                                    ? options[0]
+                                    : ''
+                              }
+                              onChange={e => handleCustomFieldChange(index, e.target.value)}
+                              className="w-full px-2 rounded text-black max-w-12"
+                            >
+                              {options.map((option, i) => {
+                                const match = option.match(/^(.+?)\[\+\d+(\.\d{1,2})?\]$/);
+                                const label = match ? match[1] : option;
+                                return (
+                                  <option key={i} value={option}>{label.trim()}</option>
+                                );
+                              })}
+                            </select>
+                          </label>
+                        );
+                      }
+                      return null;
+                    })}
+                  </form>
+                )}
+              </div>
+              {product?.description && (
+                <p className="mb-4 max-w-sm text-base font-arial">{product.description}</p>
+              )}
+              {product?.includes && product.includes.length > 0 && (
+                <ul className="list-disc list-inside text-sm mb-4 text-left ml-6 mr-auto">
+                  {product.includes.map((item, i) => (
+                    <li key={i} className="font-arial mb-2 pl-[19.8px] indent-[-21.1px]">{item}</li>
+                  ))}
+                </ul>
+              )}
+              <button
+                className="
+                  font-arial-bold
+                  snipcart-add-item
+                  bg-white 
+                  border-2
+                  text-black 
+                  px-4 
+                  py-2 
+                  rounded
+                  mt-2
+                  uppercase
+                  cursor-pointer
+                  snipcart-checkout
+                  hover:invert
+                  hover:text-red-700  
+                  transition-all
+                "
+                data-item-id={product?.id}
+                data-item-name={product?.title}
+                data-item-price={product?.price}
+                data-item-url="/"
+                data-item-max-quantity="1"
+                data-item-stackable="always"
+                data-item-description={product?.description || ""}
+                {
+                  ...((product?.customFields || []).reduce((acc, field, i) => {
+                    acc[`data-item-custom${i + 1}-name`] = field.name;
+                    acc[`data-item-custom${i + 1}-type`] = field.type;
+                    if (field.options) acc[`data-item-custom${i + 1}-options`] = field.options;
+                    const val = customFieldValues[i];
+                    if (typeof val === 'boolean') {
+                      acc[`data-item-custom${i + 1}-value`] = val ? 'true' : 'false';
+                    } else if (typeof val === 'string') {
+                      const stripped = val.split('[')[0]; // remove price annotation
+                      acc[`data-item-custom${i + 1}-value`] = stripped;
+                    }
+                    return acc;
+                  }, {} as Record<string, string>))
+                }
+              >
+                Add to Cart
+              </button>
+            </>
+          )}
+        </div>
+        {/* Contact Modal for sponsor-me plans */}
+        <ContactModal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)} />
+      </div>
     </div>
   );
 }
+  

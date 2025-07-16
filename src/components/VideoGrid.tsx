@@ -1,31 +1,33 @@
 import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 
-const videos = [
-  { id: 1, title: 'ep1: INTRO', url:'https://mudderfuger.b-cdn.net/_vids/1_mudderfuger_intro.mp4' },
-  { id: 2, title: 'ep2: walking to the park', url: 'https://mudderfuger.b-cdn.net/_vids/2_walking_to_the_park.mp4' },
-  { id: 3, title: 'ep3: skatepark', url: 'https://mudderfuger.b-cdn.net/_vids/3_skatepark.mp4' },
-  { id: 4, title: 'ep4: dinner', url: 'https://mudderfuger.b-cdn.net/_vids/3.5_dinner.mp4' },
-  { id: 5, title: 'ep5: walking to work', url: 'https://mudderfuger.b-cdn.net/_vids/4_photogrpher_walking_to_work.mp4' },
-  { id: 6, title: 'ep6: donut shop', url: 'https://mudderfuger.b-cdn.net/_vids/5_donut_shop.mp4' },
-  { id: 7, title: 'ep7: jail', url: 'https://mudderfuger.b-cdn.net/_vids/6_jail_mudderfuger.mp4' },
-  { id: 8, title: 'ep8: phone in jail', url: 'https://mudderfuger.b-cdn.net/_vids/7_jail_phone_cops.mp4' },
-  { id: 9, title: 'ep9: out of jail', url: 'https://mudderfuger.b-cdn.net/_vids/8_mudderfuger_out_of_jail.mp4' },
-  { id: 10, title: 'ep10: out of jail pt2', url: 'https://mudderfuger.b-cdn.net/_vids/9_out_of_jail_selfi-hevc.mp4' },
-  { id: 11, title: 'ep11: police station', url: 'https://mudderfuger.b-cdn.net/_vids/10_police_station_skate.mp4' },
-  { id: 12, title: 'ep12: skatepark pt2', url: 'https://mudderfuger.b-cdn.net/_vids/11_mudderfuger_skate_part.mp4' },
-  { id: 13, title: 'ep13: wake up', url: 'https://mudderfuger.b-cdn.net/_vids/12_wake_up_mudderfuger.mp4' }
-];
+type Video = {
+  id: number;
+  title: string;
+  url: string;
+};
 
 export default function VideoGrid({
     isMuted,
+    videos
   }: {
     isMuted: boolean;
+    videos: Video[];
   }) {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [hoverTimeMap, setHoverTimeMap] = useState<{ [key: number]: number }>({});
   const hoverRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
   const [localIsMuted, setLocalIsMuted] = useState<boolean>(isMuted);
+  const [preferWebm, setPreferWebm] = useState(false);
+
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    const isFirefox = ua.toLowerCase().includes('firefox');
+    if (isSafari || isFirefox) {
+      setPreferWebm(true);
+    }
+  }, []);
 
   useLayoutEffect(() => {
     Object.values(hoverRefs.current).forEach(video => {
@@ -110,14 +112,20 @@ export default function VideoGrid({
                   hoverRefs.current[video.id] = el;
                 }}
                 muted={localIsMuted}
-                preload="metadata"
+                preload="preload"
                 playsInline
                 onContextMenu={(e) => e.preventDefault()}
                 className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
                 onTouchStart={() => handleMouseEnter(video.id)}
               >
-                <source src={video.url} type="video/mp4" />
-                <source src={video.url.replace('.mp4', '.webm')} type="video/webm" />
+                <source
+                  src={
+                    preferWebm
+                      ? video.url.replace('.mp4', '.webm')
+                      : video.url
+                  }
+                  type={preferWebm ? 'video/webm' : 'video/mp4'}
+                />
               </video>
               <div className="absolute top-2 right-2 z-20 cursor-pointer" onClick={handleMuteToggle}>
                 {localIsMuted ? (
@@ -156,8 +164,14 @@ export default function VideoGrid({
               e.currentTarget.currentTime = time;
             }}
           >
-            <source src={selectedVideo} type="video/mp4" />
-            <source src={selectedVideo?.replace('.mp4', '.webm')} type="video/webm" />
+            <source
+              src={
+                preferWebm
+                  ? selectedVideo?.replace('.mp4', '.webm')
+                  : selectedVideo
+              }
+              type={preferWebm ? 'video/webm' : 'video/mp4'}
+            />
             
           </video>
         </div>

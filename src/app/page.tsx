@@ -7,14 +7,27 @@ import ScrollingBannerProds from "../components/ScrollingBannerProds"
 import VideoGrid from "../components/VideoGrid";
 import ProductsSection from "../components/ProductsSection";
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
+import ContactModal from "../components/ContactModal";
 
 export default function HomePage() {
+  const [videos, setVideos] = useState<Video[]>([]);
+  useEffect(() => {
+    async function fetchVideos() {
+      const res = await fetch('/api/videos');
+      const data = await res.json();
+      setVideos(data);
+    }
+    fetchVideos();
+  }, []);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const animatedTextRef = useRef<HTMLSpanElement>(null);
+  const heroVideoUrl = 'https://mudderfuger.b-cdn.net/_vids/1_intro.mp4'
 
   const [isMuted, setIsMuted] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [preferWebm, setPreferWebm] = useState<null | boolean>(null);
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -23,6 +36,17 @@ export default function HomePage() {
       setIsMuted(newMuted);
     }
   };
+
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    const isFirefox = ua.toLowerCase().includes('firefox');
+    if (isSafari || isFirefox) {
+      setPreferWebm(true);
+    } else {
+      setPreferWebm(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!sentinelRef.current || !videoRef.current) return;
@@ -73,33 +97,39 @@ export default function HomePage() {
   return (
     <main className="bg-black text-white min-h-screen">
       <section ref={heroRef} className="w-full h-screen relative overflow-hidden">
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted={isMuted}
-          playsInline
-          className="absolute w-full h-full object-cover"
-        >
-          <source
-            src="https://mudderfuger.b-cdn.net/_vids/1_mudderfuger_intro.mp4"
-            type="video/mp4"
-          />
-          <source
-            src="https://mudderfuger.b-cdn.net/_vids/1_mudderfuger_intro.webm"
-            type="video/webm"
-          />
-        </video>
+        {preferWebm !== null && (
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            muted={isMuted}
+            playsInline
+            className="absolute w-full h-full object-cover"
+          >
+            <source
+              src={
+                preferWebm
+                  ? heroVideoUrl.replace('.mp4', '.webm')
+                  : heroVideoUrl
+              }
+              type={preferWebm ? 'video/webm' : 'video/mp4'}
+            />
+          </video>
+        )}
 
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
           <h1 className="font-arial text-3xl md:text-7xl font-extrabold uppercase tracking-tighter xl:text-8xl">
             <span ref={animatedTextRef} className="text-red-500 opacity-95">Mudderfuger</span>
           </h1>
-          <Navbar onNavClick={() => {
-            if (videoRef.current && !videoRef.current.paused) {
-              videoRef.current.pause();
-            }
-          }} />
+          <Navbar
+            onNavClick={() => {
+              if (videoRef.current && !videoRef.current.paused) {
+                videoRef.current.pause();
+              }
+            }}
+            onContactClick={() => setIsModalOpen(true)}
+          />
+          <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
           <button
             onClick={toggleMute}
             className="font-arial bg-transparent text-white px-3 py-1 rounded hover:bg-black/80 transition-colors duration-300 tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4 translate-1.5 md:translate-x-4"
@@ -119,11 +149,11 @@ export default function HomePage() {
       <section 
       className="pb-0 pt-9 md:pt-10 lg:pt-11 xl:pt-12"
       id="story-section">
-        <h2 className="text-2xl font-bold uppercase tracking-wide justify-self-center mb-px md:text-3xl lg:text-3xl xl:text-4xl">
+        <h2 className="text-2xl font-bold uppercase text-center tracking-wide justify-self-center mb-px md:text-3xl lg:text-3xl xl:text-4xl">
           MuddaFuger&rsquo;s Story
         </h2>
       <ScrollingBannerVids />
-      <VideoGrid isMuted={isMuted} />
+      <VideoGrid isMuted={isMuted} videos={videos} />
       </section>
 
       <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full overflow-x-hidden relative">
@@ -158,3 +188,9 @@ export default function HomePage() {
     </main>
   );
 }
+
+type Video = {
+  id: number;
+  title: string;
+  url: string;
+};
