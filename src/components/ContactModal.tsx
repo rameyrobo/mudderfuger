@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-
+import { useState } from 'react';
 type ContactModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -8,26 +8,34 @@ type ContactModalProps = {
 type FormValues = { name: string; email: string; message: string };
 function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const onSubmit = async (data: { name: string; email: string; message: string }) => {
+    setSubmitting(true);
+    setErrorMsg(null);
+    setSuccessMsg(null);
     try {
       const res = await fetch('/api/transactions/send-contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-
-      const result = await res.json();
-      if (result.success) {
-        alert('Message sent!');
-        onClose();
+      if (res.ok) {
+        setSuccessMsg('Message sent!');
+        setTimeout(() => {
+          setSuccessMsg(null);
+          onClose();
+        }, 1500);
       } else {
-        alert('Failed to send message. Please try again later.');
+        const result = await res.json();
+        setErrorMsg(result.error || 'Failed to send message.');
       }
-    } catch (error) {
-      alert('An error occurred. Please try again later.');
-      console.error(error);
+    } catch {
+      setErrorMsg('Network error.');
     }
+    setSubmitting(false);
   };
 
   if (!isOpen) return null;
@@ -60,17 +68,18 @@ function ContactModal({ isOpen, onClose }: ContactModalProps) {
           />
           {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>}
 
-
-          <label htmlFor="message" className="font-arial uppercase block mb-1 font-medium">Message:</label>
-          <textarea
-            id="message"
-            {...register('message', { required: 'Message is required' })}
+          <label htmlFor="subject" className="font-arial uppercase block mb-1 font-medium">Subject:</label>
+          <input
+            id="name"
+            {...register('name', { required: 'Name is required' })}
             className="font-arial w-full border border-gray-300 rounded px-3 py-2"
-          ></textarea>
-          {errors.message && <p className="text-red-600 text-sm mt-1">{errors.message.message}</p>}
-
+          />
+          {errorMsg && <p className="text-red-600 text-sm mt-1">{errorMsg}</p>}
+          {successMsg && <p className="text-green-600 text-sm mt-1">{successMsg}</p>}
           <div className="flex justify-end space-x-2">
-            <button type="submit" className="font-arial uppercase bg-black text-white px-4 py-2 font-bold rounded hover:bg-gray-800 cursor-pointer">Submit</button>
+            <button type="submit" disabled={submitting} className="font-arial uppercase bg-black text-white px-4 py-2 font-bold rounded hover:bg-gray-800 cursor-pointer">
+              {submitting ? 'Sending...' : 'Submit'}
+            </button>
             <button type="button" onClick={onClose} className="font-arial uppercase border border-gray-400 px-4 py-2 rounded hover:bg-gray-100 cursor-pointer font-bold">Cancel</button>
           </div>
         </form>
