@@ -12,6 +12,8 @@ export const metadata: Metadata = {
 };
 const anton = Anton({ weight: '400', subsets: ['latin'] })
 
+const ga4 = process.env.NEXT_PUBLIC_GA4 as string;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -24,18 +26,21 @@ export default function RootLayout({
         <link rel="preconnect" href="https://mudderfuger.b-cdn.net" />
         <link rel="preconnect" href="https://app.snipcart.com" />
         <link rel="preconnect" href="https://cdn.snipcart.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+
         <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=G-0LR2MFBB6L`}
-          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`}
+          strategy="lazyOnload"
         />
-        <Script id="ga4-init" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-0LR2MFBB6L', { page_path: window.location.pathname });
-        `}
+        <Script id="ga4-init" strategy="lazyOnload">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${ga4}', { page_path: window.location.pathname });
+          `}
         </Script>
+        
         <script defer
           dangerouslySetInnerHTML={{
             __html: `

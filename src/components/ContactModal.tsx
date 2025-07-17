@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+
 type ContactModalProps = {
   isOpen: boolean;
   onClose: () => void;
