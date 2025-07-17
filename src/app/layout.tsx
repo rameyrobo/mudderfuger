@@ -4,7 +4,7 @@ import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import LazyStylesheetLoader from '../components/LazyStylesheetLoader';
 import { Analytics } from "@vercel/analytics/next"
-
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Mudderfuger 🛹🍻",
@@ -24,6 +24,18 @@ export default function RootLayout({
         <link rel="preconnect" href="https://mudderfuger.b-cdn.net" />
         <link rel="preconnect" href="https://app.snipcart.com" />
         <link rel="preconnect" href="https://cdn.snipcart.com" />
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=G-0LR2MFBB6L`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-0LR2MFBB6L', { page_path: window.location.pathname });
+        `}
+        </Script>
         <script defer
           dangerouslySetInnerHTML={{
             __html: `
