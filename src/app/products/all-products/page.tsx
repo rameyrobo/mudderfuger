@@ -6,7 +6,7 @@ export default function AllProductsPage() {
       {/* Add Yourself */}
       <section className="mb-10 border-b pb-8">
         <h2 className="text-xl font-bold">{`Add Yourself Into an Episode`}</h2>
-        <p className="mb-2">{`$100 — Submit a photo. We’ll build you (or a friend) into a real Mudderfuger scene as a skater, partygoer, cop, or background freak.`}</p>
+        <p className="mb-2">$100 — Submit a photo. We&lsquo;ll build you (or a friend) into a real Mudderfuger scene as a skater, partygoer, cop, or background freak.</p>
         <ul className="mb-2 list-disc pl-5">
           <li>Custom AI version of your face</li>
           <li>Name or @handle used in the skit</li>
@@ -18,7 +18,7 @@ export default function AllProductsPage() {
           data-item-name="Add Yourself Into an Episode"
           data-item-price="100"
           data-item-url="/products/add-yourself"
-          data-item-description="Submit a photo. We’ll build you (or a friend) into a real Mudderfuger scene as a skater, partygoer, cop, or background freak."
+          data-item-description="Submit a photo. We&lsquo;ll build you (or a friend) into a real Mudderfuger scene as a skater, partygoer, cop, or background freak."
         >
           Buy Now
         </button>
@@ -27,9 +27,9 @@ export default function AllProductsPage() {
       {/* Submit Song / Artwork */}
       <section className="mb-10 border-b pb-8">
         <h2 className="text-xl font-bold">{`Submit a Song / Artwork`}</h2>
-        <p className="mb-2">{`$150 — Submit a song or custom artwork (like a PNG, logo, or shirt design). If Mudderfuger likes your submission, he'll wear it in an episode and feature it on his merch store.`}</p>
+        <p className="mb-2">$150 — Submit a song or custom artwork (like a PNG, logo, or shirt design). If Mudderfuger likes your submission, he&lsquo;ll wear it in an episode and feature it on his merch store.</p>
         <ul className="mb-2 list-disc pl-5">
-          <li>You'll get a shoutout as the artist</li>
+          <li>You&lsquo;ll get a shoutout as the artist</li>
           <li>Get your design included for sale on the website</li>
           <li>The shirt will be listed for a full month, so your own promo and shoutouts can help boost sales and your chances of getting paid.</li>
           <li>At least 8–10 seconds of your music in a real skit</li>
@@ -41,7 +41,7 @@ export default function AllProductsPage() {
           data-item-name="Submit a Song / Artwork"
           data-item-price="150"
           data-item-url="/products/submit-song"
-          data-item-description="Submit a song or custom artwork (like a PNG, logo, or shirt design). If Mudderfuger likes your submission, he'll wear it in an episode and feature it on his merch store."
+          data-item-description="Submit a song or custom artwork (like a PNG, logo, or shirt design). If Mudderfuger likes your submission, he&lsquo;ll wear it in an episode and feature it on his merch store."
         >
           Buy Now
         </button>
