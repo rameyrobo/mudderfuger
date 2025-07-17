@@ -350,7 +350,7 @@ export default function ProductsSection() {
                 data-item-id={product.id}
                 data-item-name={product.title}
                 data-item-price={(product.itemPrice ?? product.price ?? 0).toFixed(2)}
-                data-item-url='/'
+                data-item-url={product.url}
                 data-item-max-quantity="1"
                 data-item-stackable="always"
                 data-item-description={product.description || ""}
