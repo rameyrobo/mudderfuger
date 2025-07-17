@@ -35,7 +35,7 @@ export const products = [
     title: "Add Yourself Into an Episode",
     price: 100,
     description: "Submit a photo. We’ll build you (or a friend) into a real Mudderfuger scene as a skater, partygoer, cop, or background freak.",
-    url: "/products/add-yourself",
+    url: "/products/all-products",
     includes: [
       "Custom AI version of your face",
       "Name or @handle used in the skit",
@@ -47,7 +47,7 @@ export const products = [
     title: "Submit a Song / Artwork",
     price: 150,
     description: "Submit a song or custom artwork (like a PNG, logo, or shirt design). If Mudderfuger likes your submission, he'll wear it in an episode and feature it on his merch store.",
-    url: "/products/submit-song",
+    url: "/products/all-products",
     includes: [
       "You'll get a shoutout as the artist",
       "Get your design included for sale on the website",
@@ -61,7 +61,7 @@ export const products = [
     title: "PRODUCT COMMERCIAL",
     price: 500,
     description: "A standalone, high-quality Mudderfuger-style ad — no monthly commitment.",
-    url: "/products/product-commercial",
+    url: "/products/all-products",
     includes: [
         "1 custom AI skit/ad  (15-40 sec)",
         "Product is clearly featured with Mudderfuger’s signature chaos and humor",
