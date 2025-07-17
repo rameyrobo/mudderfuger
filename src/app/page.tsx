@@ -28,6 +28,8 @@ export default function HomePage() {
   const [isMuted, setIsMuted] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [preferWebm, setPreferWebm] = useState<null | boolean>(null);
+  const [shouldPause, setShouldPause] = useState(false); // NEW: track if video should be paused by nav/modal
+  const shouldPauseRef = useRef(shouldPause);
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -36,6 +38,17 @@ export default function HomePage() {
       setIsMuted(newMuted);
     }
   };
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    if (shouldPause || isModalOpen) {
+      videoRef.current.pause();
+    } else {
+      // Only play if in view (IntersectionObserver will handle this)
+      // Try to play, but browser may block if not in view
+      videoRef.current.play().catch(() => {});
+    }
+  }, [shouldPause, isModalOpen])
 
   useEffect(() => {
     const ua = navigator.userAgent;
@@ -48,35 +61,50 @@ export default function HomePage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!sentinelRef.current || !videoRef.current) return;
+  // Keep shouldPauseRef in sync with shouldPause
+useEffect(() => {
+  shouldPauseRef.current = shouldPause;
+}, [shouldPause]);
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const visiblePx = entry.intersectionRect.height;
-        const totalPx = entry.boundingClientRect.height;
-        const visibleRatio = visiblePx / totalPx;
+// IntersectionObserver: pause if out of view, play if in view and not paused by nav/modal
+useEffect(() => {
+  if (!sentinelRef.current || !videoRef.current) return;
 
-        if (visibleRatio <= 0.10) {
-          if (videoRef.current && !videoRef.current.paused) {
-            videoRef.current.pause();
-          }
-        } else {
-          if (videoRef.current && videoRef.current.paused) {
-            videoRef.current.play().catch(() => {});
-          }
-        }
-      },
-      {
-        root: null,
-        threshold: Array.from({ length: 101 }, (_, i) => i / 100),
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      const visiblePx = entry.intersectionRect.height;
+      const totalPx = entry.boundingClientRect.height;
+      const visibleRatio = visiblePx / totalPx;
+
+      // Always sync muted state before play/pause
+      if (videoRef.current) {
+        videoRef.current.muted = isMuted;
       }
-    );
 
-    observer.observe(sentinelRef.current);
+      if (visibleRatio <= 0.10) {
+        videoRef.current?.pause();
+      } else {
+        // Only play if not paused by nav/modal
+        if (!shouldPauseRef.current && !isModalOpen) {
+          videoRef.current?.play().catch(() => {});
+        }
+        // If shouldPause was set by nav, but user scrolled back, reset it
+        if (shouldPauseRef.current && !isModalOpen) {
+          setShouldPause(false);
+        }
+      }
+    },
+    {
+      root: null,
+      threshold: Array.from({ length: 101 }, (_, i) => i / 100),
+    }
+  );
 
-    return () => observer.disconnect();
-  }, []);
+  observer.observe(sentinelRef.current);
+
+  return () => observer.disconnect();
+}, [isModalOpen, isMuted]); 
+
 
   useEffect(() => {
     let hue = 0;
@@ -98,23 +126,28 @@ export default function HomePage() {
     <main className="bg-black text-white min-h-screen">
       <section ref={heroRef} className="w-full h-screen relative overflow-hidden">
         {preferWebm !== null && (
-          <video
-            ref={videoRef}
-            autoPlay
-            loop
-            muted={isMuted}
-            playsInline
-            className="absolute w-full h-full object-cover"
-          >
-            <source
-              src={
-                preferWebm
-                  ? heroVideoUrl.replace('.mp4', '.webm')
-                  : heroVideoUrl
-              }
-              type={preferWebm ? 'video/webm' : 'video/mp4'}
-            />
-          </video>
+          <picture>
+            <source srcSet="/mudderfuger-thumbnail.avif" type="image/avif" />
+            <source srcSet="/mudderfuger-thumbnail.webp" type="image/webp" />
+            <video
+              ref={videoRef}
+              autoPlay
+              loop
+              muted={isMuted}
+              playsInline
+              poster="/mudderfuger-thumbnail.avif"
+              className="absolute w-full h-full object-cover"
+            >
+              <source
+                src={
+                  preferWebm
+                    ? heroVideoUrl.replace('.mp4', '.webm')
+                    : heroVideoUrl
+                }
+                type={preferWebm ? 'video/webm' : 'video/mp4'}
+              />
+            </video>
+          </picture>
         )}
 
         <div className="relative z-10 flex flex-col items-center justify-center h-full">
@@ -122,23 +155,22 @@ export default function HomePage() {
             <span ref={animatedTextRef} className="text-red-500 opacity-95">Mudderfuger</span>
           </h1>
           <Navbar
-            onNavClick={() => {
-              if (videoRef.current && !videoRef.current.paused) {
-                videoRef.current.pause();
-              }
-            }}
+            onNavClick={() => setShouldPause(true)}
             onContactClick={() => setIsModalOpen(true)}
           />
-          <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          <ContactModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+          />
           <button
             onClick={toggleMute}
             className="font-arial bg-transparent text-white px-3 py-1 rounded hover:bg-black/80 transition-colors duration-300 tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4 translate-1.5 md:translate-x-4"
           >
             {isMuted ? (
-                  <SpeakerXMarkIcon className="h-8 w-8 text-white" />
-                ) : (
-                  <SpeakerWaveIcon className="h-8 w-8 text-white" />
-                )}
+              <SpeakerXMarkIcon className="h-8 w-8 text-white" />
+            ) : (
+              <SpeakerWaveIcon className="h-8 w-8 text-white" />
+            )}
           </button>
         </div>
 

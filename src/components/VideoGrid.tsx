@@ -29,6 +29,21 @@ export default function VideoGrid({
     }
   }, []);
 
+  useEffect(() => {
+    if (!selectedVideo) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        const modalVideo = document.querySelector('#modalVideo') as HTMLVideoElement;
+        modalVideo?.pause();
+        setSelectedVideo(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedVideo]);
+
   useLayoutEffect(() => {
     Object.values(hoverRefs.current).forEach(video => {
       if (video) {

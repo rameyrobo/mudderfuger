@@ -1,32 +1,24 @@
-// src/pages/api/send-contact.ts
-import { type NextRequest, NextResponse } from 'next/server';
-import Email from 'vercel-email';
+import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
 
-export const config = { runtime: 'edge' };
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function POST(req: NextRequest) {
-  if (req.method?.toUpperCase() !== 'POST') {
-    return NextResponse.json({ success: false, error: 'Method Not Allowed' }, { status: 405 });
+export async function POST(request: Request) {
+  const { name, email, message, phone } = await request.json();
+
+  // Type assertion ensures sender is treated as a string
+  const sender = process.env.EMAIL_SENDER as string;
+
+  const { data, error } = await resend.emails.send({
+    from: `Mudderfuger <${sender}>`,
+    to: [sender],
+    subject: `Contact Form Submission from ${name}`,
+    html: `<strong>From:</strong> ${name} (${email})<br/><strong>Phone:</strong> ${phone || ''}<br/><br/>${message}`,
+  });
+
+  if (error) {
+    return NextResponse.json({ error }, { status: 500 });
   }
 
-  const body = await req.json();
-  const { name, email, message } = body;
-
-  try {
-    await Email.send({
-      to: process.env.EMAIL_SENDER!,
-      from: { email: process.env.EMAIL_SENDER!, name: 'Mudderfuger Contact Form' },
-      subject: `New Contact Form Submission from ${name}`,
-      text: `
-Name: ${name}
-Email: ${email}
-Message: ${message}
-      `,
-    });
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
-  }
+  return NextResponse.json({ data });
 }
