@@ -135,8 +135,9 @@ export default function VideoGrid({
                 {!videoReady[video.id] && (
                   <picture>
                     <source srcSet={`${thumbBase}.avif`} type="image/avif" />
+                    <source srcSet={`${thumbBase}.webp`} type="image/webp" />
                     <img
-                      src={`${thumbBase}.webp`}
+                      src={`${thumbBase}.jpg`}
                       alt={video.title}
                       className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
                       draggable={false}
