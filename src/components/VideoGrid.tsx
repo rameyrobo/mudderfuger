@@ -134,8 +134,6 @@ export default function VideoGrid({
                 {/* Thumbnail: AVIF preferred, WebP fallback */}
                 {!videoReady[video.id] && (
                   <picture>
-                    <source srcSet={`${thumbBase}.avif`} type="image/avif" />
-                    <source srcSet={`${thumbBase}.webp`} type="image/webp" />
                     <img
                       src={`${thumbBase}.jpg`}
                       alt={video.title}
