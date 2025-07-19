@@ -19,6 +19,7 @@ export default function VideoGrid({
   const hoverRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
   const [localIsMuted, setLocalIsMuted] = useState<boolean>(isMuted);
   const [preferWebm, setPreferWebm] = useState(false);
+  const [videoReady, setVideoReady] = useState<{ [key: number]: boolean }>({});
 
   useEffect(() => {
     const ua = navigator.userAgent;
@@ -110,51 +111,76 @@ export default function VideoGrid({
     setSelectedVideo(url);
   };
 
+  const handleVideoReady = (videoId: number) => {
+    setVideoReady(prev => ({ ...prev, [videoId]: true }));
+  };
+
   return (
     <>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4 lg:px-20 sm:px-6 xl:px-52 max-w-[1530px] mx-auto">
-        {videos.map(video => (
-          <div
-            key={video.id}
-            className="relative group cursor-pointer"
-            onClick={() => handleClick(video.id, video.url)}
-            onMouseEnter={() => handleMouseEnter(video.id)}
-            onMouseLeave={() => handleMouseLeave(video.id)}
-          >
-            <div className="aspect-[4/5] w-full relative">
-              <video
-                ref={el => {
-                  hoverRefs.current[video.id] = el;
-                }}
-                muted={localIsMuted}
-                preload="preload"
-                playsInline
-                onContextMenu={(e) => e.preventDefault()}
-                className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
-                onTouchStart={() => handleMouseEnter(video.id)}
-              >
-                <source
-                  src={
-                    preferWebm
-                      ? video.url.replace('.mp4', '.webm')
-                      : video.url
-                  }
-                  type={preferWebm ? 'video/webm' : 'video/mp4'}
-                />
-              </video>
-              <div className="absolute top-2 right-2 z-20 cursor-pointer" onClick={handleMuteToggle}>
-                {localIsMuted ? (
-                  <SpeakerXMarkIcon className="h-6 w-6 text-white" />
-                ) : (
-                  <SpeakerWaveIcon className="h-6 w-6 text-white" />
+        {videos.map(video => {
+          const fileName = video.url.split('/').pop()?.replace(/\.(mp4|webm)$/i, '') || '';
+          const thumbBase = `https://mudderfuger.b-cdn.net/_thumbs/${fileName}`;
+
+          return (
+            <div
+              key={video.id}
+              className="relative group cursor-pointer"
+              onClick={() => handleClick(video.id, video.url)}
+              onMouseEnter={() => handleMouseEnter(video.id)}
+              onMouseLeave={() => handleMouseLeave(video.id)}
+            >
+              <div className="aspect-[4/5] w-full relative">
+                {/* Thumbnail: AVIF preferred, WebP fallback */}
+                {!videoReady[video.id] && (
+                  <picture>
+                    <source srcSet={`${thumbBase}.avif`} type="image/avif" />
+                    <img
+                      src={`${thumbBase}.webp`}
+                      alt={video.title}
+                      className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+                      draggable={false}
+                    />
+                  </picture>
                 )}
-              </div>
-              <div className="font-arial-bold absolute top-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-sm">
-                {video.title}
+                {/* Video: fades in on hover, stays after loaded */}
+                <video
+                  ref={el => {
+                    hoverRefs.current[video.id] = el;
+                  }}
+                  muted={localIsMuted}
+                  preload="preload"
+                  playsInline
+                  onCanPlay={() => handleVideoReady(video.id)}
+                  onContextMenu={(e) => e.preventDefault()}
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                    videoReady[video.id] ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  onTouchStart={() => handleMouseEnter(video.id)}
+                >
+                  <source
+                    src={
+                      preferWebm
+                        ? video.url.replace('.mp4', '.webm')
+                        : video.url
+                    }
+                    type={preferWebm ? 'video/webm' : 'video/mp4'}
+                  />
+                </video>
+                <div className="absolute top-2 right-2 z-20 cursor-pointer" onClick={handleMuteToggle}>
+                  {localIsMuted ? (
+                    <SpeakerXMarkIcon className="h-6 w-6 text-white" />
+                  ) : (
+                    <SpeakerWaveIcon className="h-6 w-6 text-white" />
+                  )}
+                </div>
+                <div className="font-arial-bold absolute top-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-sm">
+                  {video.title}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       {selectedVideo && (
         <div
