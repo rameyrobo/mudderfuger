@@ -138,7 +138,7 @@ export default function VideoGrid({
 
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4 lg:px-20 sm:px-6 xl:px-52 max-w-[1530px] mx-auto">
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-1 px-0.5 lg:px-20 px-2 md:px-6 xl:px-52 max-w-[1530px] mx-auto">
         {videos.map(video => {
           const fileName = video.url.split('/').pop()?.replace(/\.(mp4|webm)$/i, '') || '';
           const thumbBase = `https://mudderfuger.b-cdn.net/_thumbs/${fileName}`;
@@ -185,14 +185,14 @@ export default function VideoGrid({
                     type={preferWebm ? 'video/webm' : 'video/mp4'}
                   />
                 </video>
-                <div className="absolute top-2 right-2 z-20 cursor-pointer" onClick={handleMuteToggle}>
+                <div className="absolute bottom-2 right-2 z-20 cursor-pointer bg-neutral-800 p-0.5 rounded-full " onClick={handleMuteToggle}>
                   {localIsMuted ? (
                     <SpeakerXMarkIcon className="h-6 w-6 text-white" />
                   ) : (
                     <SpeakerWaveIcon className="h-6 w-6 text-white" />
                   )}
                 </div>
-                <div className="font-arial-bold absolute top-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-sm">
+                <div className="font-arial-bold absolute top-0 left-0 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-xs max-w-[88%] truncate">
                   {video.title}
                 </div>
               </div>
