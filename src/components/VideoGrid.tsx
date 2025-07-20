@@ -117,6 +117,14 @@ export default function VideoGrid({
   };
 
   const handleActivateVideo = (videoId: number) => {
+    // Pause all other videos, but don't reset their thumbnail state
+    Object.entries(hoverRefs.current).forEach(([id, el]) => {
+      if (el && parseInt(id) !== videoId) {
+        el.pause();
+        // Do NOT set videoActivated to false here
+      }
+    });
+
     setVideoActivated(prev => ({ ...prev, [videoId]: true }));
     const el = hoverRefs.current[videoId];
     if (el) el.play().catch(() => {});
@@ -146,7 +154,7 @@ export default function VideoGrid({
                     <img
                       src={`${thumbBase}.jpg`}
                       alt={video.title}
-                      className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+                      className="absolute inset-0 w-full h-full object-cover"
                       draggable={false}
                     />
                   </picture>
@@ -156,10 +164,9 @@ export default function VideoGrid({
                   muted={localIsMuted}
                   preload="preload"
                   playsInline
+                  poster={`${thumbBase}.jpg`}
                   onContextMenu={e => e.preventDefault()}
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-                    videoActivated[video.id] ? 'opacity-100' : 'opacity-0'
-                  }`}
+                  className={`absolute inset-0 w-full h-full object-cover ${videoActivated[video.id] ? 'opacity-100' : 'opacity-0'}`}
                   onTouchStart={() => handleActivateVideo(video.id)}
                   onMouseEnter={() => handleActivateVideo(video.id)}
                 >
