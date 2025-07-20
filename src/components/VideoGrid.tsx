@@ -58,23 +58,26 @@ export default function VideoGrid({
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target as HTMLVideoElement;
-          if (!entry.isIntersecting && !video.paused) {
+          if (!entry.isIntersecting) {
             video.pause();
+            console.log('Paused video', video.dataset.videoid);
           }
         });
       },
       {
-        rootMargin: '200px',
+        rootMargin: '40px',
         threshold: 0.1,
       }
     );
 
+    // Observe all current video elements
     Object.values(hoverRefs.current).forEach((video) => {
       if (video) observer.observe(video);
     });
 
+    // Clean up on unmount or when videos change
     return () => observer.disconnect();
-  }, []);
+  }, [videos, videoActivated]);
 
   const handleMuteToggle = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -167,6 +170,7 @@ export default function VideoGrid({
                 )}
                 <video
                   ref={el => { hoverRefs.current[video.id] = el; }}
+                  data-videoid={video.id}
                   muted={localIsMuted}
                   preload="preload"
                   playsInline
