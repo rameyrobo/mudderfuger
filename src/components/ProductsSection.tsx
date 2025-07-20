@@ -445,7 +445,7 @@ export default function ProductsSection() {
         <div className={`flex flex-col items-start ${product?.category === 'sponsor-me' ? 'w-full' : 'w-full md:w-7/12 lg:w-5/12'}`}>
           {product?.category === "sponsor-me" ? (
             <>
-              <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 text-left pt-28 md:mt-96 lg:pt-9 lg:mt-0">
+              <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 text-left pt-[50px] md:pt-[45rem] lg:pt-9">
              {modalImage && (
               <Image
                 src={modalImage}
