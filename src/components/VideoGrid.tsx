@@ -192,7 +192,7 @@ export default function VideoGrid({
                     <SpeakerWaveIcon className="h-6 w-6 text-white" />
                   )}
                 </div>
-                <div className="font-arial-bold absolute top-0 left-0 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-xs max-w-[88%] truncate">
+                <div className="font-arial-bold absolute top-0 left-0 bg-black bg-opacity-60 text-white px-2 py-1 text-xs lg:text-sm max-w-[88%] truncate">
                   {video.title}
                 </div>
               </div>
