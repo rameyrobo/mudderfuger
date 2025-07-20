@@ -19,7 +19,6 @@ export default function VideoGrid({
   const hoverRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
   const [localIsMuted, setLocalIsMuted] = useState<boolean>(isMuted);
   const [preferWebm, setPreferWebm] = useState(false);
-  const [videoReady, setVideoReady] = useState<{ [key: number]: boolean }>({});
   const [videoActivated, setVideoActivated] = useState<{ [key: number]: boolean }>({});
 
   useEffect(() => {
@@ -110,10 +109,6 @@ export default function VideoGrid({
       el.pause(); // pause thumbnail video before opening modal
     }
     setSelectedVideo(url);
-  };
-
-  const handleVideoReady = (videoId: number) => {
-    setVideoReady(prev => ({ ...prev, [videoId]: true }));
   };
 
   const handleActivateVideo = (videoId: number) => {
