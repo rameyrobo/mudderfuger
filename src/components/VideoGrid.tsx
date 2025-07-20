@@ -191,9 +191,9 @@ export default function VideoGrid({
                 </video>
                 <div className="absolute bottom-2 right-2 z-20 cursor-pointer bg-neutral-800 p-0.5 rounded-full " onClick={handleMuteToggle}>
                   {localIsMuted ? (
-                    <SpeakerXMarkIcon className="h-6 w-6 text-white" />
+                    <SpeakerXMarkIcon className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   ) : (
-                    <SpeakerWaveIcon className="h-6 w-6 text-white" />
+                    <SpeakerWaveIcon className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   )}
                 </div>
                 <div className="font-arial-bold absolute top-0 left-0 bg-black bg-opacity-60 text-white px-2 py-1 text-xs lg:text-sm max-w-[88%] truncate">
