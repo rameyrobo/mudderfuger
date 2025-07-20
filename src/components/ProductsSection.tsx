@@ -163,8 +163,6 @@ export default function ProductsSection() {
     }, 0);
   };
 
-
-
   const handleModalClose = () => {
     setModalIdx(null);
     setModalImage(null);
@@ -352,7 +350,7 @@ export default function ProductsSection() {
                 data-item-id={product.id}
                 data-item-name={product.title}
                 data-item-price={(product.itemPrice ?? product.price ?? 0).toFixed(2)}
-                data-item-url="/"
+                data-item-url={product.url}
                 data-item-max-quantity="1"
                 data-item-stackable="always"
                 data-item-description={product.description || ""}
@@ -447,7 +445,7 @@ export default function ProductsSection() {
         <div className={`flex flex-col items-start ${product?.category === 'sponsor-me' ? 'w-full' : 'w-full md:w-7/12 lg:w-5/12'}`}>
           {product?.category === "sponsor-me" ? (
             <>
-              <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 text-left pt-28 md:mt-96 lg:pt-9 lg:mt-0">
+              <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 text-left pt-[50px] md:pt-[45rem] lg:pt-9">
              {modalImage && (
               <Image
                 src={modalImage}
@@ -616,7 +614,7 @@ export default function ProductsSection() {
                 data-item-id={product?.id}
                 data-item-name={product?.title}
                 data-item-price={product?.price}
-                data-item-url="/"
+                data-item-url={product?.url}
                 data-item-max-quantity="1"
                 data-item-stackable="always"
                 data-item-description={product?.description || ""}

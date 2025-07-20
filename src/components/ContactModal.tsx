@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
 
 type ContactModalProps = {
   isOpen: boolean;
@@ -13,6 +14,18 @@ function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  // Add Escape key handler
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isOpen, onClose]);
 
   const onSubmit = async (data: { name: string; email: string; message: string }) => {
     setSubmitting(true);
