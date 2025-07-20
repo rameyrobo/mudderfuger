@@ -125,6 +125,17 @@ export default function VideoGrid({
     if (el) el.play().catch(() => {});
   };
 
+  useEffect(() => {
+    if (selectedVideo) {
+      setTimeout(() => {
+        const modalVideo = document.querySelector('#modalVideo') as HTMLVideoElement;
+        if (modalVideo) {
+          modalVideo.play().catch(() => {});
+        }
+      }, 100); // slight delay to ensure the element is mounted
+    }
+  }, [selectedVideo]);
+
   return (
     <>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4 lg:px-20 sm:px-6 xl:px-52 max-w-[1530px] mx-auto">
@@ -204,6 +215,7 @@ export default function VideoGrid({
             controlsList="nodownload"
             autoPlay
             muted={localIsMuted}
+            playsInline
             onContextMenu={(e) => e.preventDefault()}
             className="max-h-[80vh] max-w-[90vw] border-4 border-white rounded"
             onLoadedMetadata={(e) => {
