@@ -20,6 +20,7 @@ export default function VideoGrid({
   const [localIsMuted, setLocalIsMuted] = useState<boolean>(isMuted);
   const [preferWebm, setPreferWebm] = useState(false);
   const [videoReady, setVideoReady] = useState<{ [key: number]: boolean }>({});
+  const [videoActivated, setVideoActivated] = useState<{ [key: number]: boolean }>({});
 
   useEffect(() => {
     const ua = navigator.userAgent;
@@ -115,6 +116,12 @@ export default function VideoGrid({
     setVideoReady(prev => ({ ...prev, [videoId]: true }));
   };
 
+  const handleActivateVideo = (videoId: number) => {
+    setVideoActivated(prev => ({ ...prev, [videoId]: true }));
+    const el = hoverRefs.current[videoId];
+    if (el) el.play().catch(() => {});
+  };
+
   return (
     <>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4 lg:px-20 sm:px-6 xl:px-52 max-w-[1530px] mx-auto">
@@ -131,9 +138,11 @@ export default function VideoGrid({
               onMouseLeave={() => handleMouseLeave(video.id)}
             >
               <div className="aspect-[4/5] w-full relative">
-                {/* Thumbnail: AVIF preferred, WebP fallback */}
-                {!videoReady[video.id] && (
+                {/* Thumbnail: show until activated */}
+                {!videoActivated[video.id] && (
                   <picture>
+                    <source srcSet={`${thumbBase}.avif`} type="image/avif" />
+                    <source srcSet={`${thumbBase}.webp`} type="image/webp" />
                     <img
                       src={`${thumbBase}.jpg`}
                       alt={video.title}
@@ -142,20 +151,17 @@ export default function VideoGrid({
                     />
                   </picture>
                 )}
-                {/* Video: fades in on hover, stays after loaded */}
                 <video
-                  ref={el => {
-                    hoverRefs.current[video.id] = el;
-                  }}
+                  ref={el => { hoverRefs.current[video.id] = el; }}
                   muted={localIsMuted}
                   preload="preload"
                   playsInline
-                  onCanPlay={() => handleVideoReady(video.id)}
-                  onContextMenu={(e) => e.preventDefault()}
+                  onContextMenu={e => e.preventDefault()}
                   className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-                    videoReady[video.id] ? 'opacity-100' : 'opacity-0'
+                    videoActivated[video.id] ? 'opacity-100' : 'opacity-0'
                   }`}
-                  onTouchStart={() => handleMouseEnter(video.id)}
+                  onTouchStart={() => handleActivateVideo(video.id)}
+                  onMouseEnter={() => handleActivateVideo(video.id)}
                 >
                   <source
                     src={
