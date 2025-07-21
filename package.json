@@ -3,10 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev:turbo": "next dev --turbo"
   },
   "dependencies": {
     "@fontsource/anton": "^5.2.6",

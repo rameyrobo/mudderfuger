@@ -46,12 +46,10 @@ export const products = [
     id: "submit-song",
     title: "Submit a Song / Artwork",
     price: 150,
-    description: "Submit a song or custom artwork (like a PNG, logo, or shirt design). If Mudderfuger likes your submission, he'll wear it in an episode and feature it on his merch store.",
+    description: "Submit a song (mp3, wav, or aiff). I'll feature it in one of my IG Reels.",
     url: "/products/all-products",
     includes: [
       "You'll get a shoutout as the artist",
-      "Get your design included for sale on the website",
-      "The shirt will be listed for a full month, so your own promo and shoutouts can help boost sales and your chances of getting paid.",
       "At least 8–10 seconds of your music in a real skit",
       "Tag in caption + option for a collab post - add on"
     ]
