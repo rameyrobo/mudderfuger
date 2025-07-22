@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, useLayoutEffect } from 'react';
+import Image from 'next/image';
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 
 type Video = {
@@ -15,8 +16,37 @@ export default function VideoGrid({
     videos: Video[];
   }) {
   const [thumbnailsLoaded, setThumbnailsLoaded] = useState(false);
+  const [thumbFormat, setThumbFormat] = useState<'avif' | 'webp' | 'jpg' | null>(null);
   useEffect(() => {
-    setThumbnailsLoaded(true);
+    // Detect AVIF support first, then WebP, then fallback to JPG
+    const testAvif = () => {
+      return new Promise<boolean>(resolve => {
+        const avif = new window.Image();
+        avif.src = "data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAG1pZjFhdmlmAAACAGF2aWZtAAAAAAABAAEAAQAAAwAABAAAAAAQAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAABkZXNjAAAAAAAAAAEAAQAAADhhdmlmAAABAAEAAQAAAG1pZjFhdmlmAAACAGF2aWZtAAAAAAABAAEAAQAAAwAABAAAAAAQAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAABkZXNjAAAAAAAAAAEAAQAAADhhdmlmAAABAAEAAQAA";
+        avif.onload = avif.onerror = function () {
+          resolve(avif.width === 1);
+        };
+      });
+    };
+    const testWebp = () => {
+      return new Promise<boolean>(resolve => {
+        const webp = new window.Image();
+        webp.src = "data:image/webp;base64,UklGRiIAAABXRUJQVlA4TAYAAAAvAAAAAAfQ//73v/+BiOh/AAA=";
+        webp.onload = webp.onerror = function () {
+          resolve(webp.width === 1);
+        };
+      });
+    };
+    (async () => {
+      let format: 'avif' | 'webp' | 'jpg' = 'jpg';
+      if (await testAvif()) {
+        format = 'avif';
+      } else if (await testWebp()) {
+        format = 'webp';
+      }
+      setThumbFormat(format);
+      setThumbnailsLoaded(true);
+    })();
   }, []);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [hoverTimeMap, setHoverTimeMap] = useState<{ [key: number]: number }>({});
@@ -147,9 +177,12 @@ export default function VideoGrid({
     <>
       <div className="grid grid-cols-3 md:grid-cols-3 gap-1 px-0.5 lg:px-20 md:px-6 xl:px-52 max-w-[1530px] mx-auto">
         {videos.map(video => {
+          // Derive the base thumbnail URL for each video
           const fileName = video.url.split('/').pop()?.replace(/\.(mp4|webm)$/i, '') || '';
           const thumbBase = `https://mudderfuger.b-cdn.net/_thumbs/${fileName}`;
-
+          // Use detected format from state (set by useEffect)
+          const format = thumbFormat;
+          
           return (
             <div
               key={video.id}
@@ -159,18 +192,18 @@ export default function VideoGrid({
               onMouseLeave={() => handleMouseLeave(video.id)}
             >
               <div className="aspect-[4/5] w-full relative">
-                {/* Thumbnail: show until activated and after page load */}
-                {thumbnailsLoaded && !videoActivated[video.id] && (
-                  <picture>
-                    <source srcSet={`${thumbBase}.avif`} type="image/avif" />
-                    <source srcSet={`${thumbBase}.webp`} type="image/webp" />
-                    <img
-                      src={`${thumbBase}.jpg`}
-                      alt={video.title}
-                      className="absolute inset-0 w-full h-full object-cover"
-                      draggable={false}
-                    />
-                  </picture>
+                {/* Thumbnail: show until activated and after page load, only best format loaded */}
+                {thumbnailsLoaded && format && !videoActivated[video.id] && (
+                  <Image
+                    src={`${thumbBase}.${format}`}
+                    alt={video.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    draggable={false}
+                    priority={false}
+                    unoptimized={false}
+                  />
                 )}
                 <video
                   ref={el => { hoverRefs.current[video.id] = el; }}
