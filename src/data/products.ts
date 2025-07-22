@@ -44,7 +44,7 @@ export const products = [
   },
   {
     id: "submit-song",
-    title: "Submit a Song / Artwork",
+    title: "Submit a Song",
     price: 150,
     description: "Submit a song (mp3, wav, or aiff). I'll feature it in one of my IG Reels.",
     url: "/products/all-products",
