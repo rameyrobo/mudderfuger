@@ -14,6 +14,10 @@ export default function VideoGrid({
     isMuted: boolean;
     videos: Video[];
   }) {
+  const [thumbnailsLoaded, setThumbnailsLoaded] = useState(false);
+  useEffect(() => {
+    setThumbnailsLoaded(true);
+  }, []);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [hoverTimeMap, setHoverTimeMap] = useState<{ [key: number]: number }>({});
   const hoverRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
@@ -141,7 +145,7 @@ export default function VideoGrid({
 
   return (
     <>
-      <div className="grid grid-cols-3 md:grid-cols-3 gap-1 px-0.5 lg:px-20 px-2 md:px-6 xl:px-52 max-w-[1530px] mx-auto">
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-1 px-0.5 lg:px-20 md:px-6 xl:px-52 max-w-[1530px] mx-auto">
         {videos.map(video => {
           const fileName = video.url.split('/').pop()?.replace(/\.(mp4|webm)$/i, '') || '';
           const thumbBase = `https://mudderfuger.b-cdn.net/_thumbs/${fileName}`;
@@ -155,8 +159,8 @@ export default function VideoGrid({
               onMouseLeave={() => handleMouseLeave(video.id)}
             >
               <div className="aspect-[4/5] w-full relative">
-                {/* Thumbnail: show until activated */}
-                {!videoActivated[video.id] && (
+                {/* Thumbnail: show until activated and after page load */}
+                {thumbnailsLoaded && !videoActivated[video.id] && (
                   <picture>
                     <source srcSet={`${thumbBase}.avif`} type="image/avif" />
                     <source srcSet={`${thumbBase}.webp`} type="image/webp" />
