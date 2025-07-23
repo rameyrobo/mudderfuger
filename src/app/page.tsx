@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar"
 import ScrollingBannerVids from "../components/ScrollingBannerVids"
 import ScrollingBannerProds from "../components/ScrollingBannerProds"
-import VideoGrid from "../components/VideoGrid";
+import dynamic from "next/dynamic";
+const VideoGrid = dynamic(() => import("../components/VideoGrid"), { ssr: false });
 import ProductsSection from "../components/ProductsSection";
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 import ContactModal from "../components/ContactModal";
