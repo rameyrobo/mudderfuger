@@ -195,10 +195,16 @@ export default function VideoGrid({
                 {/* Thumbnail: show until activated and after page load, only best format loaded */}
                 {thumbnailsLoaded && format && !videoActivated[video.id] && (
                   <Image
-                    src={`${thumbBase}.${format}`}
+                    src={`${thumbBase}-1280.${format}`} // fallback srce
                     alt={video.title}
                     fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    srcSet={`
+                      ${thumbBase}-320.${format} 320w,
+                      ${thumbBase}-640.${format} 640w,
+                      ${thumbBase}-1280.${format} 1280w,
+                      ${thumbBase}-1920.${format} 1920w
+                    `}
                     className="absolute inset-0 w-full h-full object-cover"
                     draggable={false}
                     priority={false}
