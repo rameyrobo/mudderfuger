@@ -35,7 +35,7 @@ export default function VideoGrid({
     isMuted: boolean;
     videos: Video[];
   }) {
-  const thumbFormat: 'webp' = 'webp';
+  const thumbFormat = 'webp' as const;
   const thumbnailsLoaded = true;
   const thumbSize = useResponsiveThumbSize();
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
