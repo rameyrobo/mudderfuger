@@ -35,41 +35,9 @@ export default function VideoGrid({
     isMuted: boolean;
     videos: Video[];
   }) {
-  const [thumbnailsLoaded, setThumbnailsLoaded] = useState(false);
-  const [thumbFormat, setThumbFormat] = useState<'avif' | 'webp' | 'jpg' | null>(null);
+  const thumbFormat: 'webp' = 'webp';
+  const thumbnailsLoaded = true;
   const thumbSize = useResponsiveThumbSize();
-
-  useEffect(() => {
-    // Detect AVIF support first, then WebP, then fallback to JPG
-    const testAvif = () => {
-      return new Promise<boolean>(resolve => {
-        const avif = new window.Image();
-        avif.src = "data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAG1pZjFhdmlmAAACAGF2aWZtAAAAAAABAAEAAQAAAwAABAAAAAAQAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAABkZXNjAAAAAAAAAAEAAQAAADhhdmlmAAABAAEAAQAAAG1pZjFhdmlmAAACAGF2aWZtAAAAAAABAAEAAQAAAwAABAAAAAAQAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAABkZXNjAAAAAAAAAAEAAQAAADhhdmlmAAABAAEAAQAA";
-        avif.onload = avif.onerror = function () {
-          resolve(avif.width === 1);
-        };
-      });
-    };
-    const testWebp = () => {
-      return new Promise<boolean>(resolve => {
-        const webp = new window.Image();
-        webp.src = "data:image/webp;base64,UklGRiIAAABXRUJQVlA4TAYAAAAvAAAAAAfQ//73v/+BiOh/AAA=";
-        webp.onload = webp.onerror = function () {
-          resolve(webp.width === 1);
-        };
-      });
-    };
-    (async () => {
-      let format: 'avif' | 'webp' | 'jpg' = 'jpg';
-      if (await testAvif()) {
-        format = 'avif';
-      } else if (await testWebp()) {
-        format = 'webp';
-      }
-      setThumbFormat(format);
-      setThumbnailsLoaded(true);
-    })();
-  }, []);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [hoverTimeMap, setHoverTimeMap] = useState<{ [key: number]: number }>({});
   const hoverRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
@@ -202,9 +170,7 @@ export default function VideoGrid({
           // Derive the base thumbnail URL for each video
           const fileName = video.url.split('/').pop()?.replace(/\.(mp4|webm)$/i, '') || '';
           const thumbBase = `https://mudderfuger.b-cdn.net/_thumbs/${fileName}`;
-          // Use detected format from state (set by useEffect)
           const format = thumbFormat;
-          
           return (
             <div
               key={video.id}
@@ -217,7 +183,7 @@ export default function VideoGrid({
                 {/* Thumbnail: show until activated and after page load, only best format loaded */}
                 {thumbnailsLoaded && format && !videoActivated[video.id] && (
                   <Image
-                    src={`${thumbBase}-${thumbSize}.${format}`}
+                    src={`${thumbBase}-${thumbSize}.webp`}
                     alt={video.title}
                     fill
                     sizes="(max-width:450px) 150px, (max-width: 640px) 320px, (max-width: 1024px) 640px, (max-width: 1536px) 1280px, 1920px"
@@ -233,7 +199,7 @@ export default function VideoGrid({
                   muted={localIsMuted}
                   preload="preload"
                   playsInline
-                  poster={`${thumbBase}-${thumbSize}.${format}`}
+                  poster={`${thumbBase}-${thumbSize}.webp`}
                   onContextMenu={e => e.preventDefault()}
                   className={`absolute inset-0 w-full h-full object-cover ${videoActivated[video.id] ? 'opacity-100' : 'opacity-0'}`}
                   onTouchStart={() => handleActivateVideo(video.id)}
