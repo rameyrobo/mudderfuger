@@ -133,19 +133,13 @@ useEffect(() => {
     }
     const size = getBestThumbSize();
     videoRef.current.poster = `/mudderfuger-thumbnail-${size}.webp`;
-  }, [preferWebm, isMuted]);
+  }, [preferWebm, isMuted]);e
 
   return (
     <main className="bg-black text-white min-h-screen">
       <section ref={heroRef} className="w-full h-screen relative overflow-hidden">
         {preferWebm !== null && (
           <picture id="hero-picture">
-            <source
-              id="hero-srcset"
-              srcSet="/mudderfuger-thumbnail-320.webp 320w, /mudderfuger-thumbnail-640.webp 640w, /mudderfuger-thumbnail-1280.webp 1280w, /mudderfuger-thumbnail-1920.webp 1920w"
-              sizes="(max-width:450px) 320px, (max-width: 640px) 640px, (max-width: 1024px) 1280px, 1920px"
-              type="image/webp"
-            />
             {/* No <img> fallback, only responsive <source> */}
             <video
               ref={videoRef}
@@ -153,7 +147,6 @@ useEffect(() => {
               loop
               muted={isMuted}
               playsInline
-              poster="/mudderfuger-thumbnail-1280.webp"
               className="absolute w-full h-full object-cover"
               id="hero-video"
             >
