@@ -13,8 +13,9 @@ function useResponsiveThumbSize() {
 
   useEffect(() => {
     function updateSize() {
-      const w = window.innerWidth;
-      if (w < 640) setSize(320);
+      const w = window.innerWidth;    
+      if (w < 450) setSize(144);
+      else if (w < 640) setSize(320);
       else if (w < 1024) setSize(640);
       else if (w < 1536) setSize(1280);
       else setSize(1920);
@@ -219,7 +220,7 @@ export default function VideoGrid({
                     src={`${thumbBase}-${thumbSize}.${format}`}
                     alt={video.title}
                     fill
-                    sizes="(max-width: 640px) 320px, (max-width: 1024px) 640px, (max-width: 1536px) 1280px, 1920px"
+                    sizes="(max-width:450px) 150px, (max-width: 640px) 320px, (max-width: 1024px) 640px, (max-width: 1536px) 1280px, 1920px"
                     className="absolute inset-0 w-full h-full object-cover"
                     draggable={false}
                     priority={false}
