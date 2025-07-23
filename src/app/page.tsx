@@ -121,20 +121,6 @@ useEffect(() => {
     return () => cancelAnimationFrame(frameId);
   }, []);
 
-  // Dynamically set the video poster to the best size for the device
-  useEffect(() => {
-    if (!videoRef.current) return;
-    function getBestThumbSize() {
-      const w = window.innerWidth;
-      if (w < 450) return 320;
-      if (w < 640) return 640;
-      if (w < 1024) return 1280;
-      return 1920;
-    }
-    const size = getBestThumbSize();
-    videoRef.current.poster = `/mudderfuger-thumbnail-${size}.webp`;
-  }, [preferWebm, isMuted]);e
-
   return (
     <main className="bg-black text-white min-h-screen">
       <section ref={heroRef} className="w-full h-screen relative overflow-hidden">
