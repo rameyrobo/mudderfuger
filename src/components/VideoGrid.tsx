@@ -198,7 +198,7 @@ export default function VideoGrid({
                     src={`${thumbBase}-1280.${format}`}
                     alt={video.title}
                     fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 640px) 300px, (max-width: 1024px) 400px, 600px"
                     className="absolute inset-0 w-full h-full object-cover"
                     draggable={false}
                     priority={false}
