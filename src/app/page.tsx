@@ -109,7 +109,6 @@ useEffect(() => {
   useEffect(() => {
     let hue = 0;
     let frameId: number;
-
     const animateHue = () => {
       if (animatedTextRef.current) {
         animatedTextRef.current.style.color = `hsl(${hue}, 100%, 50%)`;
@@ -117,26 +116,45 @@ useEffect(() => {
       hue = (hue + .3) % 360;
       frameId = requestAnimationFrame(animateHue);
     };
-
     frameId = requestAnimationFrame(animateHue);
     return () => cancelAnimationFrame(frameId);
   }, []);
+
+  // Dynamically set the video poster to the best size for the device
+  useEffect(() => {
+    if (!videoRef.current) return;
+    function getBestThumbSize() {
+      const w = window.innerWidth;
+      if (w < 450) return 320;
+      if (w < 640) return 640;
+      if (w < 1024) return 1280;
+      return 1920;
+    }
+    const size = getBestThumbSize();
+    videoRef.current.poster = `/mudderfuger-thumbnail-${size}.webp`;
+  }, [preferWebm, isMuted]);
 
   return (
     <main className="bg-black text-white min-h-screen">
       <section ref={heroRef} className="w-full h-screen relative overflow-hidden">
         {preferWebm !== null && (
-          <picture>
-            <source srcSet="/mudderfuger-thumbnail.avif" type="image/avif" />
-            <source srcSet="/mudderfuger-thumbnail.webp" type="image/webp" />
+          <picture id="hero-picture">
+            <source
+              id="hero-srcset"
+              srcSet="/mudderfuger-thumbnail-320.webp 320w, /mudderfuger-thumbnail-640.webp 640w, /mudderfuger-thumbnail-1280.webp 1280w, /mudderfuger-thumbnail-1920.webp 1920w"
+              sizes="(max-width:450px) 320px, (max-width: 640px) 640px, (max-width: 1024px) 1280px, 1920px"
+              type="image/webp"
+            />
+            {/* No <img> fallback, only responsive <source> */}
             <video
               ref={videoRef}
               autoPlay
               loop
               muted={isMuted}
               playsInline
-              poster="/mudderfuger-thumbnail.avif"
+              poster="/mudderfuger-thumbnail-1280.webp"
               className="absolute w-full h-full object-cover"
+              id="hero-video"
             >
               <source
                 src={

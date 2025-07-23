@@ -14,8 +14,7 @@ function useResponsiveThumbSize() {
   useEffect(() => {
     function updateSize() {
       const w = window.innerWidth;    
-      if (w < 450) setSize(144);
-      else if (w < 640) setSize(320);
+      if (w < 640) setSize(320);
       else if (w < 1024) setSize(640);
       else if (w < 1536) setSize(1280);
       else setSize(1920);
