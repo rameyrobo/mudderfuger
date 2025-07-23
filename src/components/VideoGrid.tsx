@@ -8,6 +8,25 @@ type Video = {
   url: string;
 };
 
+function useResponsiveThumbSize() {
+  const [size, setSize] = useState(1280); // default
+
+  useEffect(() => {
+    function updateSize() {
+      const w = window.innerWidth;
+      if (w < 640) setSize(320);
+      else if (w < 1024) setSize(640);
+      else if (w < 1536) setSize(1280);
+      else setSize(1920);
+    }
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
+  return size;
+}
+
 export default function VideoGrid({
     isMuted,
     videos
@@ -17,6 +36,8 @@ export default function VideoGrid({
   }) {
   const [thumbnailsLoaded, setThumbnailsLoaded] = useState(false);
   const [thumbFormat, setThumbFormat] = useState<'avif' | 'webp' | 'jpg' | null>(null);
+  const thumbSize = useResponsiveThumbSize();
+
   useEffect(() => {
     // Detect AVIF support first, then WebP, then fallback to JPG
     const testAvif = () => {
@@ -195,10 +216,10 @@ export default function VideoGrid({
                 {/* Thumbnail: show until activated and after page load, only best format loaded */}
                 {thumbnailsLoaded && format && !videoActivated[video.id] && (
                   <Image
-                    src={`${thumbBase}-1280.${format}`}
+                    src={`${thumbBase}-${thumbSize}.${format}`}
                     alt={video.title}
                     fill
-                    sizes="(max-width: 640px) 300px, (max-width: 1024px) 400px, 600px"
+                    sizes="(max-width: 640px) 320px, (max-width: 1024px) 640px, (max-width: 1536px) 1280px, 1920px"
                     className="absolute inset-0 w-full h-full object-cover"
                     draggable={false}
                     priority={false}
@@ -211,7 +232,7 @@ export default function VideoGrid({
                   muted={localIsMuted}
                   preload="preload"
                   playsInline
-                  poster={`${thumbBase}.jpg`}
+                  poster={`${thumbBase}-${thumbSize}.${format}`}
                   onContextMenu={e => e.preventDefault()}
                   className={`absolute inset-0 w-full h-full object-cover ${videoActivated[video.id] ? 'opacity-100' : 'opacity-0'}`}
                   onTouchStart={() => handleActivateVideo(video.id)}
