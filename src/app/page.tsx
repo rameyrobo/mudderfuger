@@ -137,7 +137,7 @@ useEffect(() => {
 
   return (
     <main className="bg-black text-white min-h-screen">
-      <section ref={heroRef} className="w-full h-screen relative overflow-hidden">
+      <section ref={heroRef} className="w-full h-screen max-h-[100dvh]relative overflow-hidden">
         {preferWebm !== null && (
           <picture id="hero-picture">
             <source
@@ -207,7 +207,7 @@ useEffect(() => {
       <VideoGrid isMuted={isMuted} videos={videos} />
       </section>
 
-      <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full overflow-x-hidden relative">
+      <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full max-h-[100dvh] overflow-x-hidden relative">
         <ScrollingBannerProds />
         <h2 className="
         color-white

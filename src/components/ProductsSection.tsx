@@ -250,7 +250,7 @@ export default function ProductsSection() {
           key={product.id}
           id={product.id}
           tabIndex={0}
-          className="group relative flex items-center justify-center h-[47vh] bg-black text-white overflow-hidden outline-none"
+          className="group relative flex items-center justify-center h-[47dvh] bg-black text-white overflow-hidden outline-none"
           onMouseLeave={() => handleMouseLeave(idx)}
           onClick={() => {
             setContactModalOpen(false); // Close contact modal if open
@@ -437,7 +437,7 @@ export default function ProductsSection() {
                 alt=""
                 width={600}
                 height={800}
-                className="w-full max-h-96 md:max-h-[80vh] object-contain mb-4 md:mb-0"
+                className="w-full max-h-96 md:max-h-[80dvh] object-contain mb-4 md:mb-0"
               />
             )}
           </div>

@@ -4,7 +4,7 @@ import Marquee from 'react-fast-marquee';
 
 export default function ScrollingBanner() {
   return (
-    <div className="bg-black h-[6vh] mb-0 flex border-t border-b border-white">
+    <div className="bg-black h-[6dvh] mb-0 flex border-t border-b border-white">
       <Marquee
         gradient={false}
         speed={400}

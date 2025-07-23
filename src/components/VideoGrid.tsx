@@ -245,7 +245,7 @@ export default function VideoGrid({
             muted={localIsMuted}
             playsInline
             onContextMenu={(e) => e.preventDefault()}
-            className="max-h-[80vh] max-w-[90vw] border-4 border-white rounded"
+            className="max-h-[80dvh] max-w-90vw border-4 border-white rounded"
             onLoadedMetadata={(e) => {
               const index = videos.findIndex(v => v.url === selectedVideo);
               const time = hoverTimeMap[videos[index]?.id] || 0;
