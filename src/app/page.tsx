@@ -1,103 +1,36 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import Navbar from "../components/Navbar"
-import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 
 export default function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const sentinelRef = useRef<HTMLDivElement>(null);
   const animatedTextRef = useRef<HTMLSpanElement>(null);
 
-  const [isMuted, setIsMuted] = useState(true);
-  const [userToggled, setUserToggled] = useState(false);
-
-  const toggleMute = () => {
-    setUserToggled(true);
-    if (videoRef.current) {
-      const newMuted = !videoRef.current.muted;
-      videoRef.current.muted = newMuted;
-      setIsMuted(newMuted);
-      if (audioRef.current) {
-        if (newMuted) {
-          audioRef.current.pause();
-        } else {
-          audioRef.current.play().catch(() => {});
-        }
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (!sentinelRef.current || !videoRef.current) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const visiblePx = entry.intersectionRect.height;
-        const totalPx = entry.boundingClientRect.height;
-        const visibleRatio = visiblePx / totalPx;
-
-        if (visibleRatio <= 0) {
-          if (!userToggled) {
-            if (videoRef.current) {
-              videoRef.current.muted = true;
-              setIsMuted(true);
-            }
-          } else {
-            setUserToggled(false);
-          }
-        }
-      },
-      {
-        root: null,
-        threshold: Array.from({ length: 101 }, (_, i) => i / 100),
-      }
-    );
-
-    observer.observe(sentinelRef.current);
-
-    return () => observer.disconnect();
-  }, [userToggled, isMuted]);
-
-
   return (
-    <main className="bg-black text-white min-h-screen">
-      <section ref={heroRef} className="w-full h-screen relative overflow-hidden">
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted={isMuted}
-          playsInline
-          className="absolute w-full h-full object-cover"
-        >
-          
-        </video>
-        <audio ref={audioRef} src="https://mudderfuger.b-cdn.net/_sounds/Fuck%20Tha%20Police.mp3" />
-        <div className="relative z-10 flex flex-col items-center justify-center h-full">
-          <h1 className="font-arial text-3xl md:text-7xl font-extrabold uppercase tracking-tighter xl:text-8xl">
+    <main className="bg-black text-white min-h-screen px-2">
+      <section ref={heroRef} className="w-full min-h-screen relative overflow-y-scroll">
+        <div className="relative z-10 flex flex-col items-center">
+          <h1 className="font-arial text-4xl sm:text-7xl font-extrabold uppercase tracking-tighter mt-20 xl:text-8xl">
             <span ref={animatedTextRef} className="text-red-500 opacity-95">Mudderfuger</span>
           </h1>
-          <div className="flex-menu  flex flex-col md:flex-row">
-          <Navbar />
-          <button
-            onClick={toggleMute}
-            className="w-fit font-arial bg-transparent text-white px-3 py-1 rounded hover:bg-black/80 transition-colors duration-300 tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4 relative translate-x-[378%] translate-y-[-95%] md:translate-y-[15%] md:translate-x-0 lg:translate-x-3.5 lg:translate-y-2"
+          {/* Normal playable video under the h1 */}
+          <video
+            ref={videoRef}
+            controls
+            controlsList="nodownload"
+            className="w-full max-w-3xl mt-8 rounded-smshadow-lg"
+            poster="/mudderfuger_official_trailer_poster.jpg"
           >
-            {isMuted ? (
-                  <SpeakerXMarkIcon className="h-8 w-8 text-white" />
-                ) : (
-                  <SpeakerWaveIcon className="h-8 w-8 text-white" />
-                )}
-          </button>
+            <source src="https://mudderfuger.b-cdn.net/_vids/mudderfuger_official_trailer.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div className="flex-menu flex flex-col md:flex-row">
+            <Navbar />
+            
           </div>
-                <a href="#" className="text-4xl font-arial-bold text-white mt-32 focus:bg-black/90 focus-within:bg-black/90 hover:bg-black/90 transition-all px-5 py-1.5 rounded-sm tracking-wide focus:underline focus-within:underline hover:underline leading-4">coming soon</a>
         </div>
-
-        {/* Invisible sentinel div at the bottom of hero */}
-        <div ref={sentinelRef} className="absolute bottom-0 h-[100px] w-full pointer-events-none" />
       </section>
     </main>
   );
