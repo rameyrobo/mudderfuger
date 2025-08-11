@@ -35,7 +35,7 @@ export default function HomePage() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <form onSubmit={handleSubmit} className="bg-gray-900 p-8 rounded shadow-lg space-y-4">
+        <form onSubmit={handleSubmit} className="bg-gray-900 p-8 rounded shadow-lg space-y-4 font-arial">
           <h2 className="text-2xl font-bold mb-4 font-arial uppercase">Enter Password & Email</h2>
           <input
             type="email"
