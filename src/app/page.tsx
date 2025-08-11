@@ -1,12 +1,64 @@
 "use client";
 
-import { useRef } from "react";
-import Navbar from "../components/Navbar"
+import { useState, useRef } from "react";
+import Navbar from "../components/Navbar";
+
+const SITE_PASSWORD = process.env.NEXT_PUBLIC_SITE_PASSWORD || "fallbackpassword";
 
 export default function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const animatedTextRef = useRef<HTMLSpanElement>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    typeof window !== "undefined" && localStorage.getItem("siteAuthed") === "true"
+  );
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password !== SITE_PASSWORD) {
+      setError("Incorrect password.");
+      return;
+    }
+    // Log email to backend
+    await fetch("/api/log-visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    localStorage.setItem("siteAuthed", "true");
+    setIsAuthenticated(true);
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <form onSubmit={handleSubmit} className="bg-gray-900 p-8 rounded shadow-lg space-y-4">
+          <h2 className="text-2xl font-bold mb-4 font-arial uppercase">Enter Password & Email</h2>
+          <input
+            type="email"
+            required
+            placeholder="Your email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            className="block w-full p-2 rounded bg-gray-800 text-white font-arial"
+          />
+          <input
+            type="password"
+            required
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            className="block w-full p-2 rounded bg-gray-800 text-white font-arial"
+          />
+          {error && <div className="text-red-400">{error}</div>}
+          <button type="submit" className="w-full bg-red-600 py-2 rounded font-arial uppercase">Enter</button>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <main className="bg-black text-white min-h-screen px-2">
