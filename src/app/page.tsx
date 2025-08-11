@@ -54,7 +54,7 @@ export default function HomePage() {
             className="block w-full p-2 rounded bg-gray-800 text-white font-arial"
           />
           {error && <div className="text-red-400">{error}</div>}
-          <button type="submit" className="w-full bg-red-600 py-2 rounded font-arial uppercase">Enter</button>
+          <button type="submit" className="w-full bg-red-600 py-2 rounded font-arial uppercase cursor-pointer">Enter</button>
         </form>
       </div>
     );
