@@ -165,20 +165,32 @@ export default function VideoGrid({
   return (
     <>
       <div className="grid grid-cols-3 md:grid-cols-3 gap-1 px-0.5 lg:px-20 md:px-6 xl:px-52 max-w-[1530px] mx-auto">
-        {videos.map(video => {
+        {videos.map((video, idx) => {
           // Derive the base thumbnail URL for each video
           const fileName = video.url.split('/').pop()?.replace(/\.(mp4|webm)$/i, '') || '';
           const thumbBase = `https://mudderfuger.b-cdn.net/_thumbs/${fileName}`;
           const format = thumbFormat;
+
+          // If there are exactly 4 videos and this is the last one, span all columns and use 16:9 aspect
+          const isFourthSpanning =
+            videos.length === 4 && idx === 3
+              ? "col-span-3"
+              : "";
+
+          const aspectClass =
+            videos.length === 4 && idx === 3
+              ? "aspect-video" // Tailwind's aspect-[16/9] utility
+              : "aspect-[4/5]";
+
           return (
             <div
               key={video.id}
-              className="relative group cursor-pointer"
+              className={`relative group cursor-pointer ${isFourthSpanning}`}
               onClick={() => handleClick(video.id, video.url)}
               onMouseEnter={() => handleMouseEnter(video.id)}
               onMouseLeave={() => handleMouseLeave(video.id)}
             >
-              <div className="aspect-[4/5] w-full relative">
+              <div className={`${aspectClass} w-full relative`}>
                 {/* Thumbnail: show until activated and after page load, only best format loaded */}
                 {thumbnailsLoaded && format && !videoActivated[video.id] && (
                   <Image
@@ -219,9 +231,6 @@ export default function VideoGrid({
                   ) : (
                     <SpeakerWaveIcon className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   )}
-                </div>
-                <div className="font-arial-bold absolute top-0 left-0 bg-black bg-opacity-60 text-white px-2 py-1 text-xs lg:text-sm max-w-[88%] truncate">
-                  {video.title}
                 </div>
               </div>
             </div>

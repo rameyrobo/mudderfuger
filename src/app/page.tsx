@@ -24,7 +24,7 @@ export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const animatedTextRef = useRef<HTMLSpanElement>(null);
-  const heroVideoUrl = 'https://mudderfuger.b-cdn.net/_vids/1_intro.mp4'
+  const heroVideoUrl = 'https://mudderfuger.b-cdn.net/_hero/1_intro.mp4'
 
   const [isMuted, setIsMuted] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
