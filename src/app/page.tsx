@@ -75,7 +75,7 @@ export default function HomePage() {
             className="w-full max-w-3xl mt-8 rounded-smshadow-lg"
             poster="/mudderfuger_official_trailer_poster.jpg"
           >
-            <source src="https://mudderfuger.b-cdn.net/_vids/mudderfuger_official_trailer.mp4" type="video/mp4" />
+            <source src="https://mudderfuger.b-cdn.net/_trailer/mudderfuger_official_trailer.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <div className="flex-menu flex flex-col md:flex-row">
