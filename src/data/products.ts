@@ -62,12 +62,10 @@ export const products = [
     url: "/products/all-products",
     includes: [
         "1 custom AI skit/ad  (15-40 sec)",
-        "Product is clearly featured with Mudderfuger’s signature chaos and humor",
         "Vertical (9:16) and Horizontal (16:9) versions included ",
         "Ready for TikTok, Reels, YouTube, or paid campaigns",
         "Creative handled by us",
         "You can submit a product, short blurb, and key message — we take it from there",
-        "Repost rights included",
         "Use the video on your own channels (must tag @mudderfuger when reposting)",
     ],
     customFields: [
