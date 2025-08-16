@@ -6,6 +6,8 @@ import ScrollingBannerVids from "../components/ScrollingBannerVids"
 import dynamic from "next/dynamic";
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 import ContactModal from "../components/ContactModal";
+const SITE_PASSWORD = process.env.NEXT_PUBLIC_SITE_PASSWORD || "fallbackpassword";
+
 const VideoGrid = dynamic(() => import("../components/VideoGrid"), { ssr: false });
 
 export default function HomePage() {
@@ -23,6 +25,30 @@ export default function HomePage() {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const animatedTextRef = useRef<HTMLSpanElement>(null);
   const heroVideoUrl = 'https://mudderfuger.b-cdn.net/_trailer/mudderfuger_official_trailer.mp4'
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  useEffect(() => {
+    setIsAuthenticated(localStorage.getItem("siteAuthed") === "true");
+  }, []);
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+  
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (password !== SITE_PASSWORD) {
+        setError("Incorrect password.");
+        return;
+      }
+      // Log email to backend
+      await fetch("/api/log-visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      localStorage.setItem("siteAuthed", "true");
+      setIsAuthenticated(true);
+    };
 
   const [isMuted, setIsMuted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,6 +63,7 @@ export default function HomePage() {
       setIsMuted(newMuted);
     }
   };
+  
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -133,8 +160,40 @@ useEffect(() => {
     videoRef.current.poster = `/mudderfuger-thumbnail-${size}.webp`;
   }, [preferWebm, isMuted]);
 
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => { setHasMounted(true); }, []);
+  if (!hasMounted) return null;
+
+  if (!isAuthenticated) {
+    return (
+      <div key="login" className="min-h-screen flex items-center justify-center bg-black text-white">
+        <form onSubmit={handleSubmit} className="bg-gray-900 p-8 rounded shadow-lg space-y-4 font-arial">
+          <h2 className="text-2xl font-bold mb-4 font-arial uppercase">Enter Password & Email</h2>
+          <input
+            type="email"
+            required
+            placeholder="Your email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            className="block w-full p-2 rounded bg-gray-800 text-white font-arial"
+          />
+          <input
+            type="password"
+            required
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            className="block w-full p-2 rounded bg-gray-800 text-white font-arial"
+          />
+          {error && <div className="text-red-400">{error}</div>}
+          <button type="submit" className="w-full bg-red-600 py-2 rounded font-arial uppercase cursor-pointer">Enter</button>
+        </form>
+      </div>
+    );
+  }
+
   return (
-    <main className="bg-black text-white min-h-screen">
+    <main key="authed" className="bg-black text-white min-h-screen">
       <section ref={heroRef} className="w-full h-screen max-h-[100dvh] relative flex flex-col">
         {preferWebm !== null && (
           <picture id="hero-picture">
@@ -195,16 +254,18 @@ useEffect(() => {
       </section>
 
       <section 
-      className="pb-0 pt-9 md:pt-10 lg:pt-11 xl:pt-12"
-      id="story-section">
+        className="pb-0 pt-9 md:pt-10 lg:pt-11 xl:pt-12"
+        id="story-section">
         <h2 className="text-2xl font-bold uppercase text-center tracking-wide justify-self-center mb-10 md:text-3xl lg:text-3xl xl:text-4xl">
           MuddaFuger&rsquo;s Story
         </h2>
         <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Mudderfuger is a wildly paced, neon-soaked coming-of-age ride about a 19-year-old Al skater who sells donuts for a living while chasing his viral dream. As his music and skate clips blow up, so do the temptations, parties, and troubles he can&lsquo;t always skate away from.</p>
         <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">With a mom who always has his back and a boss who&lsquo;s like family, he manages to stay grounded until - he discovers the cop who&lsquo;s been harassing him is the same man who killed his father.</p>
         <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Set in a SoCal sprawl where skate-punk swagger meets bedroom-pop heart and a shadowy noir underbelly, Mudderfuger is about skating as survival, revenge as fuel, and finding yourself while grinding the razor&lsquo;s edge between freedom and self-destruction with a grin and a missing tooth to prove it.</p>
-      <VideoGrid isMuted={isMuted} videos={videos} />
-      <div className="py-7">
+        {isAuthenticated && (
+          <VideoGrid key="authed" isMuted={isMuted} videos={videos} />
+        )}
+        <div className="py-7">
       <h2 className="text-center text-xl sm:text-2xl md:text-4xl  font-arial-bold  text-white transition-all  px-5  py-1.5  rounded-sm  tracking-wide leading-8
       ">Marque Cox</h2>
       <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Marque Cox aka ShrimpDaddy is a Los Angeles–based director, editor, and creative force blending sharp entertainment marketing instincts with deep roots in meme culture and visual storytelling.</p> 
