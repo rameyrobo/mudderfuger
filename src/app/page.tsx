@@ -206,36 +206,17 @@ useEffect(() => {
         <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">With a mom who always has his back and a boss who's like family, he manages to stay grounded until - he discovers the cop who's been harassing him is the same man who killed his father.</p>
         <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Set in a SoCal sprawl where skate-punk swagger meets bedroom-pop heart and a shadowy noir underbelly, Mudderfuger is about skating as survival, revenge as fuel, and finding yourself while grinding the razor's edge between freedom and self-destruction with a grin and a missing tooth to prove it.</p>
       <VideoGrid isMuted={isMuted} videos={videos} />
-      </section>
-
-      <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full max-h-[100dvh] overflow-x-hidden relative">
-        <ScrollingBannerProds />
-        <h2 className="
-        color-white
-        font-bold 
-        uppercase
-        tracking-wide
-        justify-self-center
-        px-8 
-        py-4
-        absolute
-        bg-black
-        opacity-85
-        translate-y-9
-        z-50
-        pointer-events-none
-        translate-x-2
-        translate-y-9
-        text-6xl
-        sm:text-7xl 
-        md:text-8xl 
-        lg:text-9xl 
-        xl:text-10rem
-        xl:translate-y-5 
-        xl:translate-y-4">
-          Be<span className="space1">&nbsp;</span>a<span className="space2">&nbsp;</span>MF</h2>
-          
-        <ProductsSection />
+      <div className="py-7">
+      <h2 className="text-center text-xl sm:text-2xl md:text-4xl  font-arial-bold  text-white transition-all  px-5  py-1.5  rounded-sm  tracking-wide leading-8
+      ">Marque Cox</h2>
+      <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Marque Cox aka ShrimpDaddy is a Los Angeles–based director, editor, and creative force blending sharp entertainment marketing instincts with deep roots in meme culture and visual storytelling.</p> 
+      <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">From crafting iconic trailers and social campaigns for Netflix (Orange is the New Black, GLOW, Lost in Space) to directing viral content for HBO (Justice League, Fresh Prince, Friends Reunion), his work connects deeply with online audiences.</p> 
+      <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Tapped by Will Smith’s Westbrook to create high-impact memes, Marque&lsquo;s content has generated millions of likes—thanks to his rare ability to toe the line between promotion and pure internet gold. He brought that same energy to brand campaigns he believed in—directing, shooting, and editing standout social content for clients like Red Bull, Hulu, and beyond.</p> 
+      <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">His approach was born from LA&lsquo;s skate scene and sharpened in his collaborations with director Alma Har&lsquo;el and the promo departments of Netflix, HBO, and Fox.</p> 
+      <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">He is quickly becoming one of the leading voices in AI animation and character creation. Mudderfuger is his latest work. Let’s make some gold together.</p> 
+      <h2 className="text-2xl font-arial-bold text-center tracking-wide justify-self-center my-10 md:text-3xl lg:text-3xl xl:text-4xl">Jellywolf</h2>
+      <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Jellywolf is the boutique studio helmed by director Alma Har&lsquo;el. Known for reimagining the creative landscape of advertising, Alma has brought bold, emotional storytelling to campaigns for Airbnb, Facebook, Chanel, P&G, and TIME Magazine. Her work spans acclaimed films like Bombay Beach and Honey Boy, groundbreaking music and live-stream projects such as Sigur Rós&lsquo; Fjögur Píanó and Bob Dylan&lsquo;s Shadow Kingdom, and the Apple TV+ series Lady in the Lake starring Natalie Portman.</p> 
+      </div>
       </section>
     </main>
   );

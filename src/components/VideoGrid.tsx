@@ -194,7 +194,7 @@ export default function VideoGrid({
                 {/* Thumbnail: show until activated and after page load, only best format loaded */}
                 {thumbnailsLoaded && format && !videoActivated[video.id] && (
                   <Image
-                    src={`${thumbBase}-${thumbSize}.webp`}
+                    src={`${thumbBase}.webp`}
                     alt={video.title}
                     fill
                     sizes="(max-width:450px) 150px, (max-width: 640px) 320px, (max-width: 1024px) 640px, (max-width: 1536px) 1280px, 1920px"

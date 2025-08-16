@@ -8,7 +8,7 @@ type VideoFile = {
 export async function GET() {
   const apiKey = process.env.BUNNY_STORAGE_API_KEY;
 
-  const response = await fetch('https://storage.bunnycdn.com/mudderfuger/_vids/', {
+  const response = await fetch('https://storage.bunnycdn.com/mudderfuger/_promo/', {
     method: 'GET',
     headers: {
       accept: 'application/json',
@@ -35,7 +35,7 @@ export async function GET() {
       return {
         id,
         title: `ep${id}: ${titlePart}`,
-        url: `https://mudderfuger.b-cdn.net/_vids/${filename}`,
+        url: `https://mudderfuger.b-cdn.net/_promo/${filename}`,
       };
     })
     .sort((a, b) => a.id - b.id);
