@@ -24,9 +24,9 @@ export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const animatedTextRef = useRef<HTMLSpanElement>(null);
-  const heroVideoUrl = 'https://mudderfuger.b-cdn.net/_hero/1_intro.mp4'
+  const heroVideoUrl = 'https://mudderfuger.b-cdn.net/_trailer/mudderfuger_official_trailer.mp4'
 
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [preferWebm, setPreferWebm] = useState<null | boolean>(null);
   const [shouldPause, setShouldPause] = useState(false); // NEW: track if video should be paused by nav/modal
@@ -137,7 +137,7 @@ useEffect(() => {
 
   return (
     <main className="bg-black text-white min-h-screen">
-      <section ref={heroRef} className="w-full h-screen max-h-[100dvh]relative overflow-hidden">
+      <section ref={heroRef} className="w-full h-screen max-h-[100dvh] relative flex flex-col">
         {preferWebm !== null && (
           <picture id="hero-picture">
             <source
@@ -151,7 +151,6 @@ useEffect(() => {
               ref={videoRef}
               autoPlay
               loop
-              muted={isMuted}
               playsInline
               poster="/mudderfuger-thumbnail-1280.webp"
               className="absolute w-full h-full object-cover"
@@ -169,9 +168,9 @@ useEffect(() => {
           </picture>
         )}
 
-        <div className="relative z-10 flex flex-col items-center justify-center h-full">
+        <div className="relative z-10 flex flex-col items-center h-full pt-9">
           <h1 className="font-arial text-3xl md:text-7xl font-extrabold uppercase tracking-tighter xl:text-8xl">
-            <span ref={animatedTextRef} className="text-red-500 opacity-95">Mudderfuger</span>
+            <span className="text-[#0fff00] opacity-95">Mudderfuger</span>
           </h1>
           <Navbar
             onNavClick={() => setShouldPause(true)}
@@ -192,18 +191,20 @@ useEffect(() => {
             )}
           </button>
         </div>
-
-        {/* Invisible sentinel div at the bottom of hero */}
-        <div ref={sentinelRef} className="absolute bottom-0 h-[100px] w-full pointer-events-none" />
+        {/* Place the banner absolutely at the bottom */}
+        <ScrollingBannerVids className="absolute bottom-0 left-0 w-full z-30" />
+        <div ref={sentinelRef} className="absolute bottom-0 h-[100px] w-full pointer-events-none z-10" />
       </section>
 
       <section 
       className="pb-0 pt-9 md:pt-10 lg:pt-11 xl:pt-12"
       id="story-section">
-        <h2 className="text-2xl font-bold uppercase text-center tracking-wide justify-self-center mb-px md:text-3xl lg:text-3xl xl:text-4xl">
+        <h2 className="text-2xl font-bold uppercase text-center tracking-wide justify-self-center mb-10 md:text-3xl lg:text-3xl xl:text-4xl">
           MuddaFuger&rsquo;s Story
         </h2>
-      <ScrollingBannerVids />
+        <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Mudderfuger is a wildly paced, neon-soaked coming-of-age ride about a 19-year-old Al skater who sells donuts for a living while chasing his viral dream. As his music and skate clips blow up, so do the temptations, parties, and troubles he can't always skate away from.</p>
+        <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">With a mom who always has his back and a boss who's like family, he manages to stay grounded until - he discovers the cop who's been harassing him is the same man who killed his father.</p>
+        <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Set in a SoCal sprawl where skate-punk swagger meets bedroom-pop heart and a shadowy noir underbelly, Mudderfuger is about skating as survival, revenge as fuel, and finding yourself while grinding the razor's edge between freedom and self-destruction with a grin and a missing tooth to prove it.</p>
       <VideoGrid isMuted={isMuted} videos={videos} />
       </section>
 

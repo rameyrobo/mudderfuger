@@ -4,12 +4,12 @@ import Marquee from 'react-fast-marquee';
 
 export default function ScrollingBanner() {
   return (
-    <div className="bg-black h-[6vh] mb-0 flex border-t border-b border-white">
+    <div className="bg-black h-[6vh] mb-0 flex border-t border-b border-white relative">
       <Marquee
         gradient={false}
         speed={400}
         pauseOnHover={true}       
-        className="text-white text-2xl uppercase tracking-wider font-anton overflow-y-hidden"
+        className="text-white text-2xl uppercase tracking-wider overflow-y-hidden bg-black relative"
       >
         <span 
         className="text-4xl font-arial-bold tracking-wider"
