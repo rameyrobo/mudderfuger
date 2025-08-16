@@ -3,12 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar"
 import ScrollingBannerVids from "../components/ScrollingBannerVids"
-import ScrollingBannerProds from "../components/ScrollingBannerProds"
 import dynamic from "next/dynamic";
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 import ContactModal from "../components/ContactModal";
 const VideoGrid = dynamic(() => import("../components/VideoGrid"), { ssr: false });
-const ProductsSection = dynamic(() => import("../components/ProductsSection"), { ssr: false });
 
 export default function HomePage() {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -192,7 +190,7 @@ useEffect(() => {
           </button>
         </div>
         {/* Place the banner absolutely at the bottom */}
-        <ScrollingBannerVids className="absolute bottom-0 left-0 w-full z-30" />
+        <ScrollingBannerVids />
         <div ref={sentinelRef} className="absolute bottom-0 h-[100px] w-full pointer-events-none z-10" />
       </section>
 
@@ -202,9 +200,9 @@ useEffect(() => {
         <h2 className="text-2xl font-bold uppercase text-center tracking-wide justify-self-center mb-10 md:text-3xl lg:text-3xl xl:text-4xl">
           MuddaFuger&rsquo;s Story
         </h2>
-        <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Mudderfuger is a wildly paced, neon-soaked coming-of-age ride about a 19-year-old Al skater who sells donuts for a living while chasing his viral dream. As his music and skate clips blow up, so do the temptations, parties, and troubles he can't always skate away from.</p>
-        <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">With a mom who always has his back and a boss who's like family, he manages to stay grounded until - he discovers the cop who's been harassing him is the same man who killed his father.</p>
-        <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Set in a SoCal sprawl where skate-punk swagger meets bedroom-pop heart and a shadowy noir underbelly, Mudderfuger is about skating as survival, revenge as fuel, and finding yourself while grinding the razor's edge between freedom and self-destruction with a grin and a missing tooth to prove it.</p>
+        <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Mudderfuger is a wildly paced, neon-soaked coming-of-age ride about a 19-year-old Al skater who sells donuts for a living while chasing his viral dream. As his music and skate clips blow up, so do the temptations, parties, and troubles he can&lsquo;t always skate away from.</p>
+        <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">With a mom who always has his back and a boss who&lsquo;s like family, he manages to stay grounded until - he discovers the cop who&lsquo;s been harassing him is the same man who killed his father.</p>
+        <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Set in a SoCal sprawl where skate-punk swagger meets bedroom-pop heart and a shadowy noir underbelly, Mudderfuger is about skating as survival, revenge as fuel, and finding yourself while grinding the razor&lsquo;s edge between freedom and self-destruction with a grin and a missing tooth to prove it.</p>
       <VideoGrid isMuted={isMuted} videos={videos} />
       <div className="py-7">
       <h2 className="text-center text-xl sm:text-2xl md:text-4xl  font-arial-bold  text-white transition-all  px-5  py-1.5  rounded-sm  tracking-wide leading-8
