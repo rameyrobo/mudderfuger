@@ -11,7 +11,6 @@ import type { VideoGridProps } from "../components/VideoGrid";
 
 const SITE_PASSWORD = process.env.NEXT_PUBLIC_SITE_PASSWORD || "fallbackpassword";
 
-// Type the dynamic import
 const VideoGrid = dynamic<VideoGridProps>(
   () => import("../components/VideoGrid"),
   { ssr: false }
@@ -33,35 +32,17 @@ export default function HomePage() {
   const animatedTextRef = useRef<HTMLSpanElement>(null);
   const heroVideoUrl = 'https://mudderfuger.b-cdn.net/_trailer/mudderfuger_official_trailer.mp4'
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  useEffect(() => {
-    setIsAuthenticated(localStorage.getItem("siteAuthed") === "true");
-  }, []);
-
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-  
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      if (password !== SITE_PASSWORD) {
-        setError("Incorrect password.");
-        return;
-      }
-      // Log email to backend
-      await fetch("/api/log-visit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      localStorage.setItem("siteAuthed", "true");
-      setIsAuthenticated(true);
-    };
-
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isMuted, setIsMuted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [preferWebm, setPreferWebm] = useState<null | boolean>(null);
-  const [shouldPause, setShouldPause] = useState(false); // NEW: track if video should be paused by nav/modal
-  const shouldPauseRef = useRef(shouldPause);
+
+  // --- Only use pauseLock for manual pausing ---
+  const [pauseLock, setPauseLock] = useState(false);
+  const pauseLockRef = useRef(pauseLock);
+  useEffect(() => { pauseLockRef.current = pauseLock }, [pauseLock]);
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -70,18 +51,6 @@ export default function HomePage() {
       setIsMuted(newMuted);
     }
   };
-  
-
-  useEffect(() => {
-    if (!videoRef.current) return;
-    if (shouldPause || isModalOpen) {
-      videoRef.current.pause();
-    } else {
-      // Only play if in view (IntersectionObserver will handle this)
-      // Try to play, but browser may block if not in view
-      videoRef.current.play().catch(() => {});
-    }
-  }, [shouldPause, isModalOpen])
 
   useEffect(() => {
     const ua = navigator.userAgent;
@@ -94,50 +63,51 @@ export default function HomePage() {
     }
   }, []);
 
-  // Keep shouldPauseRef in sync with shouldPause
-useEffect(() => {
-  shouldPauseRef.current = shouldPause;
-}, [shouldPause]);
+  // When modal closes, unlock pause
+  useEffect(() => {
+    if (!isModalOpen) setPauseLock(false);
+  }, [isModalOpen]);
 
-// IntersectionObserver: pause if out of view, play if in view and not paused by nav/modal
-useEffect(() => {
-  if (!sentinelRef.current || !videoRef.current) return;
-
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      const visiblePx = entry.intersectionRect.height;
-      const totalPx = entry.boundingClientRect.height;
-      const visibleRatio = visiblePx / totalPx;
-
-      // Always sync muted state before play/pause
-      if (videoRef.current) {
-        videoRef.current.muted = isMuted;
-      }
-
-      if (visibleRatio <= 0.10) {
-        videoRef.current?.pause();
-      } else {
-        // Only play if not paused by nav/modal
-        if (!shouldPauseRef.current && !isModalOpen) {
-          videoRef.current?.play().catch(() => {});
-        }
-        // If shouldPause was set by nav, but user scrolled back, reset it
-        if (shouldPauseRef.current && !isModalOpen) {
-          setShouldPause(false);
-        }
-      }
-    },
-    {
-      root: null,
-      threshold: Array.from({ length: 101 }, (_, i) => i / 100),
+  // Manual pause/play for modal/nav
+  useEffect(() => {
+    if (!videoRef.current) return;
+    if (pauseLock || isModalOpen) {
+      videoRef.current.pause();
     }
-  );
+    // Do not play here! Let the observer handle play.
+  }, [pauseLock, isModalOpen]);
 
-  observer.observe(sentinelRef.current);
+  // IntersectionObserver: only controls play/pause if not locked
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    if (!sentinelRef.current || !videoRef.current) return;
 
-  return () => observer.disconnect();
-}, [isModalOpen, isMuted]); 
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const visiblePx = entry.intersectionRect.height;
+        const totalPx = entry.boundingClientRect.height;
+        const visibleRatio = visiblePx / totalPx;
 
+        videoRef.current.muted = isMuted;
+
+        if (visibleRatio <= 0.10) {
+          videoRef.current.pause();
+        } else {
+          if (!pauseLockRef.current && !isModalOpen) {
+            videoRef.current.play().catch(() => {});
+          }
+        }
+      },
+      {
+        root: null,
+        threshold: Array.from({ length: 101 }, (_, i) => i / 100),
+      }
+    );
+
+    observer.observe(sentinelRef.current);
+
+    return () => observer.disconnect();
+  }, [isAuthenticated, isMuted, isModalOpen]);
 
   useEffect(() => {
     let hue = 0;
@@ -170,6 +140,20 @@ useEffect(() => {
   const [hasMounted, setHasMounted] = useState(false);
   useEffect(() => { setHasMounted(true); }, []);
   if (!hasMounted) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password !== SITE_PASSWORD) {
+      setError("Incorrect password.");
+      return;
+    }
+    await fetch("/api/log-visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    setIsAuthenticated(true);
+  };
 
   return (
     <main className="bg-black text-white min-h-screen">
@@ -217,6 +201,12 @@ useEffect(() => {
                   poster="/mudderfuger-thumbnail-1280.webp"
                   className="absolute w-full h-full object-cover"
                   id="hero-video"
+                  onLoadedMetadata={() => {
+                    if (videoRef.current) {
+                      videoRef.current.muted = isMuted;
+                      videoRef.current.play().catch(() => {});
+                    }
+                  }}
                 >
                   <source
                     src={
@@ -235,12 +225,18 @@ useEffect(() => {
                 <span className="text-[#0fff00] opacity-95">Mudderfuger</span>
               </h1>
               <Navbar
-                onNavClick={() => setShouldPause(true)}
-                onContactClick={() => setIsModalOpen(true)}
+                onNavClick={undefined} // Remove pauseLock for nav clicks
+                onContactClick={() => {
+                  setPauseLock(true);
+                  setIsModalOpen(true);
+                }}
               />
               <ContactModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => {
+                  setIsModalOpen(false);
+                  setPauseLock(false); // Unlock pause when modal closes
+                }}
               />
               <button
                 onClick={toggleMute}
@@ -253,7 +249,6 @@ useEffect(() => {
                 )}
               </button>
             </div>
-            {/* Place the banner absolutely at the bottom */}
             <ScrollingBannerVids />
             <div ref={sentinelRef} className="absolute bottom-0 h-[100px] w-full pointer-events-none z-10" />
           </section>
