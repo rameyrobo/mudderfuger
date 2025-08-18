@@ -84,6 +84,8 @@ export default function HomePage() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
+        if (!videoRef.current) return;
+
         const visiblePx = entry.intersectionRect.height;
         const totalPx = entry.boundingClientRect.height;
         const visibleRatio = visiblePx / totalPx;
