@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     await resend.emails.send({
       from: process.env.EMAIL_SENDER || "no-reply@mudderfuger.ai",
       to: process.env.EMAIL_SENDER || "creator@mudderfuger.ai",
-      subject: "New Mudderfuger Visitor",
+      subject: email + `just visited mudderfuger.ai `,
       html: `<p>Email: <b>${email}</b></p><p>Time: ${new Date().toISOString()}</p>`,
     });
     return NextResponse.json({ ok: true });
