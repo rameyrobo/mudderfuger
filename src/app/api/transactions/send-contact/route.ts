@@ -3,17 +3,43 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+function sanitizeHeader(str: string) {
+  return str.replace(/(\r\n|\n|\r)/gm, " ");
+}
+
+function escapeHtml(str: string) {
+  return str.replace(/[&<>"']/g, (m) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  }[m] as string));
+}
+
 export async function POST(request: Request) {
   const { name, email, message, phone } = await request.json();
+
+  // Basic email validation
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+  }
 
   // Type assertion ensures sender is treated as a string
   const sender = process.env.EMAIL_SENDER as string;
 
+  const safeName = sanitizeHeader(name || "");
+  const safeEmail = sanitizeHeader(email || "");
+  const safeSubject = `Contact Form Submission from ${safeName}`;
+  const safeMessage = escapeHtml(message || "");
+  const safePhone = escapeHtml(phone || "");
+
   const { data, error } = await resend.emails.send({
     from: `Mudderfuger <${sender}>`,
     to: 'almaharelassistant@gmail.com',
-    subject: `Contact Form Submission from ${name}`,
-    html: `<strong>From:</strong> ${name} (${email})<br/><strong>Phone:</strong> ${phone || ''}<br/><br/>${message}`,
+    cc: sender,
+    subject: safeSubject,
+    html: `<strong>From:</strong> ${escapeHtml(safeName)} (${escapeHtml(safeEmail)})<br/><strong>Phone:</strong> ${safePhone}<br/><br/>${safeMessage}`,
   });
 
   if (error) {
