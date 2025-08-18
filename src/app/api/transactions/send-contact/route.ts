@@ -36,18 +36,14 @@ export async function POST(request: Request) {
   const safeMessage = escapeHtml(message || "");
   const safePhone = escapeHtml(phone || "");
 
-  const { data, error } = await resend.emails.send({
+  await resend.emails.send({
     from: `Mudderfuger <${sender}>`,
     to: receiver,
-    cc,   // use the variable
-    bcc,  // use the variable
+    cc,
+    bcc,
     subject: safeSubject,
     html: `<strong>From:</strong> ${escapeHtml(safeName)} (${escapeHtml(safeEmail)})<br/><strong>Phone:</strong> ${safePhone}<br/><br/>${safeMessage}`,
   });
 
-  if (error) {
-    return NextResponse.json({ error }, { status: 500 });
-  }
-
-  return NextResponse.json({ data });
+  return NextResponse.json({ data: "Email sent successfully" });
 }

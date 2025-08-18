@@ -161,9 +161,11 @@ export default function HomePage() {
         videoRef.current.play().then(() => {
           setIsMuted(false); // Only set to false if unmuted and played
         }).catch(() => {
-          videoRef.current.muted = true;
-          setIsMuted(true);
-          videoRef.current.play().catch(() => {});
+          if (videoRef.current) {
+            videoRef.current.muted = true;
+            setIsMuted(true);
+            videoRef.current.play().catch(() => {});
+          }
         });
       } else {
         videoRef.current.muted = true;
