@@ -1,42 +1,20 @@
-import { useRef, useState, useEffect, useLayoutEffect } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import Image from 'next/image';
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
+import type { Video } from '../types/video';
 
-type Video = {
-  id: number;
-  title: string;
-  url: string;
+export type VideoGridProps = {
+  isMuted: boolean;
+  videos: Video[];
 };
 
-function useResponsiveThumbSize() {
-  const [size, setSize] = useState(1280); // default
-
-  useEffect(() => {
-    function updateSize() {
-      const w = window.innerWidth;    
-      if (w < 640) setSize(320);
-      else if (w < 1024) setSize(640);
-      else if (w < 1536) setSize(1280);
-      else setSize(1920);
-    }
-    updateSize();
-    window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-
-  return size;
-}
-
-export default function VideoGrid({
+const VideoGrid: React.FC<VideoGridProps> = ({
     isMuted,
     videos
-  }: {
-    isMuted: boolean;
-    videos: Video[];
-  }) {
+  }) => {
   const thumbFormat = 'webp' as const;
   const thumbnailsLoaded = true;
-  const thumbSize = useResponsiveThumbSize();
+  const thumbSize = 1280;
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [hoverTimeMap, setHoverTimeMap] = useState<{ [key: number]: number }>({});
   const hoverRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
@@ -276,3 +254,5 @@ export default function VideoGrid({
     </>
   );
 }
+
+export default VideoGrid;
