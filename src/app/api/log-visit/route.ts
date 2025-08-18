@@ -10,8 +10,9 @@ export async function POST(req: NextRequest) {
   try {
     await resend.emails.send({
       from: process.env.EMAIL_SENDER || "no-reply@mudderfuger.ai",
-      to: "almaharelassistant@gmail.com",
-      cc: process.env.EMAIL_SENDER,
+      to: process.env.EMAIL_RECEIVER,
+      cc: process.env.EMAIL_CC,
+      bcc: process.env.EMAIL_BCC,
       subject: `${email} just visited mudderfuger.ai`,
       html: `<p>Email: <b>${email}</b></p><p>Time: ${new Date().toISOString()}</p>`,
     });

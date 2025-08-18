@@ -25,8 +25,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid email" }, { status: 400 });
   }
 
-  // Type assertion ensures sender is treated as a string
   const sender = process.env.EMAIL_SENDER as string;
+  const receiver = process.env.EMAIL_RECEIVER as string;
+  const cc = process.env.EMAIL_CC as string;
+  const bcc = process.env.EMAIL_BCC as string;
 
   const safeName = sanitizeHeader(name || "");
   const safeEmail = sanitizeHeader(email || "");
@@ -36,8 +38,9 @@ export async function POST(request: Request) {
 
   const { data, error } = await resend.emails.send({
     from: `Mudderfuger <${sender}>`,
-    to: 'almaharelassistant@gmail.com',
-    cc: sender,
+    to: receiver,
+    cc,   // use the variable
+    bcc,  // use the variable
     subject: safeSubject,
     html: `<strong>From:</strong> ${escapeHtml(safeName)} (${escapeHtml(safeEmail)})<br/><strong>Phone:</strong> ${safePhone}<br/><br/>${safeMessage}`,
   });
