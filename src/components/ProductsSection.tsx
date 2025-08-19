@@ -45,11 +45,7 @@ export default function ProductsSection() {
       (sponsorButton as unknown as { itemPrice: string }).itemPrice = price.toFixed(2);
     }
   }, [selectedSponsorPlan]);
-  // Log all products on mount
-  useEffect(() => {
-    console.log("All products:", products);
-  }, []);
-
+  
   // Open modal on page load and handle back/forward navigation for /products/:id
   useEffect(() => {
     const path = window.location.pathname;
@@ -196,6 +192,27 @@ export default function ProductsSection() {
   const product = rawProduct?.id === "sponsor-me"
     ? products.find(p => p.category === "sponsor-me") || rawProduct
     : rawProduct;
+
+  // Carousel slides for add-yourself
+  const [carouselIdx, setCarouselIdx] = useState(0);
+  const addYourselfSlides = useMemo(() => {
+    if (product?.id !== "add-yourself" || !product.media) return [];
+    return product.media.flatMap(mediaItem => {
+      const base = mediaItem.src.replace(/\.mp4$/, '');
+      return [
+        {
+          type: 'image',
+          src: `${base}.webp`,
+          alt: `Original image for ${mediaItem.alt}`,
+        },
+        {
+          type: 'video',
+          src: `${base}.webm`, // use webm
+          alt: mediaItem.alt,
+        }
+      ];
+    });
+  }, [product]);
 
   const snipcartPrice = useMemo(() => {
     if (!product) return "0.00";
@@ -376,7 +393,7 @@ export default function ProductsSection() {
   }
   // Modal render
   return (
-    <div className="fixed top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0 opacity-[98]">
+    <div className="fixed top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0 opacity-100">
       <div className="absolute top-0 left-0 w-full min-h-full bg-white/90 z-[-1]" onClick={() => handleModalClose()}></div>
       <div className="
       relative 
@@ -429,16 +446,83 @@ export default function ProductsSection() {
         <span className="back-buton-arrow relative font-extrabold text-base bottom-px top-0">⬅ </span> 
         Back
         </button>
-        {product?.id !== "sponsor-me" && (
+        {/* Carousel for add-yourself */}
+        {product?.id === "add-yourself" ? (
+          <div className="w-full md:w-5/12 lg:w-7/12 flex flex-col items-center justify-center mt-16 lg:mt-0">
+            {addYourselfSlides.length > 0 && (
+              <div className="relative w-full flex flex-col items-center">
+                <div className="w-full flex items-center justify-center">
+                  {addYourselfSlides[carouselIdx].type === 'image' ? (
+                    <Image
+                      src={addYourselfSlides[carouselIdx].src}
+                      alt={addYourselfSlides[carouselIdx].alt}
+                      width={400}
+                      height={400}
+                      className="object-contain rounded max-h-96 md:max-h-[80dvh] mb-4 md:mb-0"
+                    />
+                  ) : (
+                    <video
+                      key={addYourselfSlides[carouselIdx].src}
+                      controls
+                      autoPlay
+                      playsInline
+                      preload="auto"
+                      poster={addYourselfSlides[carouselIdx].src.replace('.webm', '.webp')}
+                      onContextMenu={e => e.preventDefault()}
+                      className="w-full max-h-96 md:max-h-[80dvh] object-contain mb-4 md:mb-0 rounded"
+                      style={{ background: "#000" }}
+                    >
+                      <source
+                        src={addYourselfSlides[carouselIdx].src}
+                        type="video/webm"
+                      />
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
+                </div>
+                <div className="flex gap-4 mt-2">
+                  <button
+                    aria-label="Previous"
+                    onClick={() => setCarouselIdx((carouselIdx - 1 + addYourselfSlides.length) % addYourselfSlides.length)}
+                    className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300"
+                  >
+                    ◀
+                  </button>
+                  <span className="text-sm font-arial">
+                    {carouselIdx + 1} / {addYourselfSlides.length}
+                  </span>
+                  <button
+                    aria-label="Next"
+                    onClick={() => setCarouselIdx((carouselIdx + 1) % addYourselfSlides.length)}
+                    className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300"
+                  >
+                    ▶
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : product?.id !== "sponsor-me" && (
           <div className="w-full md:w-5/12 lg:w-7/12 flex justify-center mt-16 lg:mt-0">
-            {modalImage && (
-              <Image
-                src={modalImage}
-                alt=""
-                width={600}
-                height={800}
-                className="w-full max-h-96 md:max-h-[80dvh] object-contain mb-4 md:mb-0"
+            {product?.id === "product-commercial" ? (
+              <video
+                src="https://mudderfuger.b-cdn.net/_commercials/boom_boom_v1.webm"
+                controls
+                autoPlay
+                loop
+                className="w-full max-h-96 md:max-h-[80dvh] object-contain mb-4 md:mb-0 rounded"
+                style={{ background: "#000" }}
               />
+            ) : (
+              modalImage && (
+                <Image
+                  src={modalImage}
+                  alt=""
+                  width={600}
+                  height={800}
+                  className="w-full max-h-96 md:max-h-[80dvh] object-contain mb-4 md:mb-0"
+                />
+              )
             )}
           </div>
         )}
@@ -645,4 +729,3 @@ export default function ProductsSection() {
     </div>
   );
 }
-  
