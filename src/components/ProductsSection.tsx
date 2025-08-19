@@ -467,7 +467,7 @@ export default function ProductsSection() {
             {addYourselfSlides.length > 0 && (
               <>
                 <h2 className="text-4xl font-arial-bold mb-6 text-center uppercase">
-                  Be like {product.media[Math.floor(carouselIdx / 2)]?.name}
+                  Be like {product.media?.[Math.floor(carouselIdx / 2)]?.name}
                 </h2>
                 <div className="relative w-full flex flex-col items-center">
                   <div className="w-full flex items-center justify-center">
