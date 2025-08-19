@@ -3,6 +3,7 @@ import ContactModal from './ContactModal';
 import Image from 'next/image';
 import { imgs } from '@/data/imgs';
 import { products } from '@/data/products';
+import { createPortal } from "react-dom";
 
 // Helper to get N unique random images from the pool
 function getNUniqueRandomImages(
@@ -33,6 +34,9 @@ export default function ProductsSection() {
   const [selectedSponsorPlan] = useState<string>("starter-sponsor");
   // Contact modal state
   const [isContactModalOpen, setContactModalOpen] = useState(false);
+
+  // Upload files state
+  const [uploadFiles, setUploadFiles] = useState<Record<string, File | null>>({});
 
   // Dynamically update the sponsor-me button price for Snipcart
   // This effect ensures the data-item-price attribute and dataset.itemPrice are always correct for the selected plan.
@@ -257,6 +261,18 @@ export default function ProductsSection() {
     });
   }, [customFieldValues, product]);
 
+  // Reset uploadFiles when modal changes
+  useEffect(() => {
+    setUploadFiles({});
+  }, [modalIdx]);
+
+  // Helper to check if all required uploads are present
+  const allUploadsFilled =
+    !product?.upload?.length ||
+    product.upload.every((field, idx) =>
+      field.required ? !!uploadFiles[`upload-${product.id}-${idx}`] : true
+    );
+
   if (modalIdx === null) {
     return (
       <div className="w-full grid grid-cols-2 gap-0">
@@ -392,340 +408,374 @@ export default function ProductsSection() {
     );
   }
   // Modal render
-  return (
-    <div className="fixed top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0 opacity-100">
-      <div className="absolute top-0 left-0 w-full min-h-full bg-white/90 z-[-1]" onClick={() => handleModalClose()}></div>
-      <div className="
-      relative 
-      w-full 
-      h-full 
-      mx-0 
-      bg-white 
-      text-black 
-      rounded-lg 
-      shadow-2xl 
-      p-9
-      md:px-16 
-      2xl:px-64 
-      z-10 
-      flex 
-      flex-col 
-      md:flex-row 
-      items-center 
-      gap-8 
-      overflow-y-scroll">
-        <button
-          onClick={() => handleModalClose()}
-          className="
-          font-arial-bold 
-          absolute 
-          top-px 
-          uppercase     
-          text-xl    
-          font-light    
-          z-20    
-          cursor-pointer    
-          text-black   
+  return typeof window !== "undefined"
+    ? createPortal(
+        <div className="fixed top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0 opacity-100">
+          <div className="absolute top-0 left-0 w-full min-h-full bg-white/90 z-[-1]" onClick={() => handleModalClose()}></div>
+          <div className="
+          relative 
+          w-full 
+          h-full 
+          mx-0 
           bg-white 
-          border-white
-          border-2  
-          text-center   
-          opacity-100  
-          mt-3 
-          px-3 
-          py-2 
-          rounded-sm 
-          hover:invert 
-          hover:text-red-700 
-          hover:border-red-700
-          transition-all 
-          left-7
-          "
-          aria-label="Back to Products"
-        >
-        <span className="back-buton-arrow relative font-extrabold text-base bottom-px top-0">⬅ </span> 
-        Back
-        </button>
-        {/* Carousel for add-yourself */}
-        {product?.id === "add-yourself" ? (
-          <div className="w-full md:w-5/12 lg:w-7/12 flex flex-col items-center justify-center mt-16 lg:mt-0">
-            {addYourselfSlides.length > 0 && (
-              <div className="relative w-full flex flex-col items-center">
-                <div className="w-full flex items-center justify-center">
-                  {addYourselfSlides[carouselIdx].type === 'image' ? (
-                    <Image
-                      src={addYourselfSlides[carouselIdx].src}
-                      alt={addYourselfSlides[carouselIdx].alt}
-                      width={400}
-                      height={400}
-                      className="object-contain rounded max-h-96 md:max-h-[80dvh] mb-4 md:mb-0"
-                    />
-                  ) : (
-                    <video
-                      key={addYourselfSlides[carouselIdx].src}
-                      controls
-                      autoPlay
-                      playsInline
-                      preload="auto"
-                      poster={addYourselfSlides[carouselIdx].src.replace('.webm', '.webp')}
-                      onContextMenu={e => e.preventDefault()}
-                      className="w-full max-h-96 md:max-h-[80dvh] object-contain mb-4 md:mb-0 rounded"
-                      style={{ background: "#000" }}
-                    >
-                      <source
-                        src={addYourselfSlides[carouselIdx].src}
-                        type="video/webm"
-                      />
-                      Your browser does not support the video tag.
-                    </video>
-                  )}
-                </div>
-                <div className="flex gap-4 mt-2">
-                  <button
-                    aria-label="Previous"
-                    onClick={() => setCarouselIdx((carouselIdx - 1 + addYourselfSlides.length) % addYourselfSlides.length)}
-                    className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300"
-                  >
-                    ◀
-                  </button>
-                  <span className="text-sm font-arial">
-                    {carouselIdx + 1} / {addYourselfSlides.length}
-                  </span>
-                  <button
-                    aria-label="Next"
-                    onClick={() => setCarouselIdx((carouselIdx + 1) % addYourselfSlides.length)}
-                    className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300"
-                  >
-                    ▶
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : product?.id !== "sponsor-me" && (
-          <div className="w-full md:w-5/12 lg:w-7/12 flex justify-center mt-16 lg:mt-0">
-            {product?.id === "product-commercial" ? (
-              <video
-                src="https://mudderfuger.b-cdn.net/_commercials/boom_boom_v1.webm"
-                controls
-                autoPlay
-                loop
-                className="w-full max-h-96 md:max-h-[80dvh] object-contain mb-4 md:mb-0 rounded"
-                style={{ background: "#000" }}
-              />
-            ) : (
-              modalImage && (
-                <Image
-                  src={modalImage}
-                  alt=""
-                  width={600}
-                  height={800}
-                  className="w-full max-h-96 md:max-h-[80dvh] object-contain mb-4 md:mb-0"
-                />
-              )
-            )}
-          </div>
-        )}
-        <div className={`flex flex-col items-start ${product?.category === 'sponsor-me' ? 'w-full' : 'w-full md:w-7/12 lg:w-5/12'}`}>
-          {product?.category === "sponsor-me" ? (
-            <>
-              <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 text-left pt-[50px] md:pt-[45rem] lg:pt-9">
-             {modalImage && (
-              <Image
-                src={modalImage}
-                alt=""
-                width={600}
-                height={800}
-                className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0"
-              />
-            )}
-                {products
-                  .filter(p => p.category === "sponsor-me" && typeof p.price === "number")
-                  .map((tier) => (
-                  <div
-                    key={tier.id}
-                    className={`border border-gray-300 p-6 rounded-lg bg-white shadow transition-all z-1 opacity-90 ${
-                      selectedSponsorPlan === tier.id
-                        ? "border-black ring-2 ring-black relative z-30"
-                        : "relative z-30"
-                    }`}
-                  >
-                    <h2 className="text-2xl uppercase font-arial-bold mb-2">{tier.title}</h2>
-                    <p className="text-xl font-arial-bold mb-4">
-                      {tier.id === "official-brand-partner" ? "$15k–$30k" : `$${tier.itemPrice ?? tier.price}`}{" "}
-                      <span className="text-sm font-normal">
-                        {tier.id === "official-brand-partner" ? "/year" : "/month"}
+          text-black 
+          rounded-lg 
+          shadow-2xl 
+          p-9
+          md:px-16 
+          2xl:px-64 
+          z-10 
+          flex 
+          flex-col 
+          md:flex-row 
+          items-center 
+          gap-8 
+          overflow-y-scroll">
+            <button
+              onClick={() => handleModalClose()}
+              className="
+              font-arial-bold 
+              absolute 
+              top-px 
+              uppercase     
+              text-xl    
+              font-light    
+              z-20    
+              cursor-pointer    
+              text-black   
+              bg-white 
+              border-white
+              border-2  
+              text-center   
+              opacity-100  
+              mt-3 
+              px-3 
+              py-2 
+              rounded-sm 
+              hover:invert 
+              hover:text-red-700 
+              hover:border-red-700
+              transition-all 
+              left-7
+              "
+              aria-label="Back to Products"
+            >
+            <span className="back-buton-arrow relative font-extrabold text-base bottom-px top-0">⬅ </span> 
+            Back
+            </button>
+            {/* Carousel for add-yourself */}
+            {product?.id === "add-yourself" ? (
+              <div className="w-full md:w-5/12 lg:w-7/12 flex flex-col items-center justify-center mt-16 lg:mt-0">
+                {addYourselfSlides.length > 0 && (
+                  <div className="relative w-full flex flex-col items-center">
+                    <div className="w-full flex items-center justify-center">
+                      {addYourselfSlides[carouselIdx].type === 'image' ? (
+                        <Image
+                          src={addYourselfSlides[carouselIdx].src}
+                          alt={addYourselfSlides[carouselIdx].alt}
+                          width={400}
+                          height={400}
+                          className="object-contain rounded max-h-96 md:max-h-[80dvh] mb-4 md:mb-0"
+                        />
+                      ) : (
+                        <video
+                          key={addYourselfSlides[carouselIdx].src}
+                          controls
+                          autoPlay
+                          playsInline
+                          preload="auto"
+                          poster={addYourselfSlides[carouselIdx].src.replace('.webm', '.webp')}
+                          onContextMenu={e => e.preventDefault()}
+                          className="w-full max-h-96 md:max-h-[80dvh] object-contain mb-4 md:mb-0 rounded"
+                          style={{ background: "#000" }}
+                        >
+                          <source
+                            src={addYourselfSlides[carouselIdx].src}
+                            type="video/webm"
+                          />
+                          Your browser does not support the video tag.
+                        </video>
+                      )}
+                    </div>
+                    <div className="flex gap-4 mt-2">
+                      <button
+                        aria-label="Previous"
+                        onClick={() => setCarouselIdx((carouselIdx - 1 + addYourselfSlides.length) % addYourselfSlides.length)}
+                        className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300"
+                      >
+                        ◀
+                      </button>
+                      <span className="text-sm font-arial">
+                        {carouselIdx + 1} / {addYourselfSlides.length}
                       </span>
-                    </p>
-                    <ul className="font-arial text-sm mb-6 list-disc list-inside">
-                      {tier.includes.map((item, i) => (
-                        <li key={i} className="leading-8 pl-[19.8px] indent-[-21.1px]">{item}</li>
-                      ))}
-                    </ul>
-                    {tier.id === "official-brand-partner" ? (
                       <button
-                        type="button"
-                        onClick={() => setContactModalOpen(true)}
-                        className="font-arial-bold bg-black text-white border-2 border-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:border-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer transition-color ease-in-out hover:scale-105 transition-transform"
+                        aria-label="Next"
+                        onClick={() => setCarouselIdx((carouselIdx + 1) % addYourselfSlides.length)}
+                        className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300"
                       >
-                        Contact MF
+                        ▶
                       </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setContactModalOpen(true)}
-                        className="font-arial-bold bg-black text-white border-2 border-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:border-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer transition-color ease-in-out hover:scale-105 transition-transform "
-                      >
-                        Contact MF
-                      </button>
-                    )}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <>
-              <h1 className="text-l text-2xl font-bold mb-2 font-arial-bold uppercase max-w-xl">{product?.title}</h1>
-              {(() => {
-                const field1 = product?.customFields?.[0];
-                // const field2 = product?.customFields?.[1]; <-- might add back in later
-                const val1 = customFieldValues[0];
-                const val2 = customFieldValues[1];
-
-                const isTrue = typeof val1 === 'string' && val1.startsWith('true');
-                const option1Text = isTrue ? field1?.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '').trim() : '';
-                let option2Text = '';
-                if (typeof val2 === 'string' && !val2.startsWith('0')) {
-                  const count = val2.split('[')[0];
-                  const plural = count === '1' ? 'revision' : 'revisions';
-                  option2Text = `${count} ${plural}`;
-                }
-
-                const parts = [];
-                if (option1Text) parts.push(option1Text);
-                if (option2Text) parts.push(option2Text);
-
-                return parts.length > 0 ? (
-                  <h2 className="font-arial-bold text-base text-black mb-4">
-                    w/ {parts.join(' and ')}
-                  </h2>
-                ) : null;
-              })()}
-              <div className="price-data flex flex-row content-start items-center justify-around w-full">
-                <p className="text-xl font-semibold font-arial mb flex-1">${snipcartPrice}</p>
-                {/* Custom Fields Form */}
-                {product?.customFields && product.customFields.length > 0 && (
-                  <form className="w-full max-w-none text-left flex flex-row items-center content-end justify-evenly">
-                    {product.customFields.map((field, index) => {
-                      if (field.type === 'checkbox') {
-                        const options = field.options?.split('|') ?? [];
-                        const trueOption = options.find(opt => opt.startsWith('true')) || '';
-                        return (
-                          <label key={index} className="flex items-center mb-2 font-arial text-base cursor-pointer max-w-32 leading-[1.3]">
-                            <input
-                              type="checkbox"
-                              checked={customFieldValues[index] === trueOption}
-                              onChange={e => handleCustomFieldChange(index, e.target.checked)}
-                              className="mr-2"
-                            />
-                            {field.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '')}
-                            <span className="ml-1 text-sm text-gray-600">
-                              {field.name.match(/\[\+(\d+(\.\d{1,2})?)\]/)?.[0]}
-                            </span>
-                          </label>
-                        );
-                      } else if (field.type === 'dropdown') {
-                        const options = field.options ? field.options.split('|') : [];
-                        return (
-                          <label key={index} className="block mb-2 font-arial text-base flex-1 self-auto grow-0 shrink basis-3/12 translate-y-1">
-                            <span className="block mb-1">{field.name}</span>
-                            <select
-                              value={
-                                typeof customFieldValues[index] === 'string'
-                                  ? customFieldValues[index]
-                                  : options.length > 0
-                                    ? options[0]
-                                    : ''
-                              }
-                              onChange={e => handleCustomFieldChange(index, e.target.value)}
-                              className="w-full px-2 rounded text-black max-w-12"
-                            >
-                              {options.map((option, i) => {
-                                const match = option.match(/^(.+?)\[\+\d+(\.\d{1,2})?\]$/);
-                                const label = match ? match[1] : option;
-                                return (
-                                  <option key={i} value={option}>{label.trim()}</option>
-                                );
-                              })}
-                            </select>
-                          </label>
-                        );
-                      }
-                      return null;
-                    })}
-                  </form>
                 )}
               </div>
-              {product?.description && (
-                <p className="mb-4 max-w-sm text-base font-arial">{product.description}</p>
-              )}
-              {product?.includes && product.includes.length > 0 && (
-                <ul className="list-disc list-inside text-sm mb-4 text-left ml-6 mr-auto">
-                  {product.includes.map((item, i) => (
-                    <li key={i} className="font-arial mb-2 pl-[19.8px] indent-[-21.1px]">{item}</li>
+            ) : product?.id !== "sponsor-me" && (
+              <div className="w-full md:w-5/12 lg:w-7/12 flex justify-center mt-16 lg:mt-0">
+                {product?.id === "product-commercial" ? (
+                  <video
+                    src="https://mudderfuger.b-cdn.net/_commercials/boom_boom_v1.webm"
+                    controls
+                    autoPlay
+                    loop
+                    className="w-full max-h-96 md:max-h-[80dvh] object-contain mb-4 md:mb-0 rounded"
+                    style={{ background: "#000" }}
+                  />
+                ) : (
+                  modalImage && (
+                    <Image
+                      src={modalImage}
+                      alt=""
+                      width={600}
+                      height={800}
+                      className="w-full max-h-96 md:max-h-[80dvh] object-contain mb-4 md:mb-0"
+                    />
+                  )
+                )}
+              </div>
+            )}
+            <div className={`flex flex-col items-start ${product?.category === 'sponsor-me' ? 'w-full' : 'w-full md:w-7/12 lg:w-5/12'}`}>
+              {product?.category === "sponsor-me" ? (
+                <>
+                  <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 text-left pt-[50px] md:pt-[45rem] lg:pt-9">
+                 {modalImage && (
+                  <Image
+                    src={modalImage}
+                    alt=""
+                    width={600}
+                    height={800}
+                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0"
+                  />
+                )}
+                  {products
+                    .filter(p => p.category === "sponsor-me" && typeof p.price === "number")
+                    .map((tier) => (
+                    <div
+                      key={tier.id}
+                      className={`border border-gray-300 p-6 rounded-lg bg-white shadow transition-all z-1 opacity-90 ${
+                        selectedSponsorPlan === tier.id
+                          ? "border-black ring-2 ring-black relative z-30"
+                          : "relative z-30"
+                      }`}
+                    >
+                      <h2 className="text-2xl uppercase font-arial-bold mb-2">{tier.title}</h2>
+                      <p className="text-xl font-arial-bold mb-4">
+                        {tier.id === "official-brand-partner" ? "$15k–$30k" : `$${tier.itemPrice ?? tier.price}`}{" "}
+                        <span className="text-sm font-normal">
+                          {tier.id === "official-brand-partner" ? "/year" : "/month"}
+                        </span>
+                      </p>
+                      <ul className="font-arial text-sm mb-6 list-disc list-inside">
+                        {tier.includes.map((item, i) => (
+                          <li key={i} className="leading-8 pl-[19.8px] indent-[-21.1px]">{item}</li>
+                        ))}
+                      </ul>
+                      {tier.id === "official-brand-partner" ? (
+                        <button
+                          type="button"
+                          onClick={() => setContactModalOpen(true)}
+                          className="font-arial-bold bg-black text-white border-2 border-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:border-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer transition-color ease-in-out hover:scale-105 transition-transform"
+                        >
+                          Contact MF
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setContactModalOpen(true)}
+                          className="font-arial-bold bg-black text-white border-2 border-white px-4 py-2 rounded uppercase hover:invert hover:text-red-700 hover:border-red-700 hover:bg-white bottom-0 mb-7 cursor-pointer transition-color ease-in-out hover:scale-105 transition-transform "
+                        >
+                          Contact MF
+                        </button>
+                      )}
+                    </div>
                   ))}
-                </ul>
-              )}
-              <button
-                className="
-                  font-arial-bold
-                  snipcart-add-item
-                  bg-white 
-                  border-2
-                  text-black 
-                  px-4 
-                  py-2 
-                  rounded
-                  mt-2
-                  uppercase
-                  cursor-pointer
-                  snipcart-checkout
-                  hover:invert
-                  hover:text-red-700 
-                  hover:scale-105
-                  transition-all
-                "
-                data-item-id={product?.id}
-                data-item-name={product?.title}
-                data-item-price={product?.price}
-                data-item-url={product?.url}
-                data-item-max-quantity="1"
-                data-item-stackable="always"
-                data-item-description={product?.description || ""}
-                {
-                  ...((product?.customFields || []).reduce((acc, field, i) => {
-                    acc[`data-item-custom${i + 1}-name`] = field.name;
-                    acc[`data-item-custom${i + 1}-type`] = field.type;
-                    if (field.options) acc[`data-item-custom${i + 1}-options`] = field.options;
-                    const val = customFieldValues[i];
-                    if (typeof val === 'boolean') {
-                      acc[`data-item-custom${i + 1}-value`] = val ? 'true' : 'false';
-                    } else if (typeof val === 'string') {
-                      const stripped = val.split('[')[0]; // remove price annotation
-                      acc[`data-item-custom${i + 1}-value`] = stripped;
+                </div>
+                </>
+              ) : (
+                <>
+                  <h1 className="text-l text-2xl font-bold mb-2 font-arial-bold uppercase max-w-xl">{product?.title}</h1>
+                  {(() => {
+                    const field1 = product?.customFields?.[0];
+                    // const field2 = product?.customFields?.[1]; <-- might add back in later
+                    const val1 = customFieldValues[0];
+                    const val2 = customFieldValues[1];
+
+                    const isTrue = typeof val1 === 'string' && val1.startsWith('true');
+                    const option1Text = isTrue ? field1?.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '').trim() : '';
+                    let option2Text = '';
+                    if (typeof val2 === 'string' && !val2.startsWith('0')) {
+                      const count = val2.split('[')[0];
+                      const plural = count === '1' ? 'revision' : 'revisions';
+                      option2Text = `${count} ${plural}`;
                     }
-                    return acc;
-                  }, {} as Record<string, string>))
-                }
-              >
-                Add to Cart
-              </button>
-            </>
-          )}
-        </div>
-        {/* Contact Modal for sponsor-me plans */}
-        <ContactModal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)} />
-      </div>
-    </div>
-  );
+
+                    const parts = [];
+                    if (option1Text) parts.push(option1Text);
+                    if (option2Text) parts.push(option2Text);
+
+                    return parts.length > 0 ? (
+                      <h2 className="font-arial-bold text-base text-black mb-4">
+                        w/ {parts.join(' and ')}
+                      </h2>
+                    ) : null;
+                  })()}
+                  <div className="price-data flex flex-row content-start items-center justify-around w-full">
+                    <p className="text-xl font-semibold font-arial mb flex-1">${snipcartPrice}</p>
+                    {/* Custom Fields Form */}
+                    {product?.customFields && product.customFields.length > 0 && (
+                      <form className="w-full max-w-none text-left flex flex-row items-center content-end justify-evenly">
+                        {product.customFields.map((field, index) => {
+                          if (field.type === 'checkbox') {
+                            const options = field.options?.split('|') ?? [];
+                            const trueOption = options.find(opt => opt.startsWith('true')) || '';
+                            return (
+                              <label key={index} className="flex items-center mb-2 font-arial text-base cursor-pointer max-w-32 leading-[1.3]">
+                                <input
+                                  type="checkbox"
+                                  checked={customFieldValues[index] === trueOption}
+                                  onChange={e => handleCustomFieldChange(index, e.target.checked)}
+                                  className="mr-2"
+                                />
+                                {field.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '')}
+                                <span className="ml-1 text-sm text-gray-600">
+                                  {field.name.match(/\[\+(\d+(\.\d{1,2})?)\]/)?.[0]}
+                                </span>
+                              </label>
+                            );
+                          } else if (field.type === 'dropdown') {
+                            const options = field.options ? field.options.split('|') : [];
+                            return (
+                              <label key={index} className="block mb-2 font-arial text-base flex-1 self-auto grow-0 shrink basis-3/12 translate-y-1">
+                                <span className="block mb-1">{field.name}</span>
+                                <select
+                                  value={
+                                    typeof customFieldValues[index] === 'string'
+                                      ? customFieldValues[index]
+                                      : options.length > 0
+                                        ? options[0]
+                                        : ''
+                                  }
+                                  onChange={e => handleCustomFieldChange(index, e.target.value)}
+                                  className="w-full px-2 rounded text-black max-w-12"
+                                >
+                                  {options.map((option, i) => {
+                                    const match = option.match(/^(.+?)\[\+\d+(\.\d{1,2})?\]$/);
+                                    const label = match ? match[1] : option;
+                                    return (
+                                      <option key={i} value={option}>{label.trim()}</option>
+                                    );
+                                  })}
+                                </select>
+                              </label>
+                            );
+                          }
+                          return null;
+                        })}
+                      </form>
+                    )}
+                  </div>
+                  {product?.description && (
+                    <p className="mb-4 max-w-sm text-base font-arial">{product.description}</p>
+                  )}
+                  {product?.includes && product.includes.length > 0 && (
+                    <ul className="list-disc list-inside text-sm mb-4 text-left ml-6 mr-auto">
+                      {product.includes.map((item, i) => (
+                        <li key={i} className="font-arial mb-2 pl-[19.8px] indent-[-21.1px]">{item}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {product?.upload && product.upload.length > 0 && (
+  <form className="mb-4 w-full max-w-xs flex flex-col gap-3">
+    {product.upload.map((field, idx) => (
+      <label key={idx} className="flex flex-col font-arial text-base">
+        <span className="mb-1">
+          {field.name}
+          {field.required && <span className="text-red-500">*</span>}
+        </span>
+        <input
+          type={field.type}
+          accept={field.accept}
+          required={field.required}
+          className="border rounded px-2 py-1"
+          name={`upload-${product.id}-${idx}`}
+          onChange={e => {
+            const file = e.target.files?.[0] || null;
+            setUploadFiles(prev => ({
+              ...prev,
+              [`upload-${product.id}-${idx}`]: file,
+            }));
+          }}
+        />
+        {field.description && (
+          <span className="text-xs text-gray-600 mt-1">{field.description}</span>
+        )}
+      </label>
+    ))}
+  </form>
+)}
+                  <button
+                    className={`
+                      font-arial-bold
+                      snipcart-add-item
+                      bg-white 
+                      border-2
+                      text-black 
+                      px-4 
+                      py-2 
+                      rounded
+                      mt-2
+                      uppercase
+                      cursor-pointer
+                      snipcart-checkout
+                      hover:invert
+                      hover:text-red-700 
+                      hover:scale-105
+                      transition-all
+                      ${!allUploadsFilled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
+                    `}
+                    data-item-id={product?.id}
+                    data-item-name={product?.title}
+                    data-item-price={product?.price}
+                    data-item-url={product?.url}
+                    data-item-max-quantity="1"
+                    data-item-stackable="always"
+                    data-item-description={product?.description || ""}
+                    disabled={!allUploadsFilled}
+                    {
+                      ...((product?.customFields || []).reduce((acc, field, i) => {
+                        acc[`data-item-custom${i + 1}-name`] = field.name;
+                        acc[`data-item-custom${i + 1}-type`] = field.type;
+                        if (field.options) acc[`data-item-custom${i + 1}-options`] = field.options;
+                        const val = customFieldValues[i];
+                        if (typeof val === 'boolean') {
+                          acc[`data-item-custom${i + 1}-value`] = val ? 'true' : 'false';
+                        } else if (typeof val === 'string') {
+                          const stripped = val.split('[')[0]; // remove price annotation
+                          acc[`data-item-custom${i + 1}-value`] = stripped;
+                        }
+                        return acc;
+                      }, {} as Record<string, string>))
+                    }
+                  >
+                    Add to Cart
+                  </button>
+                </>
+              )}
+            </div>
+            {/* Contact Modal for sponsor-me plans */}
+            <ContactModal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)} />
+          </div>
+        </div>,
+        document.body
+      )
+    : null;
 }

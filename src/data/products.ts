@@ -57,6 +57,15 @@ export const products = [
         src: "https://mudderfuger.b-cdn.net/_characters/weck.mp4",
         alt: "Weck as a character in a Mudderfuger skit"
       }
+    ],
+    upload: [
+      {
+        name: "Upload Your Photo",
+        description: "Upload a clear photo of your face. The better the quality, the better the result.",
+        type: "file",
+        accept: "image/*",
+        required: true
+      }
     ]
   },
   {
@@ -69,6 +78,15 @@ export const products = [
       "You'll get a shoutout as the artist",
       "At least 8–10 seconds of your music in a real skit",
       "Tag in caption + option for a collab post - add on"
+    ],
+    upload: [
+      {
+        name: "Upload Your Song",
+        description: "Upload a clear audio file of your song. The better the quality, the better the result.",
+        type: "file",
+        accept: "audio/*",
+        required: true
+      }
     ]
   },
   {
