@@ -45,17 +45,20 @@ export const products = [
       {
         type: "video",
         src: "https://mudderfuger.b-cdn.net/_characters/nuge.mp4",
-        alt: "Nuge as a character in a Mudderfuger skit"
+        alt: "Nuge as a character in a Mudderfuger skit",
+        name: "Nuge"
       },
       {
         type: "video",
         src: "https://mudderfuger.b-cdn.net/_characters/stevie_williams.mp4",
-        alt: "Stevie Williams as a character in a Mudderfuger skit"
+        alt: "Stevie Williams as a character in a Mudderfuger skit",
+        name: "Stevie"
       },
       {
         type: "video",
         src: "https://mudderfuger.b-cdn.net/_characters/weck.mp4",
-        alt: "Weck as a character in a Mudderfuger skit"
+        alt: "Weck as a character in a Mudderfuger skit",
+        name: "Weck"
       }
     ],
     upload: [
