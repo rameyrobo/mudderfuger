@@ -34,6 +34,14 @@ body {
   font-family: Anton, Helvetica, sans-serif;
 }
 
+.carousel-fade {
+  transition: opacity 0.4s;
+  opacity: 1;
+}
+.carousel-fade.fade-out {
+  opacity: 0;
+}
+
 @layer utilities {
   .animate-scroll {
     animation: scroll 10s linear infinite;

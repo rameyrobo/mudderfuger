@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import ContactModal from './ContactModal';
 import Image from 'next/image';
 import { imgs } from '@/data/imgs';
@@ -198,6 +198,8 @@ export default function ProductsSection() {
 
   // Carousel slides for add-yourself
   const [carouselIdx, setCarouselIdx] = useState(0);
+  const [isFading, setIsFading] = useState(false);
+  const prevCarouselIdx = useRef(carouselIdx);
   const addYourselfSlides = useMemo(() => {
     if (product?.id !== "add-yourself" || !product.media) return [];
     return product.media.flatMap(mediaItem => {
@@ -271,6 +273,46 @@ export default function ProductsSection() {
     product.upload.every((field, idx) =>
       field.required ? !!uploadFiles[`upload-${product.id}-${idx}`] : true
     );
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    if (product?.id !== "add-yourself" || addYourselfSlides.length === 0) return;
+
+    // If current slide is an image, auto-advance after 2 seconds
+    if (addYourselfSlides[carouselIdx].type === "image") {
+      const timer = setTimeout(() => {
+        setCarouselIdx((idx) => (idx + 1) % addYourselfSlides.length);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+
+    // If current slide is a video, advance only after video ends
+    const video = videoRef.current;
+    if (addYourselfSlides[carouselIdx].type === "video" && video) {
+      // Always start from the beginning
+      video.currentTime = 0;
+      video.play();
+
+      const handleEnded = () => {
+        setCarouselIdx((idx) => (idx + 1) % addYourselfSlides.length);
+      };
+      video.addEventListener("ended", handleEnded);
+
+      return () => {
+        video.removeEventListener("ended", handleEnded);
+      };
+    }
+  }, [carouselIdx, addYourselfSlides, product?.id, setCarouselIdx]);
+
+  useEffect(() => {
+    if (prevCarouselIdx.current !== carouselIdx) {
+      setIsFading(true);
+      const fadeTimeout = setTimeout(() => setIsFading(false), 150); // 400ms fade duration
+      prevCarouselIdx.current = carouselIdx;
+      return () => clearTimeout(fadeTimeout);
+    }
+  }, [carouselIdx]);
 
   if (modalIdx === null) {
     return (
@@ -481,14 +523,15 @@ export default function ProductsSection() {
                       />
                     ) : (
                       <div
-                        className="w-full flex justify-center items-center mb-4 md:mb-0"
+                        className={`w-full flex items-center justify-center mb-4 md:mb-0 carousel-fade${isFading ? ' fade-out' : ''}`}
                         style={{
-                          aspectRatio: '4 / 5',
+                          aspectRatio: addYourselfSlides[carouselIdx].type === 'video' ? '4 / 5' : undefined,
                           maxWidth: 400,
                           maxHeight: '80vh',
                         }}
                       >
                         <video
+                          ref={videoRef}
                           key={addYourselfSlides[carouselIdx].src}
                           controls
                           autoPlay
@@ -516,7 +559,7 @@ export default function ProductsSection() {
                     >
                       ◀
                     </button>
-                    <span className="text-sm font-arial">
+                    <span className="text-sm font-arial hidden">
                       {carouselIdx + 1} / {addYourselfSlides.length}
                     </span>
                     <button
