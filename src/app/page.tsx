@@ -280,8 +280,8 @@ export default function HomePage() {
                     focus-within:bg-black/90 
                     hover:bg-black/90 
                     transition-all 
-                    p-1  
-                    lg:top-31
+                    p-1 
+                    lg:top-30
                     lg:translate-x-0
                     lg:right-auto
                   "
