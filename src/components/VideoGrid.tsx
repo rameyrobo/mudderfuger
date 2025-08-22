@@ -229,7 +229,7 @@ const VideoGrid: React.FC<VideoGridProps> = ({
             controls
             controlsList="nodownload"
             autoPlay
-            preload
+            preload="auto"
             muted={localIsMuted}
             playsInline
             onContextMenu={(e) => e.preventDefault()}
