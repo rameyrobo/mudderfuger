@@ -186,7 +186,7 @@ const VideoGrid: React.FC<VideoGridProps> = ({
                   ref={el => { hoverRefs.current[video.id] = el; }}
                   data-videoid={video.id}
                   muted={localIsMuted}
-                  preload="preload"
+                  preload="auto"
                   playsInline
                   poster={`${thumbBase}-${thumbSize}.webp`}
                   onContextMenu={e => e.preventDefault()}
@@ -195,12 +195,12 @@ const VideoGrid: React.FC<VideoGridProps> = ({
                   onMouseEnter={() => handleActivateVideo(video.id)}
                 >
                   <source
-                    src={
-                      preferWebm
-                        ? video.url.replace('.mp4', '.webm')
-                        : video.url
-                    }
-                    type={preferWebm ? 'video/webm' : 'video/mp4'}
+                    src={video.url.replace('.mp4', '.webm')}
+                    type="video/webm"
+                  />
+                  <source
+                    src={video.url}
+                    type="video/mp4"
                   />
                 </video>
                 <div className="absolute bottom-2 right-2 z-20 cursor-pointer bg-neutral-800 p-0.5 rounded-full " onClick={handleMuteToggle}>
