@@ -18,8 +18,8 @@ export default function Navbar({
         <button
           onClick={onContactClick}
           className="
-          top-10
-          right-1
+          top-11
+          right-2
           absolute 
           font-arial-bold 
           uppercase 

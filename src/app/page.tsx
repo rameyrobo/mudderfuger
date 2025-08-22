@@ -275,6 +275,12 @@ export default function HomePage() {
                     right-2
                     top-3.5
                     z-20
+                    cursor-pointer
+                    focus:bg-black/90 
+                    focus-within:bg-black/90 
+                    hover:bg-black/90 
+                    transition-all 
+                    p-1  
                     lg:top-31
                     lg:translate-x-0
                     lg:right-auto
