@@ -8,6 +8,7 @@ import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 import ContactModal from "../components/ContactModal";
 import type { Video } from '../types/video';
 import type { VideoGridProps } from "../components/VideoGrid";
+import Image from "next/image";
 
 const SITE_PASSWORD = process.env.NEXT_PUBLIC_SITE_PASSWORD || "fallbackpassword";
 
@@ -181,7 +182,7 @@ export default function HomePage() {
         !isAuthenticated ? (
           <div key="login" className="min-h-screen flex items-center justify-center bg-black text-white">
             <form onSubmit={handleSubmit} className="bg-gray-900 p-8 rounded shadow-lg space-y-4 font-arial">
-              <h2 className="text-2xl font-bold mb-4 font-arial uppercase">Enter Password & Email</h2>
+              <h2 className="text-2xl font-bold mb-4 font-arial uppercase">Enter Email & Password</h2>
               <input
                 type="email"
                 required
@@ -204,7 +205,7 @@ export default function HomePage() {
           </div>
         ) : (
           <>
-            <section ref={heroRef} className="w-full h-screen max-h-[100dvh] relative flex flex-col">
+            <section ref={heroRef} className="w-full relative flex flex-col aspect-video h-auto lg:h-screen lg:max-h-[100dvh]">
               {preferWebm !== null && (
                 <picture id="hero-picture">
                   <source
@@ -243,9 +244,15 @@ export default function HomePage() {
                 </picture>
               )}
 
-              <div className="relative z-10 flex flex-col items-center h-full pt-9">
-                <h1 className="font-arial text-3xl md:text-7xl font-extrabold uppercase tracking-tighter xl:text-8xl">
-                  <span className="text-[#0fff00] opacity-95">Mudderfuger</span>
+              <div className="relative z-10 flex flex-col items-center h-full pt-0">
+                <h1 className="
+                font-arial  
+                font-extrabold 
+                uppercase 
+                tracking-tighter
+                text-clamped
+                max-h-30">
+                  <span className="text-[#0fff00] opacity-95 text-clamped">Mudderfuger</span>
                 </h1>
                 <Navbar
                   onNavClick={undefined} // Remove pauseLock for nav clicks
@@ -261,11 +268,22 @@ export default function HomePage() {
                     setPauseLock(false); // Unlock pause when modal closes
                   }}
                 />
-                <button onClick={toggleMute} className="mt-4">
+                <button
+                  onClick={toggleMute}
+                  className="
+                    absolute
+                    right-2
+                    top-3.5
+                    z-20
+                    lg:top-31
+                    lg:translate-x-0
+                    lg:right-auto
+                  "
+                >
                   {isMuted ? (
-                    <SpeakerXMarkIcon className="h-8 w-8 text-white" />
+                    <SpeakerXMarkIcon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                   ) : (
-                    <SpeakerWaveIcon className="h-8 w-8 text-white" />
+                    <SpeakerWaveIcon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                   )}
                 </button>
               </div>
@@ -274,28 +292,61 @@ export default function HomePage() {
             </section>
 
             <section 
-              className="pb-0 pt-9 md:pt-10 lg:pt-11 xl:pt-12"
+              className="pb-0 pt-4 md:pt-0 overflow-x-hidden"
               id="story-section">
-              <h2 className="text-2xl font-bold uppercase text-center tracking-wide justify-self-center mb-10 md:text-3xl lg:text-3xl xl:text-4xl">
-                MuddaFuger&rsquo;s Story
+              <h2 className="text-center uppercase text-clamped mt-10 mb-7 text-white transition-all  px-5  py-1.5 mx-auto rounded-sm  max-w-[900px] tracking-wide leading-13 sm:leading-18 md:leading-20 lg:leading-24 font-arial font-bold">
+                MudderFuger&rsquo;s Story
               </h2>
-              <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Mudderfuger is a wildly paced, neon-soaked coming-of-age ride about a 19-year-old Al skater who sells donuts for a living while chasing his viral dream. As his music and skate clips blow up, so do the temptations, parties, and troubles he can&lsquo;t always skate away from.</p>
+              <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5"><span className="italic">Mudderfuger</span> is a wildly paced, neon-soaked coming-of-age ride about a 19-year-old Al skater who sells donuts for a living while chasing his viral dream. As his music and skate clips blow up, so do the temptations, parties, and troubles he can&lsquo;t always skate away from.</p>
               <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">With a mom who always has his back and a boss who&lsquo;s like family, he manages to stay grounded until - he discovers the cop who&lsquo;s been harassing him is the same man who killed his father.</p>
-              <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Set in a SoCal sprawl where skate-punk swagger meets bedroom-pop heart and a shadowy noir underbelly, Mudderfuger is about skating as survival, revenge as fuel, and finding yourself while grinding the razor&lsquo;s edge between freedom and self-destruction with a grin and a missing tooth to prove it.</p>
+              <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Set in a SoCal sprawl where skate-punk swagger meets bedroom-pop heart and a shadowy noir underbelly, <span className="italic">Mudderfuger</span> is about skating as survival, revenge as fuel, and finding yourself while grinding the razor&lsquo;s edge between freedom and self-destruction with a grin and a missing tooth to prove it.</p>
               {isAuthenticated && (
                 <VideoGrid isMuted={isMuted} videos={videos} />
               )}
               <div className="py-7">
-            <h2 className="text-center text-xl sm:text-2xl md:text-4xl  font-arial-bold  text-white transition-all  px-5  py-1.5  rounded-sm  tracking-wide leading-8
+            <h2 className="text-center uppercase text-clamped mt-10 mb-7 text-white transition-all  px-5  py-1.5 mx-auto rounded-sm  max-w-[900px] tracking-widest sm:leading-18 md:leading-20 lg:leading-24 font-arial font-bold
             ">Marque Cox</h2>
             <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Marque Cox aka ShrimpDaddy is a Los Angeles–based director, editor, and creative force blending sharp entertainment marketing instincts with deep roots in meme culture and visual storytelling.</p> 
-            <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">From crafting iconic trailers and social campaigns for Netflix (Orange is the New Black, GLOW, Lost in Space) to directing viral content for HBO (Justice League, Fresh Prince, Friends Reunion), his work connects deeply with online audiences.</p> 
+            <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">From crafting iconic trailers and social campaigns for Netflix (<span className="italic">Orange is the New Black</span>, <span className="italic">GLOW</span>, <span className="italic">Lost in Space</span>) to directing viral content for HBO (<span className="italic">Justice League</span>, <span className="italic">Fresh Prince</span>, <span className="italic">Friends Reunion</span>), his work connects deeply with online audiences.</p> 
             <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Tapped by Will Smith’s Westbrook to create high-impact memes, Marque&lsquo;s content has generated millions of likes—thanks to his rare ability to toe the line between promotion and pure internet gold. He brought that same energy to brand campaigns he believed in—directing, shooting, and editing standout social content for clients like Red Bull, Hulu, and beyond.</p> 
             <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">His approach was born from LA&lsquo;s skate scene and sharpened in his collaborations with director Alma Har&lsquo;el and the promo departments of Netflix, HBO, and Fox.</p> 
-            <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">He is quickly becoming one of the leading voices in AI animation and character creation. Mudderfuger is his latest work. Let’s make some gold together.</p> 
-            <h2 className="text-2xl font-arial-bold text-center tracking-wide justify-self-center my-10 md:text-3xl lg:text-3xl xl:text-4xl">Jellywolf</h2>
-            <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Jellywolf is the boutique studio helmed by director Alma Har&lsquo;el. Known for reimagining the creative landscape of advertising, Alma has brought bold, emotional storytelling to campaigns for Airbnb, Facebook, Chanel, P&G, and TIME Magazine. Her work spans acclaimed films like Bombay Beach and Honey Boy, groundbreaking music and live-stream projects such as Sigur Rós&lsquo; Fjögur Píanó and Bob Dylan&lsquo;s Shadow Kingdom, and the Apple TV+ series Lady in the Lake starring Natalie Portman.</p> 
+            <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">He is quickly becoming one of the leading voices in AI animation and character creation. Mudderfuger is his latest work.</p> 
+            <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-2xl aspect-[21/2] m-auto mt-20 md:mt-25 lg:mt-30 mb-11">
+              <Image
+                src="/jellywolf.png"
+                alt="Jellywolf logo"
+                fill
+                className="object-contain"
+              />
             </div>
+            <p className="font-arial px-7 md:px-9 lg:px-24 xl:px-60 max-w-[1450px] mx-auto my-5">Jellywolf is the boutique studio helmed by director Alma Har&lsquo;el. Known for reimagining the creative landscape of advertising, Alma has brought bold, emotional storytelling to campaigns for Airbnb, Facebook, Chanel, P&G, and TIME Magazine. Her work spans acclaimed films like <span className="italic">Bombay Beach</span> and <span className="italic">Honey Boy</span>, groundbreaking music and live-stream projects such as Sigur Rós&lsquo; Fjögur Píanó and Bob Dylan&lsquo;s <span className="italic">Shadow Kingdom</span>, and the Apple TV+ series <span className="italic">Lady in the Lake</span> starring Natalie Portman.</p> 
+            </div>
+            {/* Instagram icon fixed at the very bottom center */}
+      <a
+        href="https://www.instagram.com/mudderfuger"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="relative bottom-4 left-1/2 -translate-x-1/2 z-50"
+        aria-label="Instagram"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={36}
+          height={36}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-white hover:text-[#E1306C] transition-colors duration-200"
+          style={{ background: "#000", borderRadius: "8px", padding: "4px" }}
+        >
+          <rect x="2" y="2" width="20" height="20" rx="5" />
+          <path d="M16.5 7.5h.01" />
+          <circle cx="12" cy="12" r="5" />
+        </svg>
+      </a>
             </section>
           </>
         )

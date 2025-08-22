@@ -33,6 +33,19 @@ body {
   color: var(--foreground);
   font-family: Anton, Helvetica, sans-serif;
 }
+.text-clamped {
+  font-size: clamp(2.1875rem, 0.2952rem + 8.6505vw, 3.75rem)
+}
+@media screen and (min-width:640px) {
+  .text-clamped {
+  font-size: clamp(3.75rem, 0.8929rem + 7.1429vw, 6.25rem);
+  }
+}
+@media (max-width: 1024px) {
+  .aspect-video {
+    aspect-ratio: 16 / 9;
+  }
+}
 
 @layer utilities {
   .animate-scroll {
