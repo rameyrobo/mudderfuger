@@ -36,9 +36,15 @@ body {
 .text-clamped {
   font-size: clamp(2.1875rem, 0.2952rem + 8.6505vw, 3.75rem)
 }
+.text-clamped-small {
+  font-size: clamp(1.458rem, 0.197rem + 5.767vw, 2.5rem);
+}
 @media screen and (min-width:640px) {
   .text-clamped {
   font-size: clamp(3.75rem, 0.8929rem + 7.1429vw, 6.25rem);
+  }
+  .text-clamped-small {
+    font-size: clamp(2.5rem, 0.595rem + 4.762vw, 4.167rem);
   }
 }
 @media (max-width: 1024px) {

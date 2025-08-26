@@ -142,7 +142,7 @@ const VideoGrid: React.FC<VideoGridProps> = ({
 
   return (
     <>
-      <div className="grid grid-cols-3 md:grid-cols-3 gap-1 px-0.5 lg:px-20 md:px-6 xl:px-52 max-w-[1530px] mx-auto">
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-1 px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto">
         {videos.map((video, idx) => {
           // Derive the base thumbnail URL for each video
           const fileName = video.url.split('/').pop()?.replace(/\.(mp4|webm)$/i, '') || '';

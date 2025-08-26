@@ -7,7 +7,7 @@ export default function Navbar({
 }) {
   return (
     <>
-      <div className="flex flex-wrap gap-1 mt-0.5 text-xl font-semibold uppercase flex-col md:flex-row md:gap-40 items-center">
+      <div className="flex flex-wrap gap-1 mt-0.5 text-xl font-semibold uppercase flex-col z-10 md:flex-row md:gap-40 items-center">
         <a
           href="#story-section"
           onClick={onNavClick}
