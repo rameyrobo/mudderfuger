@@ -309,7 +309,7 @@ export default function HomePage() {
                 <VideoGrid isMuted={isMuted} videos={videos} />
               )}
               <div className="pt-5 mb-20">
-            <h2 className="text-center uppercase text-clamped-small mt-10 mb-7 text-[#FF5C00] transition-all  px-5  py-1.5 mx-auto rounded-sm  max-w-[900px] tracking-widest sm:leading-18 md:leading-20 lg:leading-24 font-arial font-bold
+            <h2 className="text-center uppercase text-clamped-small mt-10 mb-7 text-[#FF5C00] transition-all  px-5  py-1.5 mx-auto rounded-sm  max-w-[900px] tracking-widest sm:leading-18 md:leading-20 lg:leading-24 font-arial font-bold scale-150 sm:scale-100
             ">Marque Cox</h2>
             <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto my-5"><strong>Marque Cox (aka ShrimpDaddy)</strong> is a Los Angeles–based director, editor, and creative force whose work fuses sharp entertainment marketing instincts with the language of meme culture and visual storytelling.</p> 
             <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto my-5">From shaping iconic trailers and campaigns for Netflix (<span className="italic">Orange is the New Black</span>, <span className="italic">GLOW</span>, <span className="italic">Lost in Space</span>) to directing viral content for HBO (<span className="italic">Justice League</span>, <span className="italic">Fresh Prince</span>, <span className="italic">Friends Reunion</span>), his projects consistently resonate with online audiences.</p> 
