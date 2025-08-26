@@ -56,7 +56,7 @@ function ContactModal({ isOpen, onClose }: ContactModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="font-arial fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
+    <div className="font-arial fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 pointer-events-auto">
       <div className="font-arial uppercase bg-white text-black rounded-lg shadow-lg p-6 w-full max-w-md">
         <h2 className="text-3xl mb-7 font-bold">Contact Us</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
