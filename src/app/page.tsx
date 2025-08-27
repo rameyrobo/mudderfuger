@@ -298,33 +298,27 @@ export default function HomePage() {
             <section 
               className="pb-0 pt-4 md:pt-0 overflow-x-hidden"
               id="story-section">
-              <h2 className="text-center uppercase text-clamped-small mt-10 mb-7 text-white transition-all  px-5  py-1.5 mx-auto rounded-sm  max-w-[900px] tracking-wide leading-13 sm:leading-18 md:leading-20 lg:leading-24 font-arial font-bold">
+              <h2 className="text-center uppercase text-clamped-small mt-5 md:mt-7 mb-0 text-[#FF13F0] transition-all px-5 mx-auto rounded-sm  max-w-[900px] tracking-wide leading-13 sm:leading-18 md:leading-20 lg:leading-24 font-arial font-bold scale-150 sm:scale-100">
                 Story
               </h2>
-              <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto my-5"><span className="italic">Mudderfuger</span> is a neon-soaked, breakneck coming-of-age story about a 19-year-old skater from Alabama who sells donuts by day while chasing his viral dream by night. As his music and skate clips explode online, so do the temptations, parties, and trouble he can&lsquo;t always skate away from</p>
-              <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto my-5">With a mom who always has his back and a boss who&lsquo;s like family, he manages to stay grounded until - he discovers the cop who&lsquo;s been harassing him is the same man who killed his father.</p>
+              <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto mt-3 mb-5"><span className="italic">Mudderfuger</span> is a neon-soaked, breakneck coming-of-age story about a 19-year-old skater from Alabama who sells donuts by day while chasing his viral dream by night. As his music and skate clips explode online, so do the temptations, parties, and trouble he can&lsquo;t always skate away from.</p>
               <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto my-5">With a mom who always has his back and a boss who feels like family, he stays grounded—until he learns the cop who&lsquo;s been harassing him is the same man who killed his father.</p>
               <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto my-5">Set against the sprawl of Southern California—where skate-punk swagger collides with bedroom-pop tenderness and a shadowy noir undercurrent—<span className="italic">Mudderfuger</span> is about skating as survival, revenge as fuel, and finding yourself while grinding the razor&lsquo;s edge between freedom and self-destruction… with a grin and a missing tooth to prove it.</p>
               {isAuthenticated && (
                 <VideoGrid isMuted={isMuted} videos={videos} />
               )}
-              <div className="pt-5 mb-20">
-            <h2 className="text-center uppercase text-clamped-small mt-10 mb-7 text-[#FF5C00] transition-all  px-5  py-1.5 mx-auto rounded-sm  max-w-[900px] tracking-widest sm:leading-18 md:leading-20 lg:leading-24 font-arial font-bold scale-150 sm:scale-100
+              <div className="pb-0 pt-4 md:pt-0 overflow-x-hidden">
+            <h2 className="text-center uppercase text-clamped-small mt-5 md:mt-7 mb-0 text-[#FF5C00] transition-all  px-5  py-1.5 mx-auto rounded-sm  max-w-[900px] tracking-widest sm:leading-18 md:leading-20 lg:leading-24 font-arial font-bold scale-150 sm:scale-100
             ">Marque Cox</h2>
-            <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto my-5"><strong>Marque Cox (aka ShrimpDaddy)</strong> is a Los Angeles–based director, editor, and creative force whose work fuses sharp entertainment marketing instincts with the language of meme culture and visual storytelling.</p> 
+            <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto mt-3 mb-5"><strong>Marque Cox (aka ShrimpDaddy)</strong> is a Los Angeles–based director, editor, and creative force whose work fuses sharp entertainment marketing instincts with the language of meme culture and visual storytelling.</p> 
             <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto my-5">From shaping iconic trailers and campaigns for Netflix (<span className="italic">Orange is the New Black</span>, <span className="italic">GLOW</span>, <span className="italic">Lost in Space</span>) to directing viral content for HBO (<span className="italic">Justice League</span>, <span className="italic">Fresh Prince</span>, <span className="italic">Friends Reunion</span>), his projects consistently resonate with online audiences.</p> 
             <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto my-5">Handpicked by Will Smith&lsquo;s Westbrook to craft high-impact memes, Marque&lsquo;s content has generated millions of likes—thanks to his unique ability to balance promotional strategy with pure internet chaos. He&lsquo;s brought that same energy to brands he believes in, creating standout campaigns for Red Bull, Hulu, and more.</p> 
             <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto my-5">Rooted in LA&lsquo;s skate scene and sharpened through collaborations with director Alma Har&lsquo;el and the promo teams at Netflix, HBO, and Fox, Marque has developed a style that is both authentic and culture-forward.</p> 
             <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto my-5">Now emerging as a leading voice in AI animation and character creation, he continues to push boundaries with bold new work—most recently, his project <span className="italic">Mudderfuger</span>.</p> 
-            <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg aspect-[21/2] mx-auto mt-8 lg:mt-12 mb-5 sm:mb-6 md:mb-7 lg:mb-8 py-12">
-              <Image
-                src="/jellywolf.png"
-                alt="Jellywolf logo"
-                fill
-                className="object-contain"
-              />
+            <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg aspect-[21/2] mx-auto mt-11 md:mt-12 mb-0 py-2">
+              <Image src="/jellywolf.png" alt="Jellywolf logo" fill className="object-contain"/>
             </div>
-            <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto my-5">Jellywolf is the boutique studio led by director Alma Har&lsquo;el, celebrated for redefining the language of advertising with bold, emotional storytelling. Alma has brought her visionary touch to campaigns for Airbnb, Facebook, Chanel, P&G, and TIME Magazine, crafting work that blurs the line between art and commerce.</p>
+            <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto mt-3 mb-5 pt-3 md:pt-7.5">Jellywolf is the boutique studio led by director Alma Har&lsquo;el, celebrated for redefining the language of advertising with bold, emotional storytelling. Alma has brought her visionary touch to campaigns for Airbnb, Facebook, Chanel, P&G, and TIME Magazine, crafting work that blurs the line between art and commerce.</p>
             <p className="font-arial px-7 sm:px-10 md:px-9 lg:px-20 xl:px-52 max-w-[1530px] mx-auto my-5">Her career spans acclaimed films like <span className="italic">Bombay Beach</span> and <span className="italic">Honey Boy</span>, groundbreaking collaborations in music and live-streaming such as Sigur Rós&lsquo; <span className="italic">Fjögur Píanó</span> and Bob Dylan&lsquo;s <span className="italic">Shadow Kingdom</span>, and most recently, the Apple TV+ series <span className="italic">Lady in the Lake</span> starring Natalie Portman.</p>
             </div>
             {/* Instagram icon fixed at the very bottom center */}
