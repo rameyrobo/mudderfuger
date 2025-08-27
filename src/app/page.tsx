@@ -147,11 +147,14 @@ export default function HomePage() {
       setError("Incorrect password.");
       return;
     }
-    await fetch("/api/log-visit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
+    // Bypass sending email if master@gmail.com is used
+    if (email !== "main@gmail.com") {
+      await fetch("/api/log-visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+    }
     setIsAuthenticated(true);
   };
 
