@@ -26,8 +26,12 @@ const VideoGrid: React.FC<VideoGridProps> = ({
     const ua = navigator.userAgent;
     const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
     const isFirefox = ua.toLowerCase().includes('firefox');
-    if (isSafari || isFirefox) {
-      setPreferWebm(true);
+    if (isSafari) {
+      setPreferWebm(false); // Prefer MP4 on Safari
+    } else if (isFirefox) {
+      setPreferWebm(true); // Prefer WebM on Firefox
+    } else {
+      setPreferWebm(true); // Default to WebM for other browsers
     }
   }, []);
 
@@ -224,6 +228,21 @@ const VideoGrid: React.FC<VideoGridProps> = ({
             setSelectedVideo(null);
           }}
         >
+          {/* Close Button */}
+          <button
+            className="absolute top-4 right-3 z-70 bg-white/95 hover:bg-white text-black rounded-full p-2 shadow-lg transition"
+            onClick={e => {
+              e.stopPropagation();
+              const modalVideo = document.querySelector('#modalVideo') as HTMLVideoElement;
+              modalVideo?.pause();
+              setSelectedVideo(null);
+            }}
+            aria-label="Close"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
           <video
             id="modalVideo"
             controls
@@ -248,7 +267,6 @@ const VideoGrid: React.FC<VideoGridProps> = ({
               }
               type={preferWebm ? 'video/webm' : 'video/mp4'}
             />
-            
           </video>
         </div>
       )}
