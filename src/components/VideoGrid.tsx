@@ -196,15 +196,29 @@ const VideoGrid: React.FC<VideoGridProps> = ({
                   onContextMenu={e => e.preventDefault()}
                   className={`absolute inset-0 w-full h-full object-cover ${videoActivated[video.id] ? 'opacity-100' : 'opacity-0'}`}
                   onTouchStart={() => handleActivateVideo(video.id)}
-                  onMouseEnter={() => handleActivateVideo(video.id)}
+                  onMouseEnter={() => {
+                    const el = hoverRefs.current[video.id];
+                    if (el) {
+                      if (el.readyState >= 2) {
+                        el.play().catch(() => {});
+                      } else {
+                        const onCanPlay = () => {
+                          el.play().catch(() => {});
+                          el.removeEventListener('canplay', onCanPlay);
+                        };
+                        el.addEventListener('canplay', onCanPlay);
+                      }
+                    }
+                    handleActivateVideo(video.id);
+                  }}
                 >
+                  <source
+                    src={video.url}
+                    type="video/mp4; codecs='avc1.42E01E, mp4a.40.2'"
+                  />
                   <source
                     src={video.url.replace('.mp4', '.webm')}
                     type="video/webm"
-                  />
-                  <source
-                    src={video.url}
-                    type="video/mp4"
                   />
                 </video>
                 <div className="absolute bottom-2 right-2 z-20 cursor-pointer bg-neutral-800 p-0.5 rounded-full " onClick={handleMuteToggle}>
