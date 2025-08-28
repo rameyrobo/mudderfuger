@@ -6,8 +6,10 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file") as File | null;
     const fileName = formData.get("fileName") as string | null;
     const apiKey = process.env.BUNNY_STORAGE_UPLOAD_KEY;
+    console.log("API upload:", { file, fileName, apiKey });
 
     if (!file || !fileName || !apiKey) {
+      console.log("Missing something:", { file, fileName, apiKey });
       return NextResponse.json(
         { success: false, error: "Missing file, fileName, or API key" },
         { status: 400 }
