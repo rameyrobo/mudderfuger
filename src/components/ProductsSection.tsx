@@ -14,7 +14,11 @@ type UploadField = {
   checkbox1?: { label: string; required: boolean };
   checkbox2?: { label: string; required: boolean };
 };
-
+type SnipcartCart = {
+  invoiceNumber?: string;
+  token?: string;
+  // add more fields if you use them
+};
 // Helper to get N unique random images from the pool
 function getNUniqueRandomImages(
   imgArray: { id: number; url: string }[],
@@ -31,6 +35,17 @@ function getNUniqueRandomImages(
 
 function isAddYourselfUploadField(field: UploadField): field is UploadField & { important: string[] } {
   return Array.isArray(field.important);
+}
+
+declare global {
+  interface Window {
+    Snipcart: {
+      events: {
+        on: (event: string, callback: (cart: unknown) => void) => void;
+        off: (event: string, callback: (cart: unknown) => void) => void;
+      };
+    };
+  }
 }
 
 export default function ProductsSection() {
@@ -367,10 +382,15 @@ export default function ProductsSection() {
     // Wait for Snipcart to be available
     if (typeof window === "undefined" || !window.Snipcart) return;
 
-    function handleCartConfirmed(cart: any) {
+    function handleCartConfirmed(cart: unknown) {
       console.log("cart.confirmed event fired", cart);
-      // Your upload logic here
-      const orderId = cart?.invoiceNumber || cart?.token || "unknown";
+
+      let orderId = "unknown";
+      if (cart && typeof cart === "object") {
+        const c = cart as SnipcartCart;
+        orderId = c.invoiceNumber ?? c.token ?? "unknown";
+      }
+
       const file = uploadFiles[`upload-add-yourself-0`];
       if (!file) return;
 
@@ -393,7 +413,6 @@ export default function ProductsSection() {
     }
 
     window.Snipcart.events.on("cart.confirmed", handleCartConfirmed);
-
     return () => {
       window.Snipcart.events.off("cart.confirmed", handleCartConfirmed);
     };
