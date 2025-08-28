@@ -67,7 +67,21 @@ export const products = [
         description: "Upload a clear photo of your face. The better the quality, the better the result.",
         type: "file",
         accept: "image/*",
-        required: true
+        required: true,
+        important: [
+	        "The photo must be of you (a real person). No drawings, AI art, cartoon characters, or photos of friends/family.",
+	        "By uploading, you confirm you give permission for your likeness to be turned into an AI character and used in Mudderfuger episodes, social posts, and promotions.",
+	        "You understand you won’t be entitled to any compensation beyond this purchase.",
+	        "Submissions that don’t follow these instructions will be refunded."
+        ],
+        checkbox1: {
+          label: "Yes, this is a photo of me (not someone else)",
+          required: true
+        },
+        checkbox2: {
+          label: "Yes, I give full permission to be turned into an AI character for use in Mudderfuger",
+          required: true
+        }
       }
     ]
   },

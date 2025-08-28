@@ -29,6 +29,9 @@ export default function ProductsSection() {
   // State to track custom field values for the modal product
   const [customFieldValues, setCustomFieldValues] = useState<{ [key: number]: string | boolean }>({});
 
+  // Add state for upload form validation
+  const [uploadValidation, setUploadValidation] = useState<{ [key: string]: boolean }>({});
+
   // Sponsor plan selection state
   const [selectedSponsorPlan] = useState<string>("starter-sponsor");
   // Contact modal state
@@ -270,9 +273,19 @@ export default function ProductsSection() {
   // Helper to check if all required uploads are present
   const allUploadsFilled =
     !product?.upload?.length ||
-    product.upload.every((field, idx) =>
-      field.required ? !!uploadFiles[`upload-${product.id}-${idx}`] : true
-    );
+    product.upload.every((field, idx) => {
+      if (!field.required) return true;
+      const fileUploaded = !!uploadFiles[`upload-${product.id}-${idx}`];
+      
+      // For add-yourself product, also check required checkboxes
+      if (product.id === "add-yourself") {
+        const checkbox1Checked = uploadValidation[`checkbox1-${product.id}-${idx}`] || false;
+        const checkbox2Checked = uploadValidation[`checkbox2-${product.id}-${idx}`] || false;
+        return fileUploaded && checkbox1Checked && checkbox2Checked;
+      }
+      
+      return fileUploaded;
+    });
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -313,6 +326,38 @@ export default function ProductsSection() {
       return () => clearTimeout(fadeTimeout);
     }
   }, [carouselIdx]);
+
+  const handleFileUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/api/uploads", {
+      method: "POST",
+      headers: {
+        "x-file-name": `${Date.now()}_${file.name}`,
+        "content-type": file.type,
+      },
+      body: file,
+    });
+    const data = await res.json();
+    if (data.success) {
+      // Success! Use data.url as needed
+    } else {
+      alert("Upload failed: " + data.error);
+    }
+  };
+
+  useEffect(() => {
+    function handleOrderCompleted(event) {
+      const order = event.detail;
+      // You can get order.id, order.email, etc.
+      // Now trigger your upload here!
+      uploadPendingFile(order);
+    }
+
+    window.addEventListener("snipcart.order.completed", handleOrderCompleted);
+    return () => window.removeEventListener("snipcart.order.completed", handleOrderCompleted);
+  }, []);
 
   if (modalIdx === null) {
     return (
@@ -462,6 +507,7 @@ export default function ProductsSection() {
       rounded-lg 
       shadow-2xl 
       p-9
+      pb-16
       md:px-16 
       2xl:px-64 
       z-10 
@@ -751,29 +797,104 @@ export default function ProductsSection() {
               {product?.upload && product.upload.length > 0 && (
   <form className="mb-4 w-full max-w-xs flex flex-col gap-3">
     {product.upload.map((field, idx) => (
-      <label key={idx} className="flex flex-col font-arial text-base">
-        <span className="mb-1">
-          {field.name}
-          {field.required && <span className="text-red-500">*</span>}
-        </span>
-        <input
-          type={field.type}
-          accept={field.accept}
-          required={field.required}
-          className="border rounded px-2 py-1"
-          name={`upload-${product.id}-${idx}`}
-          onChange={e => {
-            const file = e.target.files?.[0] || null;
-            setUploadFiles(prev => ({
-              ...prev,
-              [`upload-${product.id}-${idx}`]: file,
-            }));
-          }}
-        />
-        {field.description && (
-          <span className="text-xs text-gray-600 mt-1">{field.description}</span>
+      <div key={idx} className="flex flex-col font-arial text-base">
+        <label className="flex flex-col">
+          <span className="mb-1">
+            {field.name}
+            {field.required && <span className="text-red-500">*</span>}
+          </span>
+          <input
+            type={field.type}
+            accept={field.accept}
+            required={field.required}
+            className="border rounded px-2 py-1"
+            name={`upload-${product.id}-${idx}`}
+            onChange={async e => {
+              const file = e.target.files?.[0] || null;
+              setUploadFiles(prev => ({
+                ...prev,
+                [`upload-${product.id}-${idx}`]: file,
+              }));
+              if (file) {
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("fileName", `${Date.now()}_${file.name}`);
+                const res = await fetch("/api/uploads", {
+                  method: "POST",
+                  body: formData,
+                });
+                const data = await res.json();
+                if (data.success) {
+                  console.log("Uploaded to Bunny:", data.url);
+                } else {
+                  alert("Upload failed: " + data.error);
+                }
+              }
+            }}
+          />
+          {field.description && (
+            <span className="text-xs text-gray-600 mt-1">{field.description}</span>
+          )}
+        </label>
+
+        {/* Important disclaimer for add-yourself product */}
+        {product.id === "add-yourself" && field.important && (
+          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+            <h4 className="font-arial-bold text-sm text-yellow-800 mb-2">IMPORTANT:</h4>
+            <ul className="text-xs text-yellow-700 space-y-1">
+              {field.important.map((item, i) => (
+                <li key={i} className="flex items-start">
+                  <span className="text-yellow-600 mr-2 flex-shrink-0">•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
-      </label>
+
+        {/* Required checkboxes for add-yourself product */}
+        {product.id === "add-yourself" && field.checkbox1 && (
+          <label className="flex items-start mt-3 cursor-pointer">
+            <input
+              type="checkbox"
+              required={field.checkbox1.required}
+              className="mr-2 mt-1 flex-shrink-0"
+              checked={uploadValidation[`checkbox1-${product.id}-${idx}`] || false}
+              onChange={e => {
+                setUploadValidation(prev => ({
+                  ...prev,
+                  [`checkbox1-${product.id}-${idx}`]: e.target.checked,
+                }));
+              }}
+            />
+            <span className="text-sm leading-tight">
+              {field.checkbox1.label}
+              {field.checkbox1.required && <span className="text-red-500">*</span>}
+            </span>
+          </label>
+        )}
+
+        {product.id === "add-yourself" && field.checkbox2 && (
+          <label className="flex items-start mt-2 cursor-pointer">
+            <input
+              type="checkbox"
+              required={field.checkbox2.required}
+              className="mr-2 mt-1 flex-shrink-0"
+              checked={uploadValidation[`checkbox2-${product.id}-${idx}`] || false}
+              onChange={e => {
+                setUploadValidation(prev => ({
+                  ...prev,
+                  [`checkbox2-${product.id}-${idx}`]: e.target.checked,
+                }));
+              }}
+            />
+            <span className="text-sm leading-tight">
+              {field.checkbox2.label}
+              {field.checkbox2.required && <span className="text-red-500">*</span>}
+            </span>
+          </label>
+        )}
+      </div>
     ))}
   </form>
 )}
