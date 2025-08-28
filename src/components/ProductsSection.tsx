@@ -391,31 +391,36 @@ export default function ProductsSection() {
         orderId = c.invoiceNumber ?? c.token ?? "unknown";
       }
 
-      const file = uploadFiles[`upload-add-yourself-0`];
-      if (!file) return;
+      // Loop through all upload fields for the current product
+      if (product?.upload && product.upload.length > 0) {
+        product.upload.forEach((field, idx) => {
+          const file = uploadFiles[`upload-${product.id}-${idx}`];
+          if (!file) return;
 
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("fileName", `${orderId}_${file.name}`);
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("fileName", `${orderId}_${file.name}`);
 
-      fetch("/api/uploads", {
-        method: "POST",
-        body: formData,
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            console.log("Uploaded to Bunny after order:", data.url);
-          } else {
-            alert("Upload failed: " + data.error);
-          }
+          fetch("/api/uploads", {
+            method: "POST",
+            body: formData,
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                console.log("Uploaded to Bunny after order:", data.url);
+              } else {
+                alert("Upload failed: " + data.error);
+              }
+            });
         });
+      }
     }
 
     window.Snipcart.events.on("cart.confirmed", handleCartConfirmed);
     // No .off method available, so do not try to remove the listener
     return undefined;
-  }, [uploadFiles]);
+  }, [uploadFiles, product?.id, product?.upload]);
 
   if (modalIdx === null) {
     return (
