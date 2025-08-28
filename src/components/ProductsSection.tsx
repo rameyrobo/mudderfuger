@@ -413,9 +413,8 @@ export default function ProductsSection() {
     }
 
     window.Snipcart.events.on("cart.confirmed", handleCartConfirmed);
-    return () => {
-      window.Snipcart.events.off("cart.confirmed", handleCartConfirmed);
-    };
+    // No .off method available, so do not try to remove the listener
+    return undefined;
   }, [uploadFiles]);
 
   if (modalIdx === null) {
