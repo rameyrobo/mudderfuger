@@ -4,6 +4,17 @@ import Image from 'next/image';
 import { imgs } from '@/data/imgs';
 import { products } from '@/data/products';
 
+type UploadField = {
+  name: string;
+  description: string;
+  type: string;
+  accept: string;
+  required: boolean;
+  important?: string[];
+  checkbox1?: { label: string; required: boolean };
+  checkbox2?: { label: string; required: boolean };
+};
+
 // Helper to get N unique random images from the pool
 function getNUniqueRandomImages(
   imgArray: { id: number; url: string }[],
@@ -16,6 +27,10 @@ function getNUniqueRandomImages(
     chosen.push(arr.splice(idx, 1)[0].url);
   }
   return chosen;
+}
+
+function isAddYourselfUploadField(field: UploadField): field is UploadField & { important: string[] } {
+  return Array.isArray(field.important);
 }
 
 export default function ProductsSection() {
@@ -327,7 +342,8 @@ export default function ProductsSection() {
     }
   }, [carouselIdx]);
 
-  const handleFileUpload = async (file: File) => {
+  /*
+    const handleFileUpload = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
 
@@ -345,19 +361,43 @@ export default function ProductsSection() {
     } else {
       alert("Upload failed: " + data.error);
     }
-  };
+  }; */
 
   useEffect(() => {
-    function handleOrderCompleted(event) {
-      const order = event.detail;
-      // You can get order.id, order.email, etc.
-      // Now trigger your upload here!
-      uploadPendingFile(order);
+    function handleOrderCompleted(event: CustomEvent<unknown>) {
+      // If you want to type-guard, you can do so here
+      const order = (event as CustomEvent<{ id: string }>).detail;
+      const file = uploadFiles[`upload-add-yourself-0`];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("fileName", `${order.id}_${file.name}`);
+
+      fetch("/api/uploads", {
+        method: "POST",
+        body: formData,
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            console.log("Uploaded to Bunny after order:", data.url);
+          } else {
+            alert("Upload failed: " + data.error);
+          }
+        });
     }
 
-    window.addEventListener("snipcart.order.completed", handleOrderCompleted);
-    return () => window.removeEventListener("snipcart.order.completed", handleOrderCompleted);
-  }, []);
+    window.addEventListener(
+      "snipcart.order.completed",
+      handleOrderCompleted as EventListener
+    );
+    return () =>
+      window.removeEventListener(
+        "snipcart.order.completed",
+        handleOrderCompleted as EventListener
+      );
+  }, [uploadFiles]);
 
   if (modalIdx === null) {
     return (
@@ -796,7 +836,7 @@ export default function ProductsSection() {
               )}
               {product?.upload && product.upload.length > 0 && (
   <form className="mb-4 w-full max-w-xs flex flex-col gap-3">
-    {product.upload.map((field, idx) => (
+    {(product.upload as UploadField[]).map((field, idx) => (
       <div key={idx} className="flex flex-col font-arial text-base">
         <label className="flex flex-col">
           <span className="mb-1">
@@ -809,27 +849,12 @@ export default function ProductsSection() {
             required={field.required}
             className="border rounded px-2 py-1"
             name={`upload-${product.id}-${idx}`}
-            onChange={async e => {
+            onChange={e => {
               const file = e.target.files?.[0] || null;
               setUploadFiles(prev => ({
                 ...prev,
                 [`upload-${product.id}-${idx}`]: file,
               }));
-              if (file) {
-                const formData = new FormData();
-                formData.append("file", file);
-                formData.append("fileName", `${Date.now()}_${file.name}`);
-                const res = await fetch("/api/uploads", {
-                  method: "POST",
-                  body: formData,
-                });
-                const data = await res.json();
-                if (data.success) {
-                  console.log("Uploaded to Bunny:", data.url);
-                } else {
-                  alert("Upload failed: " + data.error);
-                }
-              }
             }}
           />
           {field.description && (
@@ -838,7 +863,7 @@ export default function ProductsSection() {
         </label>
 
         {/* Important disclaimer for add-yourself product */}
-        {product.id === "add-yourself" && field.important && (
+        {product.id === "add-yourself" && isAddYourselfUploadField(field) && (
           <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
             <h4 className="font-arial-bold text-sm text-yellow-800 mb-2">IMPORTANT:</h4>
             <ul className="text-xs text-yellow-700 space-y-1">
