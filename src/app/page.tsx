@@ -201,7 +201,7 @@ useEffect(() => {
       className="pb-0 pt-9 md:pt-10 lg:pt-11 xl:pt-12"
       id="story-section">
         <h2 className="text-2xl font-bold uppercase text-center tracking-wide justify-self-center mb-px md:text-3xl lg:text-3xl xl:text-4xl">
-          MuddaFuger&rsquo;s Story
+          Mudderfuger&rsquo;s Story
         </h2>
       <ScrollingBannerVids />
       <VideoGrid isMuted={isMuted} videos={videos} />
