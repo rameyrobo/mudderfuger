@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const fileName = formData.get("fileName") as string | null;
     const apiKey = process.env.BUNNY_STORAGE_UPLOAD_KEY;
     const emailSender = process.env.EMAIL_SENDER;
-    const emailReceiver = process.env.EMAIL_RECEIVER;
+    const emailReceiver = process.env.EMAIL_SENDER;
 
     if (!file || !fileName || !apiKey || !emailSender || !emailReceiver) {
       return NextResponse.json(
