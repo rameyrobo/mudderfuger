@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, useLayoutEffect } from 'react';
+import Image from 'next/image';
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 
 type Video = {
@@ -7,6 +8,25 @@ type Video = {
   url: string;
 };
 
+function useResponsiveThumbSize() {
+  const [size, setSize] = useState(1280); // default
+
+  useEffect(() => {
+    function updateSize() {
+      const w = window.innerWidth;    
+      if (w < 640) setSize(320);
+      else if (w < 1024) setSize(640);
+      else if (w < 1536) setSize(1280);
+      else setSize(1920);
+    }
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
+  return size;
+}
+
 export default function VideoGrid({
     isMuted,
     videos
@@ -14,6 +34,9 @@ export default function VideoGrid({
     isMuted: boolean;
     videos: Video[];
   }) {
+  const thumbFormat = 'webp' as const;
+  const thumbnailsLoaded = true;
+  const thumbSize = useResponsiveThumbSize();
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [hoverTimeMap, setHoverTimeMap] = useState<{ [key: number]: number }>({});
   const hoverRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
@@ -141,32 +164,45 @@ export default function VideoGrid({
 
   return (
     <>
-      <div className="grid grid-cols-3 md:grid-cols-3 gap-1 px-0.5 lg:px-20 px-2 md:px-6 xl:px-52 max-w-[1530px] mx-auto">
-        {videos.map(video => {
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-1 px-0.5 lg:px-20 md:px-6 xl:px-52 max-w-[1530px] mx-auto">
+        {videos.map((video, idx) => {
+          // Derive the base thumbnail URL for each video
           const fileName = video.url.split('/').pop()?.replace(/\.(mp4|webm)$/i, '') || '';
           const thumbBase = `https://mudderfuger.b-cdn.net/_thumbs/${fileName}`;
+          const format = thumbFormat;
+
+          // If there are exactly 4 videos and this is the last one, span all columns and use 16:9 aspect
+          const isFourthSpanning =
+            videos.length === 4 && idx === 3
+              ? "col-span-3"
+              : "";
+
+          const aspectClass =
+            videos.length === 4 && idx === 3
+              ? "aspect-video" // Tailwind's aspect-[16/9] utility
+              : "aspect-[4/5]";
 
           return (
             <div
               key={video.id}
-              className="relative group cursor-pointer"
+              className={`relative group cursor-pointer ${isFourthSpanning}`}
               onClick={() => handleClick(video.id, video.url)}
               onMouseEnter={() => handleMouseEnter(video.id)}
               onMouseLeave={() => handleMouseLeave(video.id)}
             >
-              <div className="aspect-[4/5] w-full relative">
-                {/* Thumbnail: show until activated */}
-                {!videoActivated[video.id] && (
-                  <picture>
-                    <source srcSet={`${thumbBase}.avif`} type="image/avif" />
-                    <source srcSet={`${thumbBase}.webp`} type="image/webp" />
-                    <img
-                      src={`${thumbBase}.jpg`}
-                      alt={video.title}
-                      className="absolute inset-0 w-full h-full object-cover"
-                      draggable={false}
-                    />
-                  </picture>
+              <div className={`${aspectClass} w-full relative`}>
+                {/* Thumbnail: show until activated and after page load, only best format loaded */}
+                {thumbnailsLoaded && format && !videoActivated[video.id] && (
+                  <Image
+                    src={`${thumbBase}-${thumbSize}.webp`}
+                    alt={video.title}
+                    fill
+                    sizes="(max-width:450px) 150px, (max-width: 640px) 320px, (max-width: 1024px) 640px, (max-width: 1536px) 1280px, 1920px"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    draggable={false}
+                    priority={false}
+                    unoptimized={false}
+                  />
                 )}
                 <video
                   ref={el => { hoverRefs.current[video.id] = el; }}
@@ -174,7 +210,7 @@ export default function VideoGrid({
                   muted={localIsMuted}
                   preload="preload"
                   playsInline
-                  poster={`${thumbBase}.jpg`}
+                  poster={`${thumbBase}-${thumbSize}.webp`}
                   onContextMenu={e => e.preventDefault()}
                   className={`absolute inset-0 w-full h-full object-cover ${videoActivated[video.id] ? 'opacity-100' : 'opacity-0'}`}
                   onTouchStart={() => handleActivateVideo(video.id)}
@@ -195,9 +231,6 @@ export default function VideoGrid({
                   ) : (
                     <SpeakerWaveIcon className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   )}
-                </div>
-                <div className="font-arial-bold absolute top-0 left-0 bg-black bg-opacity-60 text-white px-2 py-1 text-xs lg:text-sm max-w-[88%] truncate">
-                  {video.title}
                 </div>
               </div>
             </div>
@@ -221,7 +254,7 @@ export default function VideoGrid({
             muted={localIsMuted}
             playsInline
             onContextMenu={(e) => e.preventDefault()}
-            className="max-h-[80vh] max-w-[90vw] border-4 border-white rounded"
+            className="max-h-[80dvh] max-w-90vw border-4 border-white rounded"
             onLoadedMetadata={(e) => {
               const index = videos.findIndex(v => v.url === selectedVideo);
               const time = hoverTimeMap[videos[index]?.id] || 0;

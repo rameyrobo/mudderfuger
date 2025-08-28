@@ -40,20 +40,70 @@ export const products = [
       "Custom AI version of your face",
       "Name or @handle used in the skit",
       "Tag in caption + option for a collab post - add on"
+    ],
+    media: [
+      {
+        type: "video",
+        src: "https://mudderfuger.b-cdn.net/_characters/stevie_williams.mp4",
+        alt: "Stevie Williams as a character in a Mudderfuger skit",
+        name: "Stevie"
+      },
+      {
+        type: "video",
+        src: "https://mudderfuger.b-cdn.net/_characters/nuge.mp4",
+        alt: "Nuge as a character in a Mudderfuger skit",
+        name: "Nuge"
+      },
+      {
+        type: "video",
+        src: "https://mudderfuger.b-cdn.net/_characters/weck.mp4",
+        alt: "Weck as a character in a Mudderfuger skit",
+        name: "Weck"
+      }
+    ],
+    upload: [
+      {
+        name: "Upload Your Photo",
+        description: "Upload a clear photo of your face. The better the quality, the better the result.",
+        type: "file",
+        accept: "image/*",
+        required: true,
+        important: [
+	        "The photo must be of you (a real person). No drawings, AI art, cartoon characters, or photos of friends/family.",
+	        "By uploading, you confirm you give permission for your likeness to be turned into an AI character and used in Mudderfuger episodes, social posts, and promotions.",
+	        "You understand you won’t be entitled to any compensation beyond this purchase.",
+	        "Submissions that don’t follow these instructions will be refunded."
+        ],
+        checkbox1: {
+          label: "Yes, this is a photo of me (not someone else)",
+          required: true
+        },
+        checkbox2: {
+          label: "Yes, I give full permission to be turned into an AI character for use in Mudderfuger",
+          required: true
+        }
+      }
     ]
   },
   {
     id: "submit-song",
-    title: "Submit a Song / Artwork",
+    title: "Submit a Song",
     price: 150,
-    description: "Submit a song or custom artwork (like a PNG, logo, or shirt design). If Mudderfuger likes your submission, he'll wear it in an episode and feature it on his merch store.",
+    description: "Submit a song (mp3, wav, or aiff). I'll feature it in one of my IG Reels.",
     url: "/products/all-products",
     includes: [
       "You'll get a shoutout as the artist",
-      "Get your design included for sale on the website",
-      "The shirt will be listed for a full month, so your own promo and shoutouts can help boost sales and your chances of getting paid.",
       "At least 8–10 seconds of your music in a real skit",
       "Tag in caption + option for a collab post - add on"
+    ],
+    upload: [
+      {
+        name: "Upload Your Song",
+        description: "Upload a clear audio file of your song. The better the quality, the better the result.",
+        type: "file",
+        accept: "audio/*",
+        required: true
+      }
     ]
   },
   {
@@ -64,12 +114,10 @@ export const products = [
     url: "/products/all-products",
     includes: [
         "1 custom AI skit/ad  (15-40 sec)",
-        "Product is clearly featured with Mudderfuger’s signature chaos and humor",
         "Vertical (9:16) and Horizontal (16:9) versions included ",
         "Ready for TikTok, Reels, YouTube, or paid campaigns",
         "Creative handled by us",
         "You can submit a product, short blurb, and key message — we take it from there",
-        "Repost rights included",
         "Use the video on your own channels (must tag @mudderfuger when reposting)",
     ],
     customFields: [

@@ -1,9 +1,24 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import ContactModal from './ContactModal';
 import Image from 'next/image';
 import { imgs } from '@/data/imgs';
 import { products } from '@/data/products';
 
+type UploadField = {
+  name: string;
+  description: string;
+  type: string;
+  accept: string;
+  required: boolean;
+  important?: string[];
+  checkbox1?: { label: string; required: boolean };
+  checkbox2?: { label: string; required: boolean };
+};
+type SnipcartCart = {
+  invoiceNumber?: string;
+  token?: string;
+  // add more fields if you use them
+};
 // Helper to get N unique random images from the pool
 function getNUniqueRandomImages(
   imgArray: { id: number; url: string }[],
@@ -18,6 +33,21 @@ function getNUniqueRandomImages(
   return chosen;
 }
 
+function isAddYourselfUploadField(field: UploadField): field is UploadField & { important: string[] } {
+  return Array.isArray(field.important);
+}
+
+declare global {
+  interface Window {
+    Snipcart: {
+      events: {
+        on: (event: string, callback: (cart: unknown) => void) => void;
+        off: (event: string, callback: (cart: unknown) => void) => void;
+      };
+    };
+  }
+}
+
 export default function ProductsSection() {
   // Initial assignment of images as empty, then assign unique images on mount
   const [imageAssignments, setImageAssignments] = useState<string[]>(() => Array(products.length).fill(""));
@@ -29,10 +59,16 @@ export default function ProductsSection() {
   // State to track custom field values for the modal product
   const [customFieldValues, setCustomFieldValues] = useState<{ [key: number]: string | boolean }>({});
 
+  // Add state for upload form validation
+  const [uploadValidation, setUploadValidation] = useState<{ [key: string]: boolean }>({});
+
   // Sponsor plan selection state
   const [selectedSponsorPlan] = useState<string>("starter-sponsor");
   // Contact modal state
   const [isContactModalOpen, setContactModalOpen] = useState(false);
+
+  // Upload files state
+  const [uploadFiles, setUploadFiles] = useState<Record<string, File | null>>({});
 
   // Dynamically update the sponsor-me button price for Snipcart
   // This effect ensures the data-item-price attribute and dataset.itemPrice are always correct for the selected plan.
@@ -45,11 +81,7 @@ export default function ProductsSection() {
       (sponsorButton as unknown as { itemPrice: string }).itemPrice = price.toFixed(2);
     }
   }, [selectedSponsorPlan]);
-  // Log all products on mount
-  useEffect(() => {
-    console.log("All products:", products);
-  }, []);
-
+  
   // Open modal on page load and handle back/forward navigation for /products/:id
   useEffect(() => {
     const path = window.location.pathname;
@@ -197,6 +229,29 @@ export default function ProductsSection() {
     ? products.find(p => p.category === "sponsor-me") || rawProduct
     : rawProduct;
 
+  // Carousel slides for add-yourself
+  const [carouselIdx, setCarouselIdx] = useState(0);
+  const [isFading, setIsFading] = useState(false);
+  const prevCarouselIdx = useRef(carouselIdx);
+  const addYourselfSlides = useMemo(() => {
+    if (product?.id !== "add-yourself" || !product.media) return [];
+    return product.media.flatMap(mediaItem => {
+      const base = mediaItem.src.replace(/\.mp4$/, '');
+      return [
+        {
+          type: 'image',
+          src: `${base}.webp`,
+          alt: `Original image for ${mediaItem.alt}`,
+        },
+        {
+          type: 'video',
+          src: `${base}.webm`, // use webm
+          alt: mediaItem.alt,
+        }
+      ];
+    });
+  }, [product]);
+
   const snipcartPrice = useMemo(() => {
     if (!product) return "0.00";
     return (
@@ -240,6 +295,133 @@ export default function ProductsSection() {
     });
   }, [customFieldValues, product]);
 
+  // Reset uploadFiles when modal changes
+  useEffect(() => {
+    setUploadFiles({});
+  }, [modalIdx]);
+
+  // Helper to check if all required uploads are present
+  const allUploadsFilled =
+    !product?.upload?.length ||
+    product.upload.every((field, idx) => {
+      if (!field.required) return true;
+      const fileUploaded = !!uploadFiles[`upload-${product.id}-${idx}`];
+      
+      // For add-yourself product, also check required checkboxes
+      if (product.id === "add-yourself") {
+        const checkbox1Checked = uploadValidation[`checkbox1-${product.id}-${idx}`] || false;
+        const checkbox2Checked = uploadValidation[`checkbox2-${product.id}-${idx}`] || false;
+        return fileUploaded && checkbox1Checked && checkbox2Checked;
+      }
+      
+      return fileUploaded;
+    });
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    if (product?.id !== "add-yourself" || addYourselfSlides.length === 0) return;
+
+    // If current slide is an image, auto-advance after 2 seconds
+    if (addYourselfSlides[carouselIdx].type === "image") {
+      const timer = setTimeout(() => {
+        setCarouselIdx((idx) => (idx + 1) % addYourselfSlides.length);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+
+    // If current slide is a video, advance only after video ends
+    const video = videoRef.current;
+    if (addYourselfSlides[carouselIdx].type === "video" && video) {
+      // Always start from the beginning
+      video.currentTime = 0;
+      video.play();
+
+      const handleEnded = () => {
+        setCarouselIdx((idx) => (idx + 1) % addYourselfSlides.length);
+      };
+      video.addEventListener("ended", handleEnded);
+
+      return () => {
+        video.removeEventListener("ended", handleEnded);
+      };
+    }
+  }, [carouselIdx, addYourselfSlides, product?.id, setCarouselIdx]);
+
+  useEffect(() => {
+    if (prevCarouselIdx.current !== carouselIdx) {
+      setIsFading(true);
+      const fadeTimeout = setTimeout(() => setIsFading(false), 150); // 400ms fade duration
+      prevCarouselIdx.current = carouselIdx;
+      return () => clearTimeout(fadeTimeout);
+    }
+  }, [carouselIdx]);
+
+  /*
+    const handleFileUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/api/uploads", {
+      method: "POST",
+      headers: {
+        "x-file-name": `${Date.now()}_${file.name}`,
+        "content-type": file.type,
+      },
+      body: file,
+    });
+    const data = await res.json();
+    if (data.success) {
+      // Success! Use data.url as needed
+    } else {
+      alert("Upload failed: " + data.error);
+    }
+  }; */
+
+  useEffect(() => {
+    // Wait for Snipcart to be available
+    if (typeof window === "undefined" || !window.Snipcart) return;
+
+    function handleCartConfirmed(cart: unknown) {
+      console.log("cart.confirmed event fired", cart);
+
+      let orderId = "unknown";
+      if (cart && typeof cart === "object") {
+        const c = cart as SnipcartCart;
+        orderId = c.invoiceNumber ?? c.token ?? "unknown";
+      }
+
+      // Loop through all upload fields for the current product
+      if (product?.upload && product.upload.length > 0) {
+        product.upload.forEach((field, idx) => {
+          const file = uploadFiles[`upload-${product.id}-${idx}`];
+          if (!file) return;
+
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("fileName", `${orderId}_${file.name}`);
+
+          fetch("/api/uploads", {
+            method: "POST",
+            body: formData,
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                console.log("Uploaded to Bunny after order:", data.url);
+              } else {
+                alert("Upload failed: " + data.error);
+              }
+            });
+        });
+      }
+    }
+
+    window.Snipcart.events.on("cart.confirmed", handleCartConfirmed);
+    // No .off method available, so do not try to remove the listener
+    return undefined;
+  }, [uploadFiles, product?.id, product?.upload]);
+
   if (modalIdx === null) {
     return (
       <div className="w-full grid grid-cols-2 gap-0">
@@ -250,7 +432,7 @@ export default function ProductsSection() {
           key={product.id}
           id={product.id}
           tabIndex={0}
-          className="group relative flex items-center justify-center h-[47vh] bg-black text-white overflow-hidden outline-none"
+          className="group relative flex items-center justify-center h-[47dvh] bg-black text-white overflow-hidden outline-none"
           onMouseLeave={() => handleMouseLeave(idx)}
           onClick={() => {
             setContactModalOpen(false); // Close contact modal if open
@@ -376,7 +558,7 @@ export default function ProductsSection() {
   }
   // Modal render
   return (
-    <div className="fixed top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0 opacity-[98]">
+    <div className="fixed top-0 left-0 w-full h-full min-h-screen z-[999] flex items-start justify-center overflow-y-scroll p-0 opacity-100">
       <div className="absolute top-0 left-0 w-full min-h-full bg-white/90 z-[-1]" onClick={() => handleModalClose()}></div>
       <div className="
       relative 
@@ -388,6 +570,7 @@ export default function ProductsSection() {
       rounded-lg 
       shadow-2xl 
       p-9
+      pb-16
       md:px-16 
       2xl:px-64 
       z-10 
@@ -429,16 +612,98 @@ export default function ProductsSection() {
         <span className="back-buton-arrow relative font-extrabold text-base bottom-px top-0">⬅ </span> 
         Back
         </button>
-        {product?.id !== "sponsor-me" && (
+        {/* Carousel for add-yourself */}
+        {product?.id === "add-yourself" ? (
+          <div className="w-full md:w-5/12 lg:w-7/12 flex flex-col items-center justify-center mt-16 lg:mt-0">
+            {addYourselfSlides.length > 0 && (
+              <>
+                <h2 className="text-4xl font-arial-bold mb-6 text-center uppercase">
+                  Be like {product.media?.[Math.floor(carouselIdx / 2)]?.name}
+                </h2>
+                <div className="relative w-full flex flex-col items-center">
+                  <div className="w-full flex items-center justify-center">
+                    {addYourselfSlides[carouselIdx].type === 'image' ? (
+                      <Image
+                        src={addYourselfSlides[carouselIdx].src}
+                        alt={addYourselfSlides[carouselIdx].alt}
+                        width={400}
+                        height={500}
+                        className="object-contain rounded max-h-96 md:max-h-[80dvh] mb-4 md:mb-0"
+                      />
+                    ) : (
+                      <div
+                        className={`w-full flex items-center justify-center mb-4 md:mb-0 carousel-fade${isFading ? ' fade-out' : ''}`}
+                        style={{
+                          aspectRatio: addYourselfSlides[carouselIdx].type === 'video' ? '4 / 5' : undefined,
+                          maxWidth: 400,
+                          maxHeight: '80vh',
+                        }}
+                      >
+                        <video
+                          ref={videoRef}
+                          key={addYourselfSlides[carouselIdx].src}
+                          controls
+                          autoPlay
+                          playsInline
+                          preload="auto"
+                          poster={addYourselfSlides[carouselIdx].src.replace('.webm', '.webp')}
+                          onContextMenu={e => e.preventDefault()}
+                          className="w-full h-full object-contain rounded"
+                          style={{ background: "#000" }}
+                        >
+                          <source
+                            src={addYourselfSlides[carouselIdx].src}
+                            type="video/webm"
+                          />
+                          Your browser does not support the video tag.
+                        </video>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-4 mt-2">
+                    <button
+                      aria-label="Previous"
+                      onClick={() => setCarouselIdx((carouselIdx - 1 + addYourselfSlides.length) % addYourselfSlides.length)}
+                      className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300"
+                    >
+                      ◀
+                    </button>
+                    <span className="text-sm font-arial hidden">
+                      {carouselIdx + 1} / {addYourselfSlides.length}
+                    </span>
+                    <button
+                      aria-label="Next"
+                      onClick={() => setCarouselIdx((carouselIdx + 1) % addYourselfSlides.length)}
+                      className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300"
+                    >
+                      ▶
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        ) : product?.id !== "sponsor-me" && (
           <div className="w-full md:w-5/12 lg:w-7/12 flex justify-center mt-16 lg:mt-0">
-            {modalImage && (
-              <Image
-                src={modalImage}
-                alt=""
-                width={600}
-                height={800}
-                className="w-full max-h-96 md:max-h-[80vh] object-contain mb-4 md:mb-0"
+            {product?.id === "product-commercial" ? (
+              <video
+                src="https://mudderfuger.b-cdn.net/_commercials/boom_boom_v1.webm"
+                controls
+                autoPlay
+                loop
+                className="w-full max-h-96 md:max-h-[80dvh] object-contain mb-4 md:mb-0 rounded"
+                style={{ background: "#000" }}
               />
+            ) : (
+              modalImage && (
+                <Image
+                  src={modalImage}
+                  alt=""
+                  width={600}
+                  height={800}
+                  className="w-full max-h-96 md:max-h-[80dvh] object-contain mb-4 md:mb-0"
+                />
+              )
             )}
           </div>
         )}
@@ -592,8 +857,97 @@ export default function ProductsSection() {
                   ))}
                 </ul>
               )}
+              {product?.upload && product.upload.length > 0 && (
+  <form className="mb-4 w-full max-w-xs flex flex-col gap-3">
+    {(product.upload as UploadField[]).map((field, idx) => (
+      <div key={idx} className="flex flex-col font-arial text-base">
+        <label className="flex flex-col">
+          <span className="mb-1">
+            {field.name}
+            {field.required && <span className="text-red-500">*</span>}
+          </span>
+          <input
+            type={field.type}
+            accept={field.accept}
+            required={field.required}
+            className="border rounded px-2 py-1"
+            name={`upload-${product.id}-${idx}`}
+            onChange={e => {
+              const file = e.target.files?.[0] || null;
+              setUploadFiles(prev => ({
+                ...prev,
+                [`upload-${product.id}-${idx}`]: file,
+              }));
+            }}
+          />
+          {field.description && (
+            <span className="text-xs text-gray-600 mt-1">{field.description}</span>
+          )}
+        </label>
+
+        {/* Important disclaimer for add-yourself product */}
+        {product.id === "add-yourself" && isAddYourselfUploadField(field) && (
+          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+            <h4 className="font-arial-bold text-sm text-yellow-800 mb-2">IMPORTANT:</h4>
+            <ul className="text-xs text-yellow-700 space-y-1">
+              {field.important.map((item, i) => (
+                <li key={i} className="flex items-start">
+                  <span className="text-yellow-600 mr-2 flex-shrink-0">•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Required checkboxes for add-yourself product */}
+        {product.id === "add-yourself" && field.checkbox1 && (
+          <label className="flex items-start mt-3 cursor-pointer">
+            <input
+              type="checkbox"
+              required={field.checkbox1.required}
+              className="mr-2 mt-1 flex-shrink-0"
+              checked={uploadValidation[`checkbox1-${product.id}-${idx}`] || false}
+              onChange={e => {
+                setUploadValidation(prev => ({
+                  ...prev,
+                  [`checkbox1-${product.id}-${idx}`]: e.target.checked,
+                }));
+              }}
+            />
+            <span className="text-sm leading-tight">
+              {field.checkbox1.label}
+              {field.checkbox1.required && <span className="text-red-500">*</span>}
+            </span>
+          </label>
+        )}
+
+        {product.id === "add-yourself" && field.checkbox2 && (
+          <label className="flex items-start mt-2 cursor-pointer">
+            <input
+              type="checkbox"
+              required={field.checkbox2.required}
+              className="mr-2 mt-1 flex-shrink-0"
+              checked={uploadValidation[`checkbox2-${product.id}-${idx}`] || false}
+              onChange={e => {
+                setUploadValidation(prev => ({
+                  ...prev,
+                  [`checkbox2-${product.id}-${idx}`]: e.target.checked,
+                }));
+              }}
+            />
+            <span className="text-sm leading-tight">
+              {field.checkbox2.label}
+              {field.checkbox2.required && <span className="text-red-500">*</span>}
+            </span>
+          </label>
+        )}
+      </div>
+    ))}
+  </form>
+)}
               <button
-                className="
+                className={`
                   font-arial-bold
                   snipcart-add-item
                   bg-white 
@@ -610,7 +964,8 @@ export default function ProductsSection() {
                   hover:text-red-700 
                   hover:scale-105
                   transition-all
-                "
+                  ${!allUploadsFilled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
+                `}
                 data-item-id={product?.id}
                 data-item-name={product?.title}
                 data-item-price={product?.price}
@@ -618,6 +973,7 @@ export default function ProductsSection() {
                 data-item-max-quantity="1"
                 data-item-stackable="always"
                 data-item-description={product?.description || ""}
+                disabled={!allUploadsFilled}
                 {
                   ...((product?.customFields || []).reduce((acc, field, i) => {
                     acc[`data-item-custom${i + 1}-name`] = field.name;
@@ -645,4 +1001,3 @@ export default function ProductsSection() {
     </div>
   );
 }
-  
