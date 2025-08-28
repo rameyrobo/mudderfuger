@@ -365,6 +365,7 @@ export default function ProductsSection() {
 
   useEffect(() => {
     function handleOrderCompleted(event: CustomEvent<unknown>) {
+      console.log("snipcart.order.completed event fired", event);
       // If you want to type-guard, you can do so here
       const order = (event as CustomEvent<{ id: string }>).detail;
       const file = uploadFiles[`upload-add-yourself-0`];
