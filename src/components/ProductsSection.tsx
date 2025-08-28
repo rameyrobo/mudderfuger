@@ -364,16 +364,19 @@ export default function ProductsSection() {
   }; */
 
   useEffect(() => {
-    function handleOrderCompleted(event: CustomEvent<unknown>) {
-      console.log("snipcart.order.completed event fired", event);
-      // If you want to type-guard, you can do so here
-      const order = (event as CustomEvent<{ id: string }>).detail;
+    // Wait for Snipcart to be available
+    if (typeof window === "undefined" || !window.Snipcart) return;
+
+    function handleCartConfirmed(cart: any) {
+      console.log("cart.confirmed event fired", cart);
+      // Your upload logic here
+      const orderId = cart?.invoiceNumber || cart?.token || "unknown";
       const file = uploadFiles[`upload-add-yourself-0`];
       if (!file) return;
 
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("fileName", `${order.id}_${file.name}`);
+      formData.append("fileName", `${orderId}_${file.name}`);
 
       fetch("/api/uploads", {
         method: "POST",
@@ -389,15 +392,11 @@ export default function ProductsSection() {
         });
     }
 
-    window.addEventListener(
-      "snipcart.order.completed",
-      handleOrderCompleted as EventListener
-    );
-    return () =>
-      window.removeEventListener(
-        "snipcart.order.completed",
-        handleOrderCompleted as EventListener
-      );
+    window.Snipcart.events.on("cart.confirmed", handleCartConfirmed);
+
+    return () => {
+      window.Snipcart.events.off("cart.confirmed", handleCartConfirmed);
+    };
   }, [uploadFiles]);
 
   if (modalIdx === null) {
