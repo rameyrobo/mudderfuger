@@ -183,6 +183,8 @@ useEffect(() => {
           />
           <button
             onClick={toggleMute}
+            aria-label={isMuted ? "Unmute video" : "Mute video"}
+            aria-pressed={!isMuted}
             className="font-arial bg-transparent text-white px-3 py-1 rounded hover:bg-black/80 transition-colors duration-300 tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4 translate-1.5 md:translate-x-4"
           >
             {isMuted ? (
