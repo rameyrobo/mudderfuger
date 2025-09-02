@@ -83,7 +83,6 @@ export default function VideoGrid({
           const video = entry.target as HTMLVideoElement;
           if (!entry.isIntersecting) {
             video.pause();
-            console.log('Paused video', video.dataset.videoid);
           }
         });
       },
