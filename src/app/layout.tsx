@@ -5,6 +5,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import LazyStylesheetLoader from '../components/LazyStylesheetLoader';
 import { Analytics } from "@vercel/analytics/next"
 import Script from "next/script";
+import { Partytown } from '@builder.io/partytown/react';
+
 
 export const metadata: Metadata = {
   title: "Mudderfuger 🛹🍻",
@@ -24,22 +26,24 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/icon.ico" type="image/x-icon" sizes="32x32" />
         <link rel="preconnect" href="https://mudderfuger.b-cdn.net" />
-        <link rel="preconnect" href="https://app.snipcart.com" />
-        <link rel="preconnect" href="https://cdn.snipcart.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
 
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`}
-          strategy="lazyOnload"
+          type="text/partytown"
         />
-        <Script id="ga4-init" strategy="lazyOnload">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${ga4}', { page_path: window.location.pathname });
-          `}
-        </Script>
+        <Script
+          id="ga4-init"
+          type="text/partytown"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${ga4}', { page_path: window.location.pathname });
+            `,
+          }}
+        />
 
         {/* Snipcart loader logic, lazyOnload, runs after DOM is interactive */}
         <Script id="snipcart-loader" strategy="lazyOnload">
