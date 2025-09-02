@@ -4,16 +4,18 @@
   "private": true,
   "scripts": {
     "dev:turbo": "next dev --turbo",
-    "build": "next build",
-    "start": "next start"
-  },
+    "build": "npm run partytown && next build",
+    "start": "next start",
+    "partytown": "partytown copylib public/~partytown"
+},
   "dependencies": {
+    "@builder.io/partytown": "^0.10.3",
     "@fontsource/anton": "^5.2.6",
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/cli": "^4.1.11",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
-    "next": "15.3.4",
+    "next": "^15.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-fast-marquee": "^1.6.5",
