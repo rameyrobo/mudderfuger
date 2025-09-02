@@ -7,11 +7,11 @@
     "build": "npm run partytown && next build",
     "start": "next start",
     "partytown": "partytown copylib public/~partytown"
-},
+  },
   "dependencies": {
-    "@builder.io/partytown": "^0.10.3",
     "@fontsource/anton": "^5.2.6",
     "@heroicons/react": "^2.2.0",
+    "@qwik.dev/partytown": "^0.11.2",
     "@tailwindcss/cli": "^4.1.11",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",

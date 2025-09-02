@@ -5,7 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import LazyStylesheetLoader from '../components/LazyStylesheetLoader';
 import { Analytics } from "@vercel/analytics/next"
 import Script from "next/script";
-import { Partytown } from '@builder.io/partytown/react';
+import { Partytown } from '@qwik.dev/partytown/react';
 
 
 export const metadata: Metadata = {
@@ -26,7 +26,6 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/icon.ico" type="image/x-icon" sizes="32x32" />
         <link rel="preconnect" href="https://mudderfuger.b-cdn.net" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
 
         <Partytown debug={false} forward={['dataLayer.push']} />
 
