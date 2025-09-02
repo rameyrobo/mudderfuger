@@ -49,10 +49,10 @@ export default function RootLayout({
               loadStrategy: "on-user-interaction",
               loadCSS: false,
               modalStyle: "side",
-              addProductBehavior: "none",
-              templatesUrl: "/snipcart-templates.html"
+              addProductBehavior: "none"
             };
             function loadSnipcart() {
+              var c,d;(d=(c=window.SnipcartSettings).version)!=null||(c.version="3.0");
               if (window.__snipcartLoaded) return;
               window.__snipcartLoaded = true;
               var n = document.getElementById("snipcart");

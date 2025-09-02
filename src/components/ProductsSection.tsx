@@ -469,6 +469,7 @@ export default function ProductsSection() {
               src={imageAssignments[idx]}
               alt=""
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0 ${fading[idx] ? "opacity-0" : "opacity-100"}`}
             />
           )}
