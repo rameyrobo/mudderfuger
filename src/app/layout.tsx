@@ -28,6 +28,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://mudderfuger.b-cdn.net" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
 
+        <Partytown debug={false} forward={['dataLayer.push']} />
+
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`}
           type="text/partytown"
