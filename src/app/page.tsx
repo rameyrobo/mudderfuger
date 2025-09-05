@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar"
 import ScrollingBannerVids from "../components/ScrollingBannerVids"
 import dynamic from "next/dynamic";
-import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
+import { SpeakerWaveIcon, SpeakerXMarkIcon, PlayIcon, PauseIcon } from '@heroicons/react/24/solid';
 import ContactModal from "../components/ContactModal";
 import type { Video } from '../types/video';
 import type { VideoGridProps } from "../components/VideoGrid";
@@ -30,10 +30,15 @@ export default function HomePage() {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const animatedTextRef = useRef<HTMLSpanElement>(null);
   const heroVideoUrl = 'https://mudderfuger.b-cdn.net/_trailer/mudderfuger_official_trailer.mp4'
-  const [isMuted, setIsMuted] = useState(true); // Start as muted
+  const [isMuted, setIsMuted] = useState(false); // Start as unmuted
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [preferWebm, setPreferWebm] = useState<null | boolean>(null);
-  const [forceMuted, setForceMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [showControls, setShowControls] = useState(false);
+
+  // Move this line up here, before any use:
+  const [userWantsToPlay, setUserWantsToPlay] = useState(false);
 
   // --- Only use pauseLock for manual pausing ---
   const [pauseLock, setPauseLock] = useState(false);
@@ -48,12 +53,26 @@ export default function HomePage() {
     }
   };
 
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play();
+        setIsPlaying(true);
+        setHasInteracted(true);
+        setShowControls(true);
+        setUserWantsToPlay(true); // <-- Add this
+      } else {
+        videoRef.current.pause();
+        setIsPlaying(false);
+        setUserWantsToPlay(false); // <-- Add this
+      }
+    }
+  };
+
   useEffect(() => {
     const ua = navigator.userAgent;
-    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
     const isFirefox = ua.toLowerCase().includes('firefox');
     setPreferWebm(isFirefox); // Only Firefox prefers WebM
-    setForceMuted(isSafari || isFirefox);
   }, []);
 
   // When modal closes, unlock pause
@@ -85,7 +104,8 @@ export default function HomePage() {
         if (visibleRatio <= 0.10) {
           videoRef.current.pause();
         } else {
-          if (!pauseLockRef.current && !isModalOpen) {
+          // Only play if userWantsToPlay is true
+          if (!pauseLockRef.current && !isModalOpen && hasInteracted && userWantsToPlay) {
             videoRef.current.play().catch(() => {});
           }
         }
@@ -101,7 +121,7 @@ export default function HomePage() {
     }
 
     return () => observer.disconnect();
-  }, [isMuted, isModalOpen]);
+  }, [isMuted, isModalOpen, hasInteracted, userWantsToPlay]);
 
   useEffect(() => {
     let hue = 0;
@@ -131,6 +151,19 @@ export default function HomePage() {
     videoRef.current.poster = `/mudderfuger-thumbnail-${size}.webp`;
   }, [preferWebm, isMuted]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    video.addEventListener('play', handlePlay);
+    video.addEventListener('pause', handlePause);
+    return () => {
+      video.removeEventListener('play', handlePlay);
+      video.removeEventListener('pause', handlePause);
+    };
+  }, []);
+
   return (
     <main className="bg-black text-white min-h-screen">
       <>
@@ -151,11 +184,9 @@ export default function HomePage() {
             <picture id="hero-picture" className="pointer-events-none">
               <video
                 ref={videoRef}
-                autoPlay
-                {...(forceMuted ? { muted: true } : {})}
                 loop
                 playsInline
-                controls
+                controls={showControls}
                 poster="/mudderfuger_official_trailer_poster.jpg"
                 className="
                   absolute
@@ -171,8 +202,8 @@ export default function HomePage() {
                 id="hero-video"
                 onLoadedMetadata={() => {
                   if (videoRef.current) {
-                    videoRef.current.muted = isMuted || forceMuted;
-                    videoRef.current.play().catch(() => {});
+                    // Do NOT auto-play here
+                    // videoRef.current.play().catch(() => {});
                   }
                 }}
                 onVolumeChange={() => {
@@ -217,12 +248,35 @@ export default function HomePage() {
             />
             <button
               onClick={toggleMute}
-              className="absolute right-2 top-3.5 z-20 cursor-pointer ... pointer-events-auto"
+              className="hidden absolute right-2 top-3.5 z-20 cursor-pointer ... pointer-events-auto"
             >
               {isMuted ? (
                 <SpeakerXMarkIcon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
               ) : (
                 <SpeakerWaveIcon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+              )}
+            </button>
+            <button
+              onClick={togglePlay}
+              className="
+              absolute right-2 top-3.5 z-20 cursor-pointer ... pointer-events-auto
+              md:absolute 
+              md:right-auto
+              md:left-1/2 
+              md:top-32 
+              md:z-20 
+              md:-translate-x-1/2 
+              md:cursor-pointer 
+              md:pointer-events-auto 
+              md:bg-black/60 
+              md:rounded-full 
+              md:p-1"
+              aria-label={isPlaying ? "Pause video" : "Play video"}
+            >
+              {isPlaying ? (
+                <PauseIcon className="h-7 w-7 text-white" />
+              ) : (
+                <PlayIcon className="h-7 w-7 text-white" />
               )}
             </button>
           </div>
