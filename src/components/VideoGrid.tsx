@@ -91,7 +91,7 @@ export default function VideoGrid({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedVideo]);
+  }, [selectedVideo, closeModalAndSyncTime]);
 
   useLayoutEffect(() => {
     Object.values(hoverRefs.current).forEach(video => {
