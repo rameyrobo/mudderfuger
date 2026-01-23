@@ -24,32 +24,104 @@ export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const animatedTextRef = useRef<HTMLSpanElement>(null);
+  const muteButtonRef = useRef<HTMLButtonElement>(null);
+  const isMutedRef = useRef(true);
+  const isModalOpenRef = useRef(false);
+  const inViewRef = useRef(true);
+  const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
   const heroVideoUrl = 'https://mudderfuger.b-cdn.net/_trailer/mudderfuger_official_trailer.mp4'
 
-  const [isMuted, setIsMuted] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [preferWebm, setPreferWebm] = useState<null | boolean>(null);
-  const [shouldPause, setShouldPause] = useState(false); // NEW: track if video should be paused by nav/modal
-  const shouldPauseRef = useRef(shouldPause);
 
-  const toggleMute = () => {
+  // Set initial muted state
+  useEffect(() => {
     if (videoRef.current) {
-      const newMuted = !videoRef.current.muted;
-      videoRef.current.muted = newMuted;
-      setIsMuted(newMuted);
+      videoRef.current.muted = true;
+    }
+  }, []);
+
+  const toggleMute = (e: React.MouseEvent) => {
+    if (videoRef.current && muteButtonRef.current) {
+      const video = videoRef.current;
+      video.muted = !video.muted;
+      isMutedRef.current = video.muted;
+      
+      // Update button icon
+      muteButtonRef.current.innerHTML = video.muted 
+        ? '<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clip-rule="evenodd" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" /></svg>'
+        : '<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>';
+      
+      muteButtonRef.current.setAttribute('aria-label', video.muted ? 'Unmute video' : 'Mute video');
+      muteButtonRef.current.setAttribute('aria-pressed', String(!video.muted));
+      
+      // Force play after a tiny delay to let muted change take effect
+      setTimeout(() => {
+        if (!video.paused) return; // Already playing
+        video.play().catch(() => {});
+      }, 10);
     }
   };
 
+  // Set up IntersectionObserver after video is loaded
+  const setupIntersectionObserver = () => {
+    if (!sentinelRef.current) return;
+    if (observerRef.current) return;
+
+    observerRef.current = new IntersectionObserver(
+      ([entry]) => {
+        const visiblePx = entry.intersectionRect.height;
+        const totalPx = entry.boundingClientRect.height;
+        const visibleRatio = visiblePx / totalPx;
+        const isInView = visibleRatio > 0.10;
+        
+        inViewRef.current = isInView;
+
+        if (!videoRef.current) return;
+
+        if (!isInView) {
+          videoRef.current.pause();
+        } else if (!isModalOpenRef.current) {
+          videoRef.current.play().catch(() => {});
+        }
+      },
+      {
+        root: null,
+        threshold: Array.from({ length: 101 }, (_, i) => i / 100),
+      }
+    );
+
+    observerRef.current.observe(sentinelRef.current);
+  };
+
+  // Start monitoring video after it's loaded
+  const startVideoMonitoring = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Clear any existing interval first
+    if (intervalIdRef.current) {
+      clearInterval(intervalIdRef.current);
+    }
+
+    intervalIdRef.current = setInterval(() => {
+      if (inViewRef.current && !isModalOpenRef.current && video.paused) {
+        video.play().catch(() => {});
+      }
+    }, 100);
+  };
+
   useEffect(() => {
+    isModalOpenRef.current = isModalOpen;
     if (!videoRef.current) return;
-    if (shouldPause || isModalOpen) {
+    
+    if (isModalOpen) {
       videoRef.current.pause();
-    } else {
-      // Only play if in view (IntersectionObserver will handle this)
-      // Try to play, but browser may block if not in view
+    } else if (inViewRef.current) {
       videoRef.current.play().catch(() => {});
     }
-  }, [shouldPause, isModalOpen])
+  }, [isModalOpen]);
 
   useEffect(() => {
     const ua = navigator.userAgent;
@@ -62,49 +134,7 @@ export default function HomePage() {
     }
   }, []);
 
-  // Keep shouldPauseRef in sync with shouldPause
-useEffect(() => {
-  shouldPauseRef.current = shouldPause;
-}, [shouldPause]);
-
-// IntersectionObserver: pause if out of view, play if in view and not paused by nav/modal
-useEffect(() => {
-  if (!sentinelRef.current || !videoRef.current) return;
-
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      const visiblePx = entry.intersectionRect.height;
-      const totalPx = entry.boundingClientRect.height;
-      const visibleRatio = visiblePx / totalPx;
-
-      // Always sync muted state before play/pause
-      if (videoRef.current) {
-        videoRef.current.muted = isMuted;
-      }
-
-      if (visibleRatio <= 0.10) {
-        videoRef.current?.pause();
-      } else {
-        // Only play if not paused by nav/modal
-        if (!shouldPauseRef.current && !isModalOpen) {
-          videoRef.current?.play().catch(() => {});
-        }
-        // If shouldPause was set by nav, but user scrolled back, reset it
-        if (shouldPauseRef.current && !isModalOpen) {
-          setShouldPause(false);
-        }
-      }
-    },
-    {
-      root: null,
-      threshold: Array.from({ length: 101 }, (_, i) => i / 100),
-    }
-  );
-
-  observer.observe(sentinelRef.current);
-
-  return () => observer.disconnect();
-}, [isModalOpen, isMuted]); 
+ 
 
 
   useEffect(() => {
@@ -121,6 +151,18 @@ useEffect(() => {
     return () => cancelAnimationFrame(frameId);
   }, []);
 
+  // Cleanup interval and observer on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
+      }
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
+
   // Dynamically set the video poster to the best size for the device
   useEffect(() => {
     if (!videoRef.current) return;
@@ -133,7 +175,7 @@ useEffect(() => {
     }
     const size = getBestThumbSize();
     videoRef.current.poster = `/mudderfuger-thumbnail-${size}.webp`;
-  }, [preferWebm, isMuted]);
+  }, [preferWebm]);
 
   return (
     <main className="bg-black text-white min-h-screen">
@@ -151,11 +193,15 @@ useEffect(() => {
               ref={videoRef}
               autoPlay
               loop
-              muted={isMuted}
+              muted
               playsInline
               poster="/mudderfuger-thumbnail-1280.webp"
               className="absolute w-full h-full object-cover"
               id="hero-video"
+              onLoadedData={() => {
+                startVideoMonitoring();
+                setupIntersectionObserver();
+              }}
             >
               <source
                 src={
@@ -174,7 +220,6 @@ useEffect(() => {
             <span ref={animatedTextRef} className="text-red-500 opacity-95">Mudderfuger</span>
           </h1>
           <Navbar
-            onNavClick={() => setShouldPause(true)}
             onContactClick={() => setIsModalOpen(true)}
           />
           <ContactModal
@@ -182,16 +227,16 @@ useEffect(() => {
             onClose={() => setIsModalOpen(false)}
           />
           <button
+            ref={muteButtonRef}
             onClick={toggleMute}
-            aria-label={isMuted ? "Unmute video" : "Mute video"}
-            aria-pressed={!isMuted}
+            aria-label="Unmute video"
+            aria-pressed="false"
             className="font-arial bg-transparent text-white px-3 py-1 rounded hover:bg-black/80 transition-colors duration-300 tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4 translate-1.5 md:translate-x-4"
           >
-            {isMuted ? (
-              <SpeakerXMarkIcon className="h-8 w-8 text-white" />
-            ) : (
-              <SpeakerWaveIcon className="h-8 w-8 text-white" />
-            )}
+            <svg className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+            </svg>
           </button>
         </div>
 
@@ -206,7 +251,7 @@ useEffect(() => {
           Mudderfuger&rsquo;s Story
         </h2>
       <ScrollingBannerVids />
-      <VideoGrid isMuted={isMuted} videos={videos} />
+      <VideoGrid isMuted={true} videos={videos} />
       </section>
 
       <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full max-h-[100dvh] overflow-x-hidden relative">
