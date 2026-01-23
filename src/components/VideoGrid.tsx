@@ -43,6 +43,7 @@ export default function VideoGrid({
   const [localIsMuted, setLocalIsMuted] = useState<boolean>(isMuted);
   const [preferWebm, setPreferWebm] = useState(false);
   const [videoActivated, setVideoActivated] = useState<{ [key: number]: boolean }>({});
+  const videoBlobCache = useRef<{ [key: string]: string }>({});
 
   useEffect(() => {
     const ua = navigator.userAgent;
@@ -53,20 +54,44 @@ export default function VideoGrid({
     }
   }, []);
 
+  const closeModalAndSyncTime = () => {
+    const modalVideo = document.querySelector('#modalVideo') as HTMLVideoElement;
+    if (modalVideo) {
+      const currentTime = modalVideo.currentTime;
+      modalVideo.pause();
+      
+      // Find the video ID and update its thumbnail position
+      const videoId = videos.find(v => v.url === selectedVideo)?.id;
+      if (videoId !== undefined) {
+        setHoverTimeMap(prev => ({ ...prev, [videoId]: currentTime }));
+        
+        // Ensure thumbnail is activated (blob loaded)
+        setVideoActivated(prev => ({ ...prev, [videoId]: true }));
+        
+        // Seek thumbnail video to the modal's current time
+        setTimeout(() => {
+          const thumbnailVideo = hoverRefs.current[videoId];
+          if (thumbnailVideo) {
+            thumbnailVideo.currentTime = currentTime;
+          }
+        }, 50);
+      }
+    }
+    setSelectedVideo(null);
+  };
+
   useEffect(() => {
     if (!selectedVideo) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        const modalVideo = document.querySelector('#modalVideo') as HTMLVideoElement;
-        modalVideo?.pause();
-        setSelectedVideo(null);
+        closeModalAndSyncTime();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedVideo]);
+  }, [selectedVideo, closeModalAndSyncTime]);
 
   useLayoutEffect(() => {
     Object.values(hoverRefs.current).forEach(video => {
@@ -133,6 +158,7 @@ export default function VideoGrid({
       setHoverTimeMap(prev => ({ ...prev, [videoId]: el.currentTime }));
       el.pause(); // pause thumbnail video before opening modal
     }
+    setLocalIsMuted(false); // Unmute when opening modal
     setSelectedVideo(url);
   };
 
@@ -147,7 +173,23 @@ export default function VideoGrid({
 
     setVideoActivated(prev => ({ ...prev, [videoId]: true }));
     const el = hoverRefs.current[videoId];
-    if (el) el.play().catch(() => {});
+    if (el) {
+      el.play().catch(() => {});
+      
+      // Fetch and cache video blob in background if not already cached
+      const videoUrl = videos.find(v => v.id === videoId)?.url;
+      if (videoUrl) {
+        const actualUrl = preferWebm ? videoUrl.replace('.mp4', '.webm') : videoUrl;
+        if (!videoBlobCache.current[actualUrl]) {
+          fetch(actualUrl)
+            .then(res => res.blob())
+            .then(blob => {
+              videoBlobCache.current[actualUrl] = URL.createObjectURL(blob);
+            })
+            .catch(() => {});
+        }
+      }
+    }
   };
 
   useEffect(() => {
@@ -207,7 +249,7 @@ export default function VideoGrid({
                   ref={el => { hoverRefs.current[video.id] = el; }}
                   data-videoid={video.id}
                   muted={localIsMuted}
-                  preload="preload"
+                  preload="auto"
                   playsInline
                   poster={`${thumbBase}-${thumbSize}.webp`}
                   onContextMenu={e => e.preventDefault()}
@@ -239,11 +281,7 @@ export default function VideoGrid({
       {selectedVideo && (
         <div
           className="fixed max-w-[100vw] inset-0 bg-black bg-opacity-70 z-60 flex items-center justify-center"
-          onClick={() => {
-            const modalVideo = document.querySelector('#modalVideo') as HTMLVideoElement;
-            modalVideo?.pause();
-            setSelectedVideo(null);
-          }}
+          onClick={closeModalAndSyncTime}
         >
           <video
             id="modalVideo"
@@ -252,6 +290,7 @@ export default function VideoGrid({
             autoPlay
             muted={localIsMuted}
             playsInline
+            preload="auto"
             onContextMenu={(e) => e.preventDefault()}
             className="max-h-[80dvh] max-w-90vw border-4 border-white rounded"
             onLoadedMetadata={(e) => {
@@ -262,9 +301,13 @@ export default function VideoGrid({
           >
             <source
               src={
-                preferWebm
-                  ? selectedVideo?.replace('.mp4', '.webm')
-                  : selectedVideo
+                (() => {
+                  const actualUrl = preferWebm
+                    ? selectedVideo?.replace('.mp4', '.webm')
+                    : selectedVideo;
+                  // Use cached blob if available, otherwise use original URL
+                  return videoBlobCache.current[actualUrl || ''] || actualUrl;
+                })()
               }
               type={preferWebm ? 'video/webm' : 'video/mp4'}
             />
