@@ -43,6 +43,7 @@ export default function VideoGrid({
   const [localIsMuted, setLocalIsMuted] = useState<boolean>(isMuted);
   const [preferWebm, setPreferWebm] = useState(false);
   const [videoActivated, setVideoActivated] = useState<{ [key: number]: boolean }>({});
+  const videoBlobCache = useRef<{ [key: string]: string }>({});
 
   useEffect(() => {
     const ua = navigator.userAgent;
@@ -147,7 +148,23 @@ export default function VideoGrid({
 
     setVideoActivated(prev => ({ ...prev, [videoId]: true }));
     const el = hoverRefs.current[videoId];
-    if (el) el.play().catch(() => {});
+    if (el) {
+      el.play().catch(() => {});
+      
+      // Fetch and cache video blob in background if not already cached
+      const videoUrl = videos.find(v => v.id === videoId)?.url;
+      if (videoUrl) {
+        const actualUrl = preferWebm ? videoUrl.replace('.mp4', '.webm') : videoUrl;
+        if (!videoBlobCache.current[actualUrl]) {
+          fetch(actualUrl)
+            .then(res => res.blob())
+            .then(blob => {
+              videoBlobCache.current[actualUrl] = URL.createObjectURL(blob);
+            })
+            .catch(() => {});
+        }
+      }
+    }
   };
 
   useEffect(() => {
@@ -207,7 +224,7 @@ export default function VideoGrid({
                   ref={el => { hoverRefs.current[video.id] = el; }}
                   data-videoid={video.id}
                   muted={localIsMuted}
-                  preload="preload"
+                  preload="auto"
                   playsInline
                   poster={`${thumbBase}-${thumbSize}.webp`}
                   onContextMenu={e => e.preventDefault()}
@@ -252,6 +269,7 @@ export default function VideoGrid({
             autoPlay
             muted={localIsMuted}
             playsInline
+            preload="auto"
             onContextMenu={(e) => e.preventDefault()}
             className="max-h-[80dvh] max-w-90vw border-4 border-white rounded"
             onLoadedMetadata={(e) => {
@@ -262,9 +280,13 @@ export default function VideoGrid({
           >
             <source
               src={
-                preferWebm
-                  ? selectedVideo?.replace('.mp4', '.webm')
-                  : selectedVideo
+                (() => {
+                  const actualUrl = preferWebm
+                    ? selectedVideo?.replace('.mp4', '.webm')
+                    : selectedVideo;
+                  // Use cached blob if available, otherwise use original URL
+                  return videoBlobCache.current[actualUrl || ''] || actualUrl;
+                })()
               }
               type={preferWebm ? 'video/webm' : 'video/mp4'}
             />
