@@ -5,7 +5,6 @@ import Navbar from "../components/Navbar"
 import ScrollingBannerVids from "../components/ScrollingBannerVids"
 import ScrollingBannerProds from "../components/ScrollingBannerProds"
 import dynamic from "next/dynamic";
-import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 import ContactModal from "../components/ContactModal";
 const VideoGrid = dynamic(() => import("../components/VideoGrid"), { ssr: false });
 const ProductsSection = dynamic(() => import("../components/ProductsSection"), { ssr: false });
@@ -42,7 +41,7 @@ export default function HomePage() {
     }
   }, []);
 
-  const toggleMute = (e: React.MouseEvent) => {
+  const toggleMute = () => {
     if (videoRef.current && muteButtonRef.current) {
       const video = videoRef.current;
       video.muted = !video.muted;

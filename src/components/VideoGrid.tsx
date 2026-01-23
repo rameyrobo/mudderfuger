@@ -54,14 +54,38 @@ export default function VideoGrid({
     }
   }, []);
 
+  const closeModalAndSyncTime = () => {
+    const modalVideo = document.querySelector('#modalVideo') as HTMLVideoElement;
+    if (modalVideo) {
+      const currentTime = modalVideo.currentTime;
+      modalVideo.pause();
+      
+      // Find the video ID and update its thumbnail position
+      const videoId = videos.find(v => v.url === selectedVideo)?.id;
+      if (videoId !== undefined) {
+        setHoverTimeMap(prev => ({ ...prev, [videoId]: currentTime }));
+        
+        // Ensure thumbnail is activated (blob loaded)
+        setVideoActivated(prev => ({ ...prev, [videoId]: true }));
+        
+        // Seek thumbnail video to the modal's current time
+        setTimeout(() => {
+          const thumbnailVideo = hoverRefs.current[videoId];
+          if (thumbnailVideo) {
+            thumbnailVideo.currentTime = currentTime;
+          }
+        }, 50);
+      }
+    }
+    setSelectedVideo(null);
+  };
+
   useEffect(() => {
     if (!selectedVideo) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        const modalVideo = document.querySelector('#modalVideo') as HTMLVideoElement;
-        modalVideo?.pause();
-        setSelectedVideo(null);
+        closeModalAndSyncTime();
       }
     };
 
@@ -134,6 +158,7 @@ export default function VideoGrid({
       setHoverTimeMap(prev => ({ ...prev, [videoId]: el.currentTime }));
       el.pause(); // pause thumbnail video before opening modal
     }
+    setLocalIsMuted(false); // Unmute when opening modal
     setSelectedVideo(url);
   };
 
@@ -256,11 +281,7 @@ export default function VideoGrid({
       {selectedVideo && (
         <div
           className="fixed max-w-[100vw] inset-0 bg-black bg-opacity-70 z-60 flex items-center justify-center"
-          onClick={() => {
-            const modalVideo = document.querySelector('#modalVideo') as HTMLVideoElement;
-            modalVideo?.pause();
-            setSelectedVideo(null);
-          }}
+          onClick={closeModalAndSyncTime}
         >
           <video
             id="modalVideo"
