@@ -93,7 +93,7 @@ export default function AllProductsPage() {
           data-item-id="pyro-board"
           data-item-name="Pyro Flame Skateboard"
           data-item-price="80"
-          data-item-url="/products/all-products"
+          data-item-url="/products/pyro-board"
           data-item-description="This skateboard is fire🔥"
           data-item-image="https://mudderfuger.b-cdn.net/_imgs/pyro-board.webp"
           data-item-custom1-name="Color"
@@ -101,7 +101,7 @@ export default function AllProductsPage() {
           data-item-custom1-options="Yellow"
           data-item-custom2-name="Size"
           data-item-custom2-type="dropdown"
-          data-item-custom2-options="8&quot;|8.25&quot;|8.5&quot;"
+          data-item-custom2-options="8 inch|8.25 inch|8.5 inch"
           data-item-custom2-required="true"
         >
           Buy Now
@@ -121,7 +121,7 @@ export default function AllProductsPage() {
           data-item-id="pyro-shirt"
           data-item-name="Pyro Flame Shirt"
           data-item-price="25.99"
-          data-item-url="/products/all-products"
+          data-item-url="/products/pyro-shirt"
           data-item-description="This shirt is fire!🔥"
           data-item-image="https://mudderfuger.b-cdn.net/_imgs/pyro-shirt.webp"
           data-item-custom1-name="Color"
@@ -129,7 +129,7 @@ export default function AllProductsPage() {
           data-item-custom1-options="White"
           data-item-custom2-name="Size"
           data-item-custom2-type="dropdown"
-          data-item-custom2-options="S|M|L|XL|2XL"
+          data-item-custom2-options="Small|Medium|Large|Extra Large|2XL"
           data-item-custom2-required="true"
         >
           Buy Now
