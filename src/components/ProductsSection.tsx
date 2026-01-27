@@ -426,7 +426,7 @@ export default function ProductsSection() {
     return (
       <div className="w-full grid grid-cols-2 gap-0">
         {products
-          .filter(p => p.id === "sponsor-me" || !["starter-sponsor", "monthly-main-sponsor", "official-brand-partner"].includes(p.id))
+          .filter(p => p.id === "sponsor-me" || !["starter-sponsor", "monthly-main-sponsor", "official-brand-partner", "pyro-board", "pyro-shirt"].includes(p.id))
           .map((product, idx) => (
         <div
           key={product.id}

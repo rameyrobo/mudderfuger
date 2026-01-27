@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import ContactModal from "../components/ContactModal";
 const VideoGrid = dynamic(() => import("../components/VideoGrid"), { ssr: false });
 const ProductsSection = dynamic(() => import("../components/ProductsSection"), { ssr: false });
+const PyroProductsSection = dynamic(() => import("../components/PyroProductsSection"), { ssr: false });
 
 export default function HomePage() {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -28,7 +29,7 @@ export default function HomePage() {
   const inViewRef = useRef(true);
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const heroVideoUrl = 'https://mudderfuger.b-cdn.net/_trailer/mudderfuger_official_trailer.mp4'
+  const heroVideoUrl = 'https://mudderfuger.b-cdn.net/_trailer/MUDDERFUGER_OFFICIAL_TRAILER_.mp4'
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [preferWebm, setPreferWebm] = useState<null | boolean>(null);
@@ -161,18 +162,10 @@ export default function HomePage() {
     };
   }, []);
 
-  // Dynamically set the video poster to the best size for the device
+  // Set the video poster
   useEffect(() => {
     if (!videoRef.current) return;
-    function getBestThumbSize() {
-      const w = window.innerWidth;
-      if (w < 450) return 320;
-      if (w < 640) return 640;
-      if (w < 1024) return 1280;
-      return 1920;
-    }
-    const size = getBestThumbSize();
-    videoRef.current.poster = `/mudderfuger-thumbnail-${size}.webp`;
+    videoRef.current.poster = 'https://mudderfuger.b-cdn.net/_trailer/screenshot.jpg';
   }, [preferWebm]);
 
   return (
@@ -182,18 +175,20 @@ export default function HomePage() {
           <picture id="hero-picture">
             <source
               id="hero-srcset"
-              srcSet="/mudderfuger-thumbnail-320.webp 320w, /mudderfuger-thumbnail-640.webp 640w, /mudderfuger-thumbnail-1280.webp 1280w, /mudderfuger-thumbnail-1920.webp 1920w"
-              sizes="(max-width:450px) 320px, (max-width: 640px) 640px, (max-width: 1024px) 1280px, 1920px"
+              srcSet="https://mudderfuger.b-cdn.net/_trailer/screenshot.webp"
               type="image/webp"
             />
-            {/* No <img> fallback, only responsive <source> */}
+            <source
+              srcSet="https://mudderfuger.b-cdn.net/_trailer/screenshot.jpg"
+              type="image/jpeg"
+            />
             <video
               ref={videoRef}
               autoPlay
               loop
               muted
               playsInline
-              poster="/mudderfuger-thumbnail-1280.webp"
+              poster="https://mudderfuger.b-cdn.net/_trailer/screenshot.jpg"
               className="absolute w-full h-full object-cover"
               id="hero-video"
               onLoadedData={() => {
@@ -202,12 +197,12 @@ export default function HomePage() {
               }}
             >
               <source
-                src={
-                  preferWebm
-                    ? heroVideoUrl.replace('.mp4', '.webm')
-                    : heroVideoUrl
-                }
-                type={preferWebm ? 'video/webm' : 'video/mp4'}
+                src="https://mudderfuger.b-cdn.net/_trailer/MUDDERFUGER_OFFICIAL_TRAILER_.webm"
+                type="video/webm"
+              />
+              <source
+                src={heroVideoUrl}
+                type="video/mp4"
               />
             </video>
           </picture>
@@ -282,6 +277,8 @@ export default function HomePage() {
       <ScrollingBannerVids />
       <VideoGrid isMuted={true} videos={videos} />
       </section>
+
+      <PyroProductsSection />
 
       <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full max-h-[100dvh] overflow-x-hidden relative">
         <ScrollingBannerProds />

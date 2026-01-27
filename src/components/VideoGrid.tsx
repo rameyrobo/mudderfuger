@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useLayoutEffect } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 
@@ -54,7 +54,7 @@ export default function VideoGrid({
     }
   }, []);
 
-  const closeModalAndSyncTime = () => {
+  const closeModalAndSyncTime = useCallback(() => {
     const modalVideo = document.querySelector('#modalVideo') as HTMLVideoElement;
     if (modalVideo) {
       const currentTime = modalVideo.currentTime;
@@ -78,7 +78,7 @@ export default function VideoGrid({
       }
     }
     setSelectedVideo(null);
-  };
+  }, [selectedVideo, videos]);
 
   useEffect(() => {
     if (!selectedVideo) return;

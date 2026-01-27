@@ -2,7 +2,13 @@
 
 import Marquee from 'react-fast-marquee';
 
-export default function ScrollingBanner() {
+interface ScrollingBannerProdsProps {
+  text?: string;
+}
+
+export default function ScrollingBanner({ text }: ScrollingBannerProdsProps) {
+  const defaultText = "Yo! You wanna get in on this? You can be like me and be ai too! That'd be sick. You don't even have to like think or anything  ¯\_(ツ)_/¯  ";
+  
   return (
     <div className="bg-black h-[6dvh] mb-0 flex border-t border-b border-white">
       <Marquee
@@ -14,7 +20,7 @@ export default function ScrollingBanner() {
         <span 
         className="text-4xl font-arial-bold tracking-widest"
         >
-        Yo! You wanna get in on this? You can be like me and be ai too! That&lsquo;d be sick. You don&lsquo;t even have to like think or anything&nbsp;&nbsp;<span>¯\_(ツ)_/¯</span>&nbsp;&nbsp;</span>
+        {text || defaultText}</span>
       </Marquee>
     </div>
   );

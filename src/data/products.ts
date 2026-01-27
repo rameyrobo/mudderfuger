@@ -182,4 +182,62 @@ export const products = [
       "✅ Full category exclusivity across all channels during term"
     ]
   },
+  {
+    id: "pyro-board",
+    title: "Pyro Flame Skateboard",
+    price: 80,
+    description: "This skateboard is fire🔥\n\nComes in 8\", 8.25\", and 8.5\"",
+    url: "/products/pyro-board",
+    includes: [
+      "Expected to ship in 4-6 weeks",
+      "Secure your Pyro Flame Skateboard today MF"
+    ],
+    images: [
+      "https://mudderfuger.b-cdn.net/_imgs/pyro-board.webp",
+      "https://mudderfuger.b-cdn.net/_imgs/pyro-board-1.webp",
+      "https://mudderfuger.b-cdn.net/_imgs/pyro-board-2.webp",
+      "https://mudderfuger.b-cdn.net/_imgs/pyro-board-3.webp"
+    ],
+    image: "https://mudderfuger.b-cdn.net/_imgs/pyro-board.webp",
+    customFields: [
+      {
+        name: "Color",
+        type: "dropdown",
+        options: "Yellow"
+      },
+      {
+        name: "Size",
+        type: "dropdown",
+        options: "8|8.25|8.5"
+      }
+    ]
+  },
+  {
+    id: "pyro-shirt",
+    title: "Pyro Flame",
+    price: 25.99,
+    description: "This shirt is fire!🔥\n\nEU representative: HONSON VENTURES LIMITED, gpsr@honsonventures.com, 3, Gnaftis House flat 102, Limassol, Mesa Geitonia, 4003, CY\n\nProduct information: Gildan 64000, 2 year warranty in EU and Northern Ireland as per Directive 1999/44/EC\n\nWarnings, Hazard: For adults, Made in Bangladesh\n\nCare instructions: Machine wash: cold (max 30C or 90F), with similar colors, Do not bleach, Tumble dry: low heat, Iron, steam or dry: low heat, Do not dryclean",
+    url: "/products/pyro-shirt",
+    includes: [],
+    images: [
+      "https://mudderfuger.b-cdn.net/_imgs/pyro-shirt.webp",
+      "https://mudderfuger.b-cdn.net/_imgs/pyro-shirt-1.webp",
+      "https://mudderfuger.b-cdn.net/_imgs/pyro-shirt-2.webp",
+      "https://mudderfuger.b-cdn.net/_imgs/pyro-shirt-3.webp",
+      "https://mudderfuger.b-cdn.net/_imgs/pyro-shirt-4.webp"
+    ],
+    image: "https://mudderfuger.b-cdn.net/_imgs/pyro-shirt.webp",
+    customFields: [
+      {
+        name: "Color",
+        type: "dropdown",
+        options: "White"
+      },
+      {
+        name: "Size",
+        type: "dropdown",
+        options: "S|M|L|XL|2XL"
+      }
+    ]
+  },
 ];
