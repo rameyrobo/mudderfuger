@@ -78,6 +78,63 @@ export default function AllProductsPage() {
           Buy Now
         </button>
       </section>
+
+      {/* Pyro Flame Skateboard */}
+      <section className="mb-10 border-b pb-8">
+        <h2 className="text-xl font-bold">Pyro Flame Skateboard 🔥</h2>
+        <p className="mb-2">$80 — This skateboard is fire!</p>
+        <p className="mb-2 text-sm text-gray-400">Available Sizes: 8&quot;, 8.25&quot;, 8.5&quot;</p>
+        <ul className="mb-2 list-disc pl-5">
+          <li>Expected to ship in 4-6 weeks</li>
+          <li>Secure your Pyro Flame Skateboard today MF</li>
+        </ul>
+        <button
+          className="snipcart-add-item bg-blue-600 text-white px-4 py-2 rounded"
+          data-item-id="pyro-board"
+          data-item-name="Pyro Flame Skateboard"
+          data-item-price="80"
+          data-item-url="/products/all-products"
+          data-item-description="This skateboard is fire🔥"
+          data-item-image="https://mudderfuger.b-cdn.net/_imgs/pyro-board.webp"
+          data-item-custom1-name="Color"
+          data-item-custom1-type="dropdown"
+          data-item-custom1-options="Yellow"
+          data-item-custom2-name="Size"
+          data-item-custom2-type="dropdown"
+          data-item-custom2-options="8&quot;|8.25&quot;|8.5&quot;"
+          data-item-custom2-required="true"
+        >
+          Buy Now
+        </button>
+      </section>
+
+      {/* Pyro Flame Shirt */}
+      <section className="mb-10">
+        <h2 className="text-xl font-bold">Pyro Flame Shirt 🔥</h2>
+        <p className="mb-2">$25.99 — This shirt is fire!</p>
+        <p className="mb-2 text-sm text-gray-400">Available Sizes: S, M, L, XL, 2XL</p>
+        <p className="mb-2 text-xs text-gray-500">
+          EU representative: HONSON VENTURES LIMITED, gpsr@honsonventures.com, 3, Gnaftis House flat 102, Limassol, Mesa Geitonia, 4003, CY
+        </p>
+        <button
+          className="snipcart-add-item bg-blue-600 text-white px-4 py-2 rounded"
+          data-item-id="pyro-shirt"
+          data-item-name="Pyro Flame Shirt"
+          data-item-price="25.99"
+          data-item-url="/products/all-products"
+          data-item-description="This shirt is fire!🔥"
+          data-item-image="https://mudderfuger.b-cdn.net/_imgs/pyro-shirt.webp"
+          data-item-custom1-name="Color"
+          data-item-custom1-type="dropdown"
+          data-item-custom1-options="White"
+          data-item-custom2-name="Size"
+          data-item-custom2-type="dropdown"
+          data-item-custom2-options="S|M|L|XL|2XL"
+          data-item-custom2-required="true"
+        >
+          Buy Now
+        </button>
+      </section>
     </main>
   );
 }
