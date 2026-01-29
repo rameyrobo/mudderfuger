@@ -91,7 +91,11 @@ export default function PyroProductsSection() {
   }, [pyroBoard.images, pyroShirt.images]);
 
   return (
-    <section id="pyro-board" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full min-h-[100dvh] overflow-x-hidden relative">
+    <section 
+      id="pyro-skateshop" 
+      className="p-0 bg-black text-white flex flex-col items-center justify-center h-auto md:h-screen md:min-h-[100dvh] overflow-hidden relative scroll-mt-0"
+      style={{ scrollSnapAlign: 'start', scrollSnapStop: 'always' }}
+    >
       <ScrollingBannerProds 
         text="Yo mudderfugers, I just got sponsored! I&apos;m riding for 🔥🔥 Pyro Skateshop🔥🔥 and you can cop their new deck or shirt here. "
       />

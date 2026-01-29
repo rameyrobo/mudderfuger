@@ -169,8 +169,8 @@ export default function HomePage() {
   }, [preferWebm]);
 
   return (
-    <main className="bg-black text-white min-h-screen">
-      <section ref={heroRef} className="w-full h-screen max-h-[100dvh]relative overflow-hidden">
+    <main className="bg-black text-white h-screen overflow-y-scroll" style={{ scrollSnapType: 'y mandatory', scrollBehavior: 'smooth' }}>
+      <section ref={heroRef} className="w-full h-screen max-h-[100dvh] relative overflow-hidden" style={{ scrollSnapAlign: 'start', scrollSnapStop: 'always' }}>
         {preferWebm !== null && (
           <picture id="hero-picture">
             <source
@@ -214,6 +214,7 @@ export default function HomePage() {
           </h1>
           <div className="flex flex-wrap gap-1 mt-4 text-xl font-semibold uppercase flex-col md:flex-row md:gap-4 items-center">
             <a href="#story-section" className="font-arial-bold text-white focus:bg-black/90 focus-within:bg-black/90 hover:bg-black/90 transition-all text-xl px-5 py-1.5 rounded-sm tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4">MF&apos;s Story</a>
+            <a href="#pyro-skateshop" className="font-arial-bold text-white focus:bg-black/90 focus-within:bg-black/90 hover:bg-black/90 transition-all text-xl px-5 py-1.5 rounded-sm tracking-wide focus:underline focus-within:underline hover:underline scroll-link leading-4">Pyro Skateshop</a>
             <a href="#be-mf" className="font-arial-bold text-white focus:bg-black/90 focus-within:bg-black/90 hover:bg-black/90 transition-all text-xl px-5 py-1.5 rounded-sm tracking-wide focus:underline focus-within:underline hover:underline leading-4">Be a MF</a>
             <button
               onClick={() => setIsModalOpen(true)}
@@ -269,8 +270,9 @@ export default function HomePage() {
       </section>
 
       <section 
-      className="pb-0 pt-9 md:pt-10 lg:pt-11 xl:pt-12"
-      id="story-section">
+      className="pb-0 pt-9 md:pt-10 lg:pt-11 xl:pt-12 h-max"
+      id="story-section"
+      style={{ scrollSnapAlign: 'start', scrollSnapStop: 'always' }}>
         <h2 className="text-2xl font-bold uppercase text-center tracking-wide justify-self-center mb-px md:text-3xl lg:text-3xl xl:text-4xl">
           Mudderfuger&rsquo;s Story
         </h2>
@@ -280,7 +282,7 @@ export default function HomePage() {
 
       <PyroProductsSection />
 
-      <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-full max-h-[100dvh] overflow-x-hidden relative">
+      <section id="be-mf" className="p-0 bg-black text-white flex flex-col items-center justify-center h-screen max-h-[100dvh] overflow-x-hidden relative" style={{ scrollSnapAlign: 'start', scrollSnapStop: 'always' }}>
         <ScrollingBannerProds />
         <h2 className="
         color-white
