@@ -185,14 +185,17 @@ export default function PyroProductsSection() {
             </div>
 
             <button
-              className="snipcart-add-item font-arial-bold uppercase bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
+              className="snipcart-add-item snipcart-checkout font-arial-bold uppercase bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
               data-item-id={pyroBoard.id}
               data-item-name={pyroBoard.title}
               data-item-price={pyroBoard.price}
               data-item-url={pyroBoard.url}
               data-item-description={pyroBoard.description}
               data-item-image={pyroBoard.image}
+              data-item-stackable="never"
               data-item-custom1-name="Size"
+              data-item-custom1-type="dropdown"
+              data-item-custom1-options="8|8.25|8.5"
               data-item-custom1-value={boardSize}
             >
               Pre-Order
@@ -307,14 +310,17 @@ export default function PyroProductsSection() {
             </div>
 
             <button
-              className="snipcart-add-item font-arial-bold uppercase bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
+              className="snipcart-add-item snipcart-checkout font-arial-bold uppercase bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
               data-item-id={pyroShirt.id}
               data-item-name={pyroShirt.title}
               data-item-price={pyroShirt.price}
               data-item-url={pyroShirt.url}
               data-item-description={pyroShirt.description}
               data-item-image={pyroShirt.image}
+              data-item-stackable="never"
               data-item-custom1-name="Size"
+              data-item-custom1-type="dropdown"
+              data-item-custom1-options="S|M|L|XL|2XL"
               data-item-custom1-value={shirtSize}
             >
               Add to Cart
