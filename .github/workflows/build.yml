@@ -1,0 +1,29 @@
+# Proves the app still builds before anything gets merged.
+#
+# ⚠️ NODE_ENV is deliberately NOT set here. Setting it to development breaks the React
+# production build (it fails prerendering /_global-error with a null useContext, which looks
+# like a duplicate-React problem and is not). Setting it to production makes npm omit
+# devDependencies at install time. Leave it alone and let the tools pick their own defaults,
+# exactly as Vercel does. This cost an hour on 2026-09-10.
+name: build
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # `npm ci` installs devDependencies by default and respects the lockfile exactly,
+      # which is the point: it proves the LOCKFILE builds, not whatever resolves today.
+      - run: npm ci
+      - run: npm run build

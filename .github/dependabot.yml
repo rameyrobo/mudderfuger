@@ -1,0 +1,20 @@
+# Dependency auto-update pipeline. See .agents/rollout-dependabot.sh for the reasoning.
+# Security updates only, grouped, capped. Dependabot opens the PR; a human merges it.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/Los_Angeles"
+    # Cap it. Unbounded PRs across a dozen repos turns a real signal into wallpaper.
+    open-pull-requests-limit: 3
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
+    commit-message:
+      prefix: "deps"
+    labels: ["dependencies", "security"]
