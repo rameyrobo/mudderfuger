@@ -35,7 +35,7 @@ function ContactModal({ isOpen, onClose }: ContactModalProps) {
       const res = await fetch('/api/transactions/send-contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, dt: Math.round(performance.now()) }),
       });
       if (res.ok) {
         setSuccessMsg('Message sent!');
