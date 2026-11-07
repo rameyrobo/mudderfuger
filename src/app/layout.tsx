@@ -26,8 +26,9 @@ export const metadata: Metadata = {
     url: SITE,
     siteName: "Mudderfuger",
     type: "website",
+    images: [{ url: "/mudderfuger-thumbnail.jpg", width: 1920, height: 1088, alt: "Mudderfuger" }],
   },
-  twitter: { card: "summary_large_image" },
+  twitter: { card: "summary_large_image", images: ["/mudderfuger-thumbnail.jpg"] },
 };
 const anton = Anton({ weight: '400', subsets: ['latin'] })
 
