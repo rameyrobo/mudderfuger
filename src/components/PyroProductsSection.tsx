@@ -3,11 +3,21 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import ScrollingBannerProds from './ScrollingBannerProds';
-import { products } from '@/data/products';
+import { useShop } from './Shop';
+import type { Product } from '@/lib/shop';
 
+// The two Pyro products come from the content API (via the root layout). If the API had nothing to give,
+// the section stays out rather than rendering half a shop.
 export default function PyroProductsSection() {
-  const pyroBoard = products.find(p => p.id === 'pyro-board')!;
-  const pyroShirt = products.find(p => p.id === 'pyro-shirt')!;
+  const { products } = useShop();
+  const pyroBoard = products.find(p => p.id === 'pyro-board');
+  const pyroShirt = products.find(p => p.id === 'pyro-shirt');
+  if (!pyroBoard?.images?.length || !pyroShirt?.images?.length) return null;
+  return <PyroInner pyroBoard={pyroBoard} pyroShirt={pyroShirt} />;
+}
+
+function PyroInner({ pyroBoard, pyroShirt }: { pyroBoard: Product; pyroShirt: Product }) {
+  const { add } = useShop();
 
   const [boardImageIndex, setBoardImageIndex] = useState(0);
   const [shirtImageIndex, setShirtImageIndex] = useState(0);
@@ -185,18 +195,9 @@ export default function PyroProductsSection() {
             </div>
 
             <button
-              className="snipcart-add-item snipcart-checkout font-arial-bold uppercase bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
-              data-item-id={pyroBoard.id}
-              data-item-name={pyroBoard.title}
-              data-item-price={pyroBoard.price}
-              data-item-url={pyroBoard.url}
-              data-item-description={pyroBoard.description}
-              data-item-image={pyroBoard.image}
-              data-item-stackable="never"
-              data-item-custom1-name="Size"
-              data-item-custom1-type="dropdown"
-              data-item-custom1-options="8|8.25|8.5"
-              data-item-custom1-value={boardSize}
+              type="button"
+              onClick={() => add({ id: pyroBoard.id, title: pyroBoard.title, unitPrice: pyroBoard.price ?? 0, maxQty: 10, options: [{ name: 'Size', value: `${boardSize}"` }], image: pyroBoard.image })}
+              className="font-arial-bold uppercase bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
             >
               Pre-Order
             </button>
@@ -310,18 +311,9 @@ export default function PyroProductsSection() {
             </div>
 
             <button
-              className="snipcart-add-item snipcart-checkout font-arial-bold uppercase bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
-              data-item-id={pyroShirt.id}
-              data-item-name={pyroShirt.title}
-              data-item-price={pyroShirt.price}
-              data-item-url={pyroShirt.url}
-              data-item-description={pyroShirt.description}
-              data-item-image={pyroShirt.image}
-              data-item-stackable="never"
-              data-item-custom1-name="Size"
-              data-item-custom1-type="dropdown"
-              data-item-custom1-options="S|M|L|XL|2XL"
-              data-item-custom1-value={shirtSize}
+              type="button"
+              onClick={() => add({ id: pyroShirt.id, title: `${pyroShirt.title} shirt`, unitPrice: pyroShirt.price ?? 0, maxQty: 10, options: [{ name: 'Size', value: shirtSize }], image: pyroShirt.image })}
+              className="font-arial-bold uppercase bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
             >
               Add to Cart
             </button>

@@ -14,8 +14,9 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchVideos() {
       const res = await fetch('/api/videos');
-      const data = await res.json();
-      setVideos(data);
+      const data = await res.json().catch(() => null);
+      // a Bunny hiccup answers { error } with a 500; an empty grid beats a crashed home page
+      setVideos(Array.isArray(data) ? data : []);
     }
     fetchVideos();
   }, []);
