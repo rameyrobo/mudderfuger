@@ -43,8 +43,12 @@ export async function getProducts(): Promise<Product[]> {
     const res = await fetch(`${api}/api/collections/products`, { next: { revalidate: 300 } });
     if (!res.ok) return [];
     const d = (await res.json()) as { items?: Record<string, unknown>[] };
-    // the API adds its own bookkeeping (slug, sort, published, updatedAt); the product's own `id` wins
-    return (d.items ?? []).map(({ slug: _s, sort: _o, published: _p, updatedAt: _u, ...p }) => ({ includes: [], ...p } as unknown as Product));
+    // The API adds its own bookkeeping (a numeric row id, sort, published, updatedAt). The item's slug is the
+    // product's id ("pyro-board"), which is what the site and the /products/<id> links use.
+    return (d.items ?? []).map((item) => {
+      const { slug, id: _row, sort: _o, published: _p, updatedAt: _u, ...p } = item;
+      return { includes: [], ...p, id: String(slug) } as unknown as Product;
+    });
   } catch {
     return [];
   }
