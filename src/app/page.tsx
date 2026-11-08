@@ -196,10 +196,7 @@ export default function HomePage() {
                 setupIntersectionObserver();
               }}
             >
-              <source
-                src="https://mudderfuger.b-cdn.net/_trailer/MUDDERFUGER_OFFICIAL_TRAILER_.webm"
-                type="video/webm"
-              />
+              {/* The .webm was never uploaded to the CDN (404 since at least 10-15); the .mp4 is the trailer. */}
               <source
                 src={heroVideoUrl}
                 type="video/mp4"
