@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Anton } from 'next/font/google'
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import LazyStylesheetLoader from '../components/LazyStylesheetLoader';
 import { Analytics } from "@vercel/analytics/next"
+import { getProducts } from "@/lib/shop";
+import { ShopProvider } from "@/components/Shop";
 import Script from "next/script";
 import { Partytown } from '@qwik.dev/partytown/react';
 
@@ -34,11 +35,12 @@ const anton = Anton({ weight: '400', subsets: ['latin'] })
 
 const ga4 = process.env.NEXT_PUBLIC_GA4 as string;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const products = await getProducts();
   return (
     <html lang="en" className={anton.className}>
       <head>
@@ -63,49 +65,13 @@ export default function RootLayout({
             `,
           }}
         />
-
-        {/* Snipcart loader logic, lazyOnload, runs after DOM is interactive */}
-        <Script id="snipcart-loader" strategy="lazyOnload">
-          {`
-            window.SnipcartSettings = {
-              publicApiKey: "${process.env.NEXT_PUBLIC_SNIPCART_API_KEY}",
-              loadStrategy: "on-user-interaction",
-              loadCSS: false,
-              modalStyle: "side",
-              addProductBehavior: "none"
-            };
-            function loadSnipcart() {
-              var c,d;(d=(c=window.SnipcartSettings).version)!=null||(c.version="3.0");
-              if (window.__snipcartLoaded) return;
-              window.__snipcartLoaded = true;
-              var n = document.getElementById("snipcart");
-              if (!n) {
-                n = document.createElement("div");
-                n.id = "snipcart";
-                n.setAttribute("hidden", "true");
-                document.body.appendChild(n);
-              }
-              var s = document.createElement("script");
-              s.src = "https://cdn.snipcart.com/themes/v3.0/default/snipcart.js";
-              s.async = true;
-              document.head.appendChild(s);
-            }
-            var events = ["focus", "mouseover", "touchmove", "scroll", "keydown"];
-            events.forEach(function(evt) {
-              window.addEventListener(evt, loadSnipcart, { once: true });
-            });
-            setTimeout(loadSnipcart, 2750);
-          `}
-        </Script>
 </head>
       <body>
-        <LazyStylesheetLoader />
-        {children}
+        {/* Snipcart is gone (2026-11-08, card #154): the cart is ours (components/Shop.tsx) and checkout waits on Stripe */}
+        <ShopProvider products={products}>
+          {children}
+        </ShopProvider>
         <SpeedInsights />
-        <div
-          hidden
-          id="snipcart"
-        ></div>
         <Analytics/>
       </body>
     </html>

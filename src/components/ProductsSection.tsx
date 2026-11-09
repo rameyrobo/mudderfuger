@@ -2,23 +2,9 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import ContactModal from './ContactModal';
 import Image from 'next/image';
 import { imgs } from '@/data/imgs';
-import { products } from '@/data/products';
+import { useShop } from './Shop';
+import type { UploadField } from '@/lib/shop';
 
-type UploadField = {
-  name: string;
-  description: string;
-  type: string;
-  accept: string;
-  required: boolean;
-  important?: string[];
-  checkbox1?: { label: string; required: boolean };
-  checkbox2?: { label: string; required: boolean };
-};
-type SnipcartCart = {
-  invoiceNumber?: string;
-  token?: string;
-  // add more fields if you use them
-};
 // Helper to get N unique random images from the pool
 function getNUniqueRandomImages(
   imgArray: { id: number; url: string }[],
@@ -37,18 +23,9 @@ function isAddYourselfUploadField(field: UploadField): field is UploadField & { 
   return Array.isArray(field.important);
 }
 
-declare global {
-  interface Window {
-    Snipcart: {
-      events: {
-        on: (event: string, callback: (cart: unknown) => void) => void;
-        off: (event: string, callback: (cart: unknown) => void) => void;
-      };
-    };
-  }
-}
-
 export default function ProductsSection() {
+  // products come from the content API via the root layout; the cart is components/Shop.tsx
+  const { products, add } = useShop();
   // Initial assignment of images as empty, then assign unique images on mount
   const [imageAssignments, setImageAssignments] = useState<string[]>(() => Array(products.length).fill(""));
   const [fading, setFading] = useState(() => Array(products.length).fill(false));
@@ -70,18 +47,6 @@ export default function ProductsSection() {
   // Upload files state
   const [uploadFiles, setUploadFiles] = useState<Record<string, File | null>>({});
 
-  // Dynamically update the sponsor-me button price for Snipcart
-  // This effect ensures the data-item-price attribute and dataset.itemPrice are always correct for the selected plan.
-  useEffect(() => {
-    const sponsorButton = document.querySelector<HTMLButtonElement>('.snipcart-add-item[data-item-id="sponsor-me"]');
-    const selectedPlan = products.find(p => p.id === selectedSponsorPlan);
-    if (sponsorButton && selectedPlan) {
-      const price = selectedPlan.itemPrice ?? selectedPlan.price ?? 0;
-      sponsorButton.dataset.itemPrice = price.toFixed(2);
-      (sponsorButton as unknown as { itemPrice: string }).itemPrice = price.toFixed(2);
-    }
-  }, [selectedSponsorPlan]);
-  
   // Open modal on page load and handle back/forward navigation for /products/:id
   useEffect(() => {
     const path = window.location.pathname;
@@ -252,10 +217,10 @@ export default function ProductsSection() {
     });
   }, [product]);
 
-  const snipcartPrice = useMemo(() => {
+  const price = useMemo(() => {
     if (!product) return "0.00";
     return (
-      (product.itemPrice ?? product.price) +
+      (product.itemPrice ?? product.price ?? 0) +
       Object.entries(customFieldValues).reduce((acc, [indexStr, val]) => {
         const index = parseInt(indexStr);
         const field = product.customFields?.[index];
@@ -275,25 +240,6 @@ export default function ProductsSection() {
     }
     return 0;
   }
-
-  // Effect to update custom field values on the Buy Now button directly
-  useEffect(() => {
-    const buyNowButton = document.querySelector('button.snipcart-add-item');
-
-    if (!buyNowButton || !product || !product.customFields) return;
-
-    product.customFields.forEach((field, index) => {
-      const value = customFieldValues[index];
-
-      if (field.type === 'checkbox') {
-        const isTrue = typeof value === 'string' && value.startsWith('true');
-        buyNowButton.setAttribute(`data-item-custom${index + 1}-value`, isTrue ? 'true' : 'false');
-      } else if (field.type === 'dropdown') {
-        const stringVal = typeof value === 'string' ? value.split('[')[0] : '';
-        buyNowButton.setAttribute(`data-item-custom${index + 1}-value`, stringVal);
-      }
-    });
-  }, [customFieldValues, product]);
 
   // Reset uploadFiles when modal changes
   useEffect(() => {
@@ -357,70 +303,28 @@ export default function ProductsSection() {
     }
   }, [carouselIdx]);
 
-  /*
-    const handleFileUpload = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const res = await fetch("/api/uploads", {
-      method: "POST",
-      headers: {
-        "x-file-name": `${Date.now()}_${file.name}`,
-        "content-type": file.type,
-      },
-      body: file,
+  // Add to the cart: the price includes any priced options, and a picked photo or song rides along in memory.
+  // Nothing is uploaded here; files go up after payment, once checkout exists (Snipcart did the same).
+  const handleAdd = () => {
+    if (!product || !allUploadsFilled) return;
+    const options = (product.customFields ?? []).flatMap((field, i) => {
+      const val = customFieldValues[i];
+      if (field.type === 'checkbox') {
+        const on = typeof val === 'string' && val.startsWith('true');
+        return on ? [{ name: field.name.replace(/\[\+\d+(\.\d{1,2})?\]/, '').trim(), value: 'Yes' }] : [];
+      }
+      return typeof val === 'string' && val ? [{ name: field.name, value: val.split('[')[0].trim() }] : [];
     });
-    const data = await res.json();
-    if (data.success) {
-      // Success! Use data.url as needed
-    } else {
-      alert("Upload failed: " + data.error);
-    }
-  }; */
+    const files = (product.upload ?? []).flatMap((field, idx) => {
+      const f = uploadFiles[`upload-${product.id}-${idx}`];
+      return f ? [{ label: field.name.replace(/^Upload\s+/i, ''), file: f }] : [];
+    });
+    add({ id: product.id, title: product.title, unitPrice: Number(price), maxQty: 1, options, files, image: product.image });
+  };
 
-  useEffect(() => {
-    // Wait for Snipcart to be available
-    if (typeof window === "undefined" || !window.Snipcart) return;
-
-    function handleCartConfirmed(cart: unknown) {
-      console.log("cart.confirmed event fired", cart);
-
-      let orderId = "unknown";
-      if (cart && typeof cart === "object") {
-        const c = cart as SnipcartCart;
-        orderId = c.invoiceNumber ?? c.token ?? "unknown";
-      }
-
-      // Loop through all upload fields for the current product
-      if (product?.upload && product.upload.length > 0) {
-        product.upload.forEach((field, idx) => {
-          const file = uploadFiles[`upload-${product.id}-${idx}`];
-          if (!file) return;
-
-          const formData = new FormData();
-          formData.append("file", file);
-          formData.append("fileName", `${orderId}_${file.name}`);
-
-          fetch("/api/uploads", {
-            method: "POST",
-            body: formData,
-          })
-            .then(res => res.json())
-            .then(data => {
-              if (data.success) {
-                console.log("Uploaded to Bunny after order:", data.url);
-              } else {
-                alert("Upload failed: " + data.error);
-              }
-            });
-        });
-      }
-    }
-
-    window.Snipcart.events.on("cart.confirmed", handleCartConfirmed);
-    // No .off method available, so do not try to remove the listener
-    return undefined;
-  }, [uploadFiles, product?.id, product?.upload]);
+  if (!products.length) {
+    return <p className="w-full text-center font-arial text-white/70 py-16">The shop is down for a moment. Check back soon.</p>;
+  }
 
   if (modalIdx === null) {
     return (
@@ -528,25 +432,7 @@ export default function ProductsSection() {
                   hover:text-red-700
                   hover:border-red-700
                   cursor-pointer
-                  inline-block
-                  snipcart-checkout"
-                data-item-id={product.id}
-                data-item-name={product.title}
-                data-item-price={(product.itemPrice ?? product.price ?? 0).toFixed(2)}
-                data-item-url={product.url}
-                data-item-max-quantity="1"
-                data-item-stackable="always"
-                data-item-description={product.description || ""}
-                {...(product.customFields?.[0] && {
-                  'data-item-custom1-name': product.customFields[0].name,
-                  'data-item-custom1-type': product.customFields[0].type,
-                  'data-item-custom1-options': product.customFields[0].options,
-                })}
-                {...(product.customFields?.[1] && {
-                  'data-item-custom2-name': product.customFields[1].name,
-                  'data-item-custom2-type': product.customFields[1].type,
-                  'data-item-custom2-options': product.customFields[1].options,
-                })}
+                  inline-block"
                 tabIndex={-1}
               >
                 See Details
@@ -794,7 +680,7 @@ export default function ProductsSection() {
                 ) : null;
               })()}
               <div className="price-data flex flex-row content-start items-center justify-around w-full">
-                <p className="text-xl font-semibold font-arial mb flex-1">${snipcartPrice}</p>
+                <p className="text-xl font-semibold font-arial mb flex-1">${price}</p>
                 {/* Custom Fields Form */}
                 {product?.customFields && product.customFields.length > 0 && (
                   <form className="w-full max-w-none text-left flex flex-row items-center content-end justify-evenly">
@@ -948,48 +834,26 @@ export default function ProductsSection() {
   </form>
 )}
               <button
+                type="button"
+                onClick={handleAdd}
                 className={`
                   font-arial-bold
-                  snipcart-add-item
-                  bg-white 
+                  bg-white
                   border-2
-                  text-black 
-                  px-4 
-                  py-2 
+                  text-black
+                  px-4
+                  py-2
                   rounded
                   mt-2
                   uppercase
                   cursor-pointer
-                  snipcart-checkout
                   hover:invert
-                  hover:text-red-700 
+                  hover:text-red-700
                   hover:scale-105
                   transition-all
                   ${!allUploadsFilled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
                 `}
-                data-item-id={product?.id}
-                data-item-name={product?.title}
-                data-item-price={product?.price}
-                data-item-url={product?.url}
-                data-item-max-quantity="1"
-                data-item-stackable="always"
-                data-item-description={product?.description || ""}
                 disabled={!allUploadsFilled}
-                {
-                  ...((product?.customFields || []).reduce((acc, field, i) => {
-                    acc[`data-item-custom${i + 1}-name`] = field.name;
-                    acc[`data-item-custom${i + 1}-type`] = field.type;
-                    if (field.options) acc[`data-item-custom${i + 1}-options`] = field.options;
-                    const val = customFieldValues[i];
-                    if (typeof val === 'boolean') {
-                      acc[`data-item-custom${i + 1}-value`] = val ? 'true' : 'false';
-                    } else if (typeof val === 'string') {
-                      const stripped = val.split('[')[0]; // remove price annotation
-                      acc[`data-item-custom${i + 1}-value`] = stripped;
-                    }
-                    return acc;
-                  }, {} as Record<string, string>))
-                }
               >
                 Add to Cart
               </button>

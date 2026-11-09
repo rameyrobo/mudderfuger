@@ -1,20 +1,18 @@
 import type { Metadata } from 'next'
 
 /**
- * Everything under /products/* exists for ONE reason: Snipcart fetches these
- * URLs server-side to validate price and custom fields before accepting an
- * order. They are infrastructure, not pages a customer is meant to land on —
- * the real storefront is the Pyro and BE A MF sections of the homepage.
+ * /products/<id> opens that product's details over the BE A MF grid (the URL
+ * the details modal pushes), so a link to one product can be shared. They are
+ * not pages of their own: the storefront is the Pyro and BE A MF sections of
+ * the homepage. Keep them reachable (a blocked URL can never be de-indexed),
+ * but out of search results.
  *
- * So: keep them reachable (Snipcart needs them, and a blocked URL can never
- * be de-indexed), but keep them out of search results.
+ * Until 2026-11-08 Snipcart also fetched /products/all-products, pyro-board and
+ * pyro-shirt to validate prices. Snipcart is gone, those three pages went with
+ * it, and next.config redirects them to the home page sections.
  *
- * Without this, they are indexable by default. Vercel adds a noindex header
- * to *preview* deployments, which masks the problem — on the production
- * domain that protection is gone and these thin pages compete with the site.
- *
- * Applies to every child route: all-products, pyro-board, pyro-shirt,
- * sponsor-me, add-yourself, submit-song, product-commercial.
+ * Applies to every child route: sponsor-me, add-yourself, submit-song,
+ * product-commercial.
  */
 export const metadata: Metadata = {
   robots: {
