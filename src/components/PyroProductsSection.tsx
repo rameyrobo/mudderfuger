@@ -182,8 +182,9 @@ function PyroInner({ pyroBoard, pyroShirt }: { pyroBoard: Product; pyroShirt: Pr
             </div>
             
             <div className="mb-4">
-              <label className="font-arial text-xs text-gray-300 mb-2 block">Size</label>
+              <label htmlFor="pyro-board-size" className="font-arial text-xs text-gray-300 mb-2 block">Size</label>
               <select
+                id="pyro-board-size"
                 value={boardSize}
                 onChange={(e) => setBoardSize(e.target.value)}
                 className="w-full bg-black/80 text-white border border-white/30 rounded px-3 py-2 text-sm font-arial focus:outline-none focus:border-red-500"
@@ -197,7 +198,7 @@ function PyroInner({ pyroBoard, pyroShirt }: { pyroBoard: Product; pyroShirt: Pr
             <button
               type="button"
               onClick={() => add({ id: pyroBoard.id, title: pyroBoard.title, unitPrice: pyroBoard.price ?? 0, maxQty: 10, options: [{ name: 'Size', value: `${boardSize}"` }], image: pyroBoard.image })}
-              className="font-arial-bold uppercase bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
+              className="font-arial-bold uppercase bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
             >
               Pre-Order
             </button>
@@ -296,8 +297,9 @@ function PyroInner({ pyroBoard, pyroShirt }: { pyroBoard: Product; pyroShirt: Pr
             </div>
             
             <div className="mb-4">
-              <label className="font-arial text-xs text-gray-300 mb-2 block">Size</label>
+              <label htmlFor="pyro-shirt-size" className="font-arial text-xs text-gray-300 mb-2 block">Size</label>
               <select
+                id="pyro-shirt-size"
                 value={shirtSize}
                 onChange={(e) => setShirtSize(e.target.value)}
                 className="w-full bg-black/80 text-white border border-white/30 rounded px-3 py-2 text-sm font-arial focus:outline-none focus:border-red-500"
@@ -313,7 +315,7 @@ function PyroInner({ pyroBoard, pyroShirt }: { pyroBoard: Product; pyroShirt: Pr
             <button
               type="button"
               onClick={() => add({ id: pyroShirt.id, title: `${pyroShirt.title} shirt`, unitPrice: pyroShirt.price ?? 0, maxQty: 10, options: [{ name: 'Size', value: shirtSize }], image: pyroShirt.image })}
-              className="font-arial-bold uppercase bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
+              className="font-arial-bold uppercase bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
             >
               Add to Cart
             </button>

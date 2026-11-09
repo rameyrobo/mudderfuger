@@ -115,7 +115,7 @@ function CartButton() {
     <button
       type="button"
       onClick={() => setOpen(true)}
-      className="fixed bottom-4 right-4 z-[998] font-arial-bold uppercase bg-red-500 hover:bg-red-600 text-white px-5 py-3 rounded shadow-lg cursor-pointer"
+      className="fixed bottom-4 right-4 z-[998] font-arial-bold uppercase bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded shadow-lg cursor-pointer"
       aria-label={`Open cart, ${count} ${count === 1 ? 'item' : 'items'}`}
     >
       Cart ({count})

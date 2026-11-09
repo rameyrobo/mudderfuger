@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 const esc = (v: unknown) =>
   String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string);
@@ -33,6 +32,8 @@ export async function POST(request: Request) {
   // Type assertion ensures sender is treated as a string
   const sender = process.env.EMAIL_SENDER as string;
 
+  // Made per request, not at module scope: a build without RESEND_API_KEY would fail collecting this route.
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const { data, error } = await resend.emails.send({
     from: `Mudderfuger <${sender}>`,
     to: [sender],
