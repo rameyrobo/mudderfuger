@@ -25,7 +25,7 @@ function isAddYourselfUploadField(field: UploadField): field is UploadField & { 
 
 export default function ProductsSection() {
   // products come from the content API via the root layout; the cart is components/Shop.tsx
-  const { products, add } = useShop();
+  const { products, add, selling } = useShop();
   // Initial assignment of images as empty, then assign unique images on mount
   const [imageAssignments, setImageAssignments] = useState<string[]>(() => Array(products.length).fill(""));
   const [fading, setFading] = useState(() => Array(products.length).fill(false));
@@ -851,11 +851,11 @@ export default function ProductsSection() {
                   hover:text-red-700
                   hover:scale-105
                   transition-all
-                  ${!allUploadsFilled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
+                  ${!selling ? 'opacity-60 cursor-default pointer-events-none' : !allUploadsFilled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
                 `}
-                disabled={!allUploadsFilled}
+                disabled={!selling || !allUploadsFilled}
               >
-                Add to Cart
+                {selling ? 'Add to Cart' : 'Coming soon'}
               </button>
             </>
           )}

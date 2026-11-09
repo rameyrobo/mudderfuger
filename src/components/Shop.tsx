@@ -38,9 +38,13 @@ type Shop = {
   open: boolean;
   setOpen: (v: boolean) => void;
   fileFor: (key: string) => File[] | undefined;
+  selling: boolean;
 };
 
 const ShopContext = createContext<Shop | null>(null);
+// Selling is off until the owner decides how payment works (2026-11-08). Off: products still show, their buttons read
+// "Coming soon", and the cart button and drawer are not rendered. On: set NEXT_PUBLIC_SHOP_SELLING=1 and redeploy.
+const SELLING = process.env.NEXT_PUBLIC_SHOP_SELLING === '1';
 const STORE = 'mf-cart-v1';
 const money = (n: number) => `$${n.toFixed(2)}`;
 
@@ -70,6 +74,7 @@ export function ShopProvider({ products, children }: { products: Product[]; chil
   }, [lines, ready]);
 
   const add = useCallback((item: AddInput) => {
+    if (!SELLING) return;
     const base = `${item.id}|${item.options.map((o) => `${o.name}=${o.value}`).join(';')}`;
     setLines((prev) => {
       // a line with an attached file is always its own line; anything else stacks up to its limit
@@ -97,13 +102,14 @@ export function ShopProvider({ products, children }: { products: Product[]; chil
     count: lines.reduce((n, l) => n + l.qty, 0),
     subtotal: lines.reduce((n, l) => n + l.qty * l.unitPrice, 0),
     fileFor: (key) => files.current.get(key),
+    selling: SELLING,
   }), [products, lines, open, add, setQty, remove]);
 
   return (
     <ShopContext.Provider value={value}>
       {children}
-      <CartButton />
-      <CartDrawer />
+      {SELLING && <CartButton />}
+      {SELLING && <CartDrawer />}
     </ShopContext.Provider>
   );
 }

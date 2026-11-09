@@ -17,7 +17,7 @@ export default function PyroProductsSection() {
 }
 
 function PyroInner({ pyroBoard, pyroShirt }: { pyroBoard: Product; pyroShirt: Product }) {
-  const { add } = useShop();
+  const { add, selling } = useShop();
 
   const [boardImageIndex, setBoardImageIndex] = useState(0);
   const [shirtImageIndex, setShirtImageIndex] = useState(0);
@@ -198,9 +198,10 @@ function PyroInner({ pyroBoard, pyroShirt }: { pyroBoard: Product; pyroShirt: Pr
             <button
               type="button"
               onClick={() => add({ id: pyroBoard.id, title: pyroBoard.title, unitPrice: pyroBoard.price ?? 0, maxQty: 10, options: [{ name: 'Size', value: `${boardSize}"` }], image: pyroBoard.image })}
-              className="font-arial-bold uppercase bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
+              disabled={!selling}
+              className={`font-arial-bold uppercase bg-red-600 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full ${selling ? 'hover:bg-red-700 cursor-pointer' : 'cursor-default opacity-80'}`}
             >
-              Pre-Order
+              {selling ? 'Pre-Order' : 'Coming soon'}
             </button>
           </div>
 
@@ -315,9 +316,10 @@ function PyroInner({ pyroBoard, pyroShirt }: { pyroBoard: Product; pyroShirt: Pr
             <button
               type="button"
               onClick={() => add({ id: pyroShirt.id, title: `${pyroShirt.title} shirt`, unitPrice: pyroShirt.price ?? 0, maxQty: 10, options: [{ name: 'Size', value: shirtSize }], image: pyroShirt.image })}
-              className="font-arial-bold uppercase bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full cursor-pointer"
+              disabled={!selling}
+              className={`font-arial-bold uppercase bg-red-600 text-white px-6 py-2 rounded transition-colors duration-300 text-sm w-full ${selling ? 'hover:bg-red-700 cursor-pointer' : 'cursor-default opacity-80'}`}
             >
-              Add to Cart
+              {selling ? 'Add to Cart' : 'Coming soon'}
             </button>
           </div>
 
